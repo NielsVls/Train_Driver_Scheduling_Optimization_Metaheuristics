@@ -131,6 +131,7 @@ public class Permutations {
         if (tempS1.getBlocks().size() == 1) {
             blockIndex1 = 0;
         }
+
         Integer block1 = tempS1.getBlocks().get(blockIndex1);
         tempS1.getBlocks().remove(blockIndex1);
 

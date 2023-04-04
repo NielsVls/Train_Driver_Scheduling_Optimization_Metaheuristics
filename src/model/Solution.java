@@ -4,6 +4,8 @@ import global.Parameters;
 
 import java.util.ArrayList;
 
+import static util.LNS.DestroyRepair.getRandomNumberInRange;
+
 public class Solution implements Cloneable{
     private ArrayList<Schedule> schedules;
     private int totalCost;
@@ -34,6 +36,9 @@ public class Solution implements Cloneable{
         this.totalTimeWasted = other.totalTimeWasted;
         this.averageDuration = other.averageDuration;
         this.driversWorkingLessThen6hours = other.driversWorkingLessThen6hours;
+    }
+    public void insertBlock(){
+
     }
 
     public int getTotalCost() {

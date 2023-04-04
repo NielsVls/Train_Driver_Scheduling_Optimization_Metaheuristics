@@ -56,26 +56,20 @@ public class Main {
         consmatrix = consecutiveInMatrix();
         consbreakmatrix = consecutiveBreakInMatrix();
 
-        //MatrixToCsv csv = new MatrixToCsv();
-        //csv.convert(consmatrix,"cons_blocks");
-        //csv.convert(consbreakmatrix,"cons_block_with_break");
-        //csv.convert(travelmatrix,"travelMatrix");
-        //csv.convert(updatedTravelMatrix,"travelMatrix_with_FW");
-
         //Run the greedy algorithm
         Calculations calculations = new Calculations(blocks,stations,breakStations,depots,parameters,travelmatrix,consmatrix,consbreakmatrix);
         GreedyBaseAlgo algoTest = new GreedyBaseAlgo(calculations);
-        //Solution baseSolution = algoTest.runInitialSolution();
-        //finalSolutionCheck(baseSolution);
+        Solution baseSolution = algoTest.runInitialSolution();
+        finalSolutionCheck(baseSolution);
 
         //Solution baseSolution = algoTest.runTimeBasedInitialSolution();
         // finalSolutionCheck(baseSolution);
 
-        Solution baseSolution = algoTest.run1BlockPerScheduleInitialSolution();
-        finalSolutionCheck(baseSolution);
+//        Solution baseSolution = algoTest.run1BlockPerScheduleInitialSolution();
+//        finalSolutionCheck(baseSolution);
 
         Permutations permutations = new Permutations(calculations);
-        Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,300000, permutations);
+        Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,60000, permutations);
         finalSolutionCheck(endSolSA);
 
         DestroyRepair builders = new DestroyRepair(calculations);
@@ -149,11 +143,6 @@ public class Main {
             return false;
         }else if(scheduleBlocks.size() == 1){
             if (schedule.getDuration() > 300 && schedule.getBreakAfterBlock() == -1){
-//                Block b = blocks.get(scheduleBlocks.get(0)-1);
-//                System.out.println(travelmatrix[schedule.getClosestDepot()][b.getStartLoc()]);
-//                System.out.println(travelmatrix[b.getEndLoc()][schedule.getClosestDepot()]);
-//                System.out.println(schedule);
-//                System.out.println(b);
                 System.out.println("The schedule consist of 1 block [" + scheduleBlocks.get(0) + "] and takes longer then accepted ("+schedule.getDuration()+").");
                 return false;
             }

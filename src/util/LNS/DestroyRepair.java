@@ -38,16 +38,19 @@ public class DestroyRepair {
     public PossibleSolution destruct2(Solution solution, int destructions){
         Solution oldSolution = new Solution(solution);
         Solution newSolution = oldSolution.clone();
+
         oldSolution.calculateCost();
         int oldCost = oldSolution.getTotalTimeWasted();
-        System.out.println("OLDCOST "+oldCost);
+
         PossibleSolution result = new PossibleSolution();
         result.setOldSolution(oldSolution);
         result.setOldCost(oldCost);
 
+
         if(solution == null){
             return null;
         }
+
         removedBlocks.clear();
         changedSchedules.clear();
         int removed = 0;
