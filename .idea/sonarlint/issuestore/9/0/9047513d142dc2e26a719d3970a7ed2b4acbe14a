@@ -1,0 +1,6 @@
+
+ƒ
+java:S1319"gThe type of "trainNr" should be an interface such as "List" rather than the implementation "ArrayList".(§¡Ä8…ƒ“âä0
+
+java:S1319P"pThe return type of this method should be an interface such as "List" rather than the implementation "ArrayList".(“™±8èÉ“âä0
+V	java:S107"BConstructor has 11 parameters, which is greater than 7 authorized.(§¡Ä

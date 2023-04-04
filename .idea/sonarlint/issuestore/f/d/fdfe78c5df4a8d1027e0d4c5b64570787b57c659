@@ -1,0 +1,7 @@
+
+’
+java:S1319Z"pThe return type of this method should be an interface such as "List" rather than the implementation "ArrayList".(Ã¯™Æúÿÿÿÿ8í¤ºÎï0
+’
+java:S1319z"pThe return type of this method should be an interface such as "List" rather than the implementation "ArrayList".(úµÁñÿÿÿÿÿ8î¤ºÎï0
+p
+java:S2975."SRemove this "clone" implementation; use a copy constructor or copy factory instead.(â¦õ–8±äÜšò0

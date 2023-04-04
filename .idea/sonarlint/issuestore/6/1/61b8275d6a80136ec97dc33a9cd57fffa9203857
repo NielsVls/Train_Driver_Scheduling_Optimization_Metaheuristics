@@ -1,0 +1,16 @@
+
+y
+java:S1488+"^Immediately return this expression instead of assigning it to the temporary variable "number".(±¶}8²´¡“ò0
+b
+java:S2184C"ECast one of the operands of this subtraction operation to a "double".(ÎŠ¹ö8²´¡“ò0
+{	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ãúÈûÿÿÿÿ8²´¡“ò0
+W
+java:S1118
+":Add a private constructor to hide the implicit public one.(ûÙùÈ8±ŠÅ™ò0
+;
+java:S2119*"Save and re-use this "Random".(¡Å”¦8¼µ¡“ò0
+]	java:S125D"<This block of commented-out lines of code should be removed.(¡‘»³ùÿÿÿÿ8î—Ë›ò0
+M
+java:S1128"0Remove this unused import 'java.util.ArrayList'.(÷‰îƒ8ÈöÀ˜ò0
+\
+java:S1144":Remove this unused private "acceptanceProbability" method.(û¾¾Ãıÿÿÿÿ8¿µ¡“ò0

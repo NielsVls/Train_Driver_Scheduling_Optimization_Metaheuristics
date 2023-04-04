@@ -1,0 +1,37 @@
+
+c	java:S112ž"FDefine and throw a dedicated exception instead of using a generic one.(¿Í‘þ8¹‡µÇñ0
+†
+java:S1319‡"hThe type of "bestFits" should be an interface such as "List" rather than the implementation "ArrayList".(ãËÒõ8º‡µÇñ0
+Ž
+java:S1319ž"pThe type of "changedSchedules" should be an interface such as "List" rather than the implementation "ArrayList".(¿Í‘þ8º‡µÇñ0
+‹
+java:S1319ž"mThe type of "removedBlocks" should be an interface such as "List" rather than the implementation "ArrayList".(¿Í‘þ8º‡µÇñ0
+{	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ŽãúÈûÿÿÿÿ8»‡µÇñ0
+X	java:S125&"<This block of commented-out lines of code should be removed.(ÈÈÊÑ8×§¡Èñ0
+W	java:S125+"<This block of commented-out lines of code should be removed.(Û‰Ë8Ôì«Èñ0
+]	java:S125g"<This block of commented-out lines of code should be removed.(óðîªþÿÿÿÿ8ö‡µÇñ0
+`
+java:S1854 "=Remove this useless assignment to local variable "schedules".(³„ûåùÿÿÿÿ8÷‡µÇñ0
+Š
+java:S1130ž"lRemove the declaration of thrown exception 'java.lang.Exception', as it cannot be thrown from method's body.(¿Í‘þ8ø‡µÇñ0
+U
+java:S1172ž"7Remove this unused method parameter "changedSchedules".(¿Í‘þ8ø‡µÇñ0
+Q
+java:S1481 ".Remove this unused "schedules" local variable.(³„ûåùÿÿÿÿ8ø‡µÇñ0
+Y	java:S125£"<This block of commented-out lines of code should be removed.(Íµƒ¸8ø‡µÇñ0
+X	java:S125¥"<This block of commented-out lines of code should be removed.(ùÌ¨8ø‡µÇñ0
+^	java:S125¶"<This block of commented-out lines of code should be removed.(ú¯¼Àûÿÿÿÿ8ù‡µÇñ0
+S
+java:S1128"1Remove this unused import 'java.util.Collection'.(¹ÉÐšùÿÿÿÿ8Ñõ‡Èñ0
+N
+java:S1068",Remove this unused "stations" private field.(«²¹Ìùÿÿÿÿ8ù‡µÇñ0
+S
+java:S1068"1Remove this unused "breakStations" private field.(Ç£ÿÝüÿÿÿÿ8ù‡µÇñ0
+P
+java:S1068".Remove this unused "consmatrix" private field.(†ù§Éüÿÿÿÿ8ù‡µÇñ0
+U
+java:S1068"3Remove this unused "consbreakmatrix" private field.(ÁÙ¡•ÿÿÿÿÿ8ù‡µÇñ0
+R
+java:S1068"0Remove this unused "travelmatrix" private field.(›Ñ«úüÿÿÿÿ8ù‡µÇñ0
+K
+java:S1068".Remove this unused "parameters" private field.(ÀÅõÇ8ù‡µÇñ0

@@ -1,0 +1,202 @@
+package model;
+
+import java.util.ArrayList;
+
+public class Schedule implements Cloneable{
+    Integer id;
+    boolean isLocal;
+    boolean isValid;
+    int duration;
+    int startStation;
+    int startDay;
+    int startTime;
+    ArrayList<Integer> blocks;
+    int closestDepot;
+    int type;
+    int timeWorkingBeforeBreak;
+    int timeWorkingWithoutBreak;
+    int breakAfterBlock;
+    ArrayList<Integer> breakPossibleAfterBlocks;
+    int timeWasted;
+
+    public Schedule(){
+        breakAfterBlock = -1;
+        blocks = new ArrayList<>();
+        breakPossibleAfterBlocks = new ArrayList<>();
+    }
+
+    public Schedule(Schedule s){
+        this.id = s.id;
+        this.isLocal = s.isLocal;
+        this.duration = s.duration;
+        this.startStation = s.startStation;
+        this.startTime = s.startTime;
+        this.startDay = s.startDay;
+        this.blocks = new ArrayList<>(s.blocks);
+        this.closestDepot = s.closestDepot;
+        this.type = s.type;
+        this.timeWorkingBeforeBreak = s.timeWorkingBeforeBreak;
+        this.timeWorkingWithoutBreak = s.timeWorkingWithoutBreak;
+        this.breakAfterBlock = s.breakAfterBlock;
+        this.breakPossibleAfterBlocks = new ArrayList<>(s.breakPossibleAfterBlocks);
+        this.timeWasted = s.timeWasted;
+    }
+
+    @Override
+    public Schedule clone() {
+        try {
+            // Call Object's clone method to create a shallow copy
+            Schedule cloned = (Schedule) super.clone();
+
+            // Create deep copies of mutable fields
+            cloned.blocks = new ArrayList<>(blocks);
+            cloned.breakPossibleAfterBlocks = new ArrayList<>(breakPossibleAfterBlocks);
+
+            return cloned;
+        } catch (CloneNotSupportedException e) {
+            // Should not happen since we are Cloneable
+            throw new InternalError(e);
+        }
+    }
+
+    public int getClosestDepot() {
+        return closestDepot;
+    }
+
+    public void setClosestDepot(int closestDepot) {
+        this.closestDepot = closestDepot;
+    }
+
+    public int getStartDay() {
+        return startDay;
+    }
+
+    public void setStartDay(int startDay) {
+        this.startDay = startDay;
+    }
+
+    public boolean isLocal() {
+        return isLocal;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public int getStartStation() {
+        return startStation;
+    }
+
+    public ArrayList<Integer> getBlocks() {
+        return blocks;
+    }
+
+    public void setLocal(boolean local) {
+        isLocal = local;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public void setStartStation(int startStation) {
+        this.startStation = startStation;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public int getTimeWorkingWithoutBreak() {
+        return timeWorkingWithoutBreak;
+    }
+
+    public void setTimeWorkingWithoutBreak(int timeWorkingWithoutBreak) {
+        this.timeWorkingWithoutBreak = timeWorkingWithoutBreak;
+    }
+
+    public ArrayList<Integer> getBreakPossibleAfterBlocks() {
+        return breakPossibleAfterBlocks;
+    }
+
+    public int getBreakAfterBlock() {
+        return breakAfterBlock;
+    }
+
+    public void setBreakAfterBlock(int breakAfterBlock) {
+        this.breakAfterBlock = breakAfterBlock;
+    }
+
+    public int getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(int startTime) {
+        this.startTime = startTime;
+    }
+
+    public int getTimeWorkingBeforeBreak() {
+        return timeWorkingBeforeBreak;
+    }
+
+    public void setTimeWorkingBeforeBreak(int timeWorkingBeforeBreak) {
+        this.timeWorkingBeforeBreak = timeWorkingBeforeBreak;
+    }
+
+    public boolean isValid() {
+        return isValid;
+    }
+
+    public void setValid(boolean valid) {
+        isValid = valid;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getTimeWasted() {
+        return timeWasted;
+    }
+
+    public void setTimeWasted(int timeWasted) {
+        this.timeWasted = timeWasted;
+    }
+
+    @Override
+    public String toString() {
+        String valid = "INVALID";
+        if(isValid){
+            valid = "VALID";
+        }
+
+        if (breakAfterBlock != -1){
+            return "\n" + valid + " Schedule " + id +" {\n" +
+                    "duration =" + duration +
+                    "\nstartTime=" + startTime +
+                    "\nTime before Break=" + timeWorkingBeforeBreak +
+                    "\nThere will be a break after block =" + breakAfterBlock +
+                    "\nTime since Last Break=" + timeWorkingWithoutBreak +
+                    "\nBREAKS?=" + breakPossibleAfterBlocks +
+                    "\nblocks=" + blocks +
+                    "\nCan it be done by a local station driver? " + isLocal() + " --> " + getType() +
+                    " }\n";
+        }else{
+            return "\n" + valid + " Schedule " + id +" {\n" +
+                    "duration =" + duration +
+                    "\nstartTime=" + startTime +
+                    "\nblocks=" + blocks +
+                    "\nCan it be done by a local station driver? " + isLocal() + " --> " + getType() +
+                    " }\n";
+        }
+
+    }
+}

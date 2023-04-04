@@ -1,0 +1,21 @@
+
+`	java:S112"FDefine and throw a dedicated exception instead of using a generic one.(†–ÿŞúÿÿÿÿ
+`	java:S112-"FDefine and throw a dedicated exception instead of using a generic one.(æ•Ó¯úÿÿÿÿ
+Z	java:S112A"FDefine and throw a dedicated exception instead of using a generic one.(°¦ì
+‹
+java:S1319"pThe return type of this method should be an interface such as "List" rather than the implementation "ArrayList".(†–ÿŞúÿÿÿÿ
+…
+java:S1319A"pThe return type of this method should be an interface such as "List" rather than the implementation "ArrayList".(°¦ì
+
+java:S1319X"pThe return type of this method should be an interface such as "List" rather than the implementation "ArrayList".(Ş‚ÖÄ8ê„Ñûæ0
+…
+java:S1319X"hThe type of "stations" should be an interface such as "List" rather than the implementation "ArrayList".(Ş‚ÖÄ8ê„Ñûæ0
+’
+java:S1319b"pThe return type of this method should be an interface such as "List" rather than the implementation "ArrayList".(½ÂŸÚÿÿÿÿÿ8óÜÿœç0
+Š
+java:S1319b"hThe type of "stations" should be an interface such as "List" rather than the implementation "ArrayList".(½ÂŸÚÿÿÿÿÿ8óÜÿœç0
+y
+java:S1488’"]Immediately return this expression instead of assigning it to the temporary variable "value".(ğÒÖÿÿÿÿÿ
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(½ÏáÜøÿÿÿÿ
+S
+java:S1117ˆ"<Rename "stations" which hides the field declared at line 13.(©’øÏ
