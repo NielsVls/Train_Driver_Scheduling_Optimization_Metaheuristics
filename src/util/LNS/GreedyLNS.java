@@ -36,18 +36,13 @@ public class GreedyLNS {
     }
 
     //True means that Block b is added to Schedule s
-    public InfoBestFit bestFitBlock(Block block, Solution solution){
-        Solution newSolution = new Solution(solution);
-        ArrayList<Schedule> schedules = newSolution.getSchedules();
+    public InfoBestFit bestFitBlock(Block block, ArrayList<Schedule> schedules){
         Integer b = block.getId();
         int cost = 9999999;
         int indexInSchedule = -1;
         int scheduleID = -1;
         for (Schedule s: schedules) {
             Schedule temp = new Schedule(s);
-            newSolution.calculateSolution();
-            int prev = newSolution.getBlocksExecuted();
-            int aft = newSolution.getBlocksExecuted();
             for(int i = 0; i <= s.getBlocks().size(); i++){
                 if(i == 0){
                     Integer blockAfter = temp.getBlocks().get(0);
@@ -55,7 +50,6 @@ public class GreedyLNS {
                         temp.getBlocks().add(0,b);
                         c.calculateSchedule(temp);
                         if(c.checkSchedule(temp)){
-                            //int sCost = calculateCost(block,blocks.get(blockAfter-1),temp);
                             int sCost = calculateCost2(s,temp);
                             if(sCost < cost){
                                 cost = sCost;
@@ -64,8 +58,6 @@ public class GreedyLNS {
                             }
                         }
                         temp.getBlocks().remove(b);
-                        newSolution.calculateSolution();
-                        aft = newSolution.getBlocksExecuted();
                         break;
                     }
                 } else if (i == temp.getBlocks().size()) {
@@ -74,17 +66,14 @@ public class GreedyLNS {
                         temp.getBlocks().add(b);
                         c.calculateSchedule(temp);
                         if(c.checkSchedule(temp)){
-                            //int sCost = calculateCost(blocks.get(blockBefore-1),block,temp);
                             int sCost = calculateCost2(s,temp);
                             if(sCost < cost){
                                 cost = sCost;
-                                indexInSchedule = i-1;
+                                indexInSchedule = i;
                                 scheduleID = s.getId();
                             }
                         }
                         temp.getBlocks().remove(b);
-                        newSolution.calculateSolution();
-                        aft = newSolution.getBlocksExecuted();
                         break;
                     }
                 } else {
@@ -94,7 +83,6 @@ public class GreedyLNS {
                         temp.getBlocks().add(i,b);
                         c.calculateSchedule(temp);
                         if(c.checkSchedule(temp)){
-                            //int sCost = calculateCost(block,blocks.get(blockAfter-1),temp) + calculateCost(blocks.get(blockBefore-1),block,temp);
                             int sCost = calculateCost2(s,temp);
                             if(sCost < cost){
                                 cost = sCost;
@@ -103,14 +91,9 @@ public class GreedyLNS {
                             }
                         }
                         temp.getBlocks().remove(b);
-                        newSolution.calculateSolution();
-                        aft = newSolution.getBlocksExecuted();
                         break;
                     }
                 }
-            }
-            if(aft != prev){
-                System.out.println("ERROR");
             }
         }
         if(scheduleID != -1){
@@ -122,6 +105,7 @@ public class GreedyLNS {
 
     private int calculateCost2(Schedule oldS, Schedule newS) {
         if (newS.getDuration() == 0) {
+            System.out.println("NEW DURATION = 0");
             return oldS.getDuration();
         }
 
@@ -130,8 +114,9 @@ public class GreedyLNS {
             System.out.println("\n-------------------\n");
             System.out.println(newS);
         }
-        double oldCostPerMinute = parameters.getSalary() / oldS.getDuration();
-        double newCostPerMinute = parameters.getSalary() / newS.getDuration();
+
+        double oldCostPerMinute = (double) parameters.getSalary() / oldS.getDuration();
+        double newCostPerMinute = (double) parameters.getSalary() / newS.getDuration();
 
         double oldWastedTime = c.calculateTimeWaste(oldS);
         double newWastedTime = c.calculateTimeWaste(newS);
@@ -139,6 +124,7 @@ public class GreedyLNS {
         if (!oldS.isLocal() && newS.isLocal()) {
             newCostPerMinute = (parameters.getCostFraction() * parameters.getSalary()) / newS.getDuration();
         }
+
         int diffvalid = 0;
         if(!oldS.isValid() && newS.isValid()){
             diffvalid = 1;
@@ -148,9 +134,7 @@ public class GreedyLNS {
         double diffWT = oldWastedTime - newWastedTime;
         double diffCPM = oldCostPerMinute - newCostPerMinute;
 
-        int result = (int) (diffWT * 1 + diffCPM * 1 + diffvalid * 1000);
-
         //A positive result equals an improvement
-        return result;
+        return (int) (diffWT * 1 + diffCPM * 0 + diffvalid * 1000);
     }
 }

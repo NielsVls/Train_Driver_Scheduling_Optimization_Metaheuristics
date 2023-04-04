@@ -4,8 +4,6 @@ import model.Station;
 import model.Solution;
 import util.LNS.DestroyRepair;
 import util.LNS.LargeNeighbourhoodSearch;
-import util.SA.Permutations;
-import util.SA.SimulatedAnnealing;
 import util.algorithms.Calculations;
 import global.Parameters;
 import util.algorithms.GreedyBaseAlgo;
@@ -56,32 +54,34 @@ public class Main {
         consmatrix = consecutiveInMatrix();
         consbreakmatrix = consecutiveBreakInMatrix();
 
-        //Run the greedy algorithm
+        //RUN THE ALGORITHM TO GET THE BASE SOLUTION
         Calculations calculations = new Calculations(blocks,stations,breakStations,depots,parameters,travelmatrix,consmatrix,consbreakmatrix);
         GreedyBaseAlgo algoTest = new GreedyBaseAlgo(calculations);
-        Solution baseSolution = algoTest.runInitialSolution();
-        finalSolutionCheck(baseSolution);
+//        Solution baseSolution = algoTest.runInitialSolution();
+//        finalSolutionCheck(baseSolution,calculations);
+
 
         //Solution baseSolution = algoTest.runTimeBasedInitialSolution();
-        // finalSolutionCheck(baseSolution);
+        // finalSolutionCheck(baseSolution,calculations);
 
 //        Solution baseSolution = algoTest.run1BlockPerScheduleInitialSolution();
-//        finalSolutionCheck(baseSolution);
+//        finalSolutionCheck(baseSolution,calculations);
 
-        Permutations permutations = new Permutations(calculations);
-        Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,60000, permutations);
-        finalSolutionCheck(endSolSA);
+        Solution baseSolution = algoTest.runRandomInitialSolution();
+        finalSolutionCheck(baseSolution,calculations);
+
+//        Permutations permutations = new Permutations(calculations);
+//        Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,60000, permutations);
+//        finalSolutionCheck(endSolSA);
 
         DestroyRepair builders = new DestroyRepair(calculations);
-
-//        Solution endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,300000,builders);
-//        //Solution endSolLNS = LNS2.runSimulation(baseSolution,300000,builders);
-//        finalSolutionCheck(endSolLNS);
+        Solution endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,60000,builders);
+        finalSolutionCheck(endSolLNS,calculations);
 
     }
 
     //Final check of the schedules if the result is valid
-    static void finalSolutionCheck(Solution solution){
+    static void finalSolutionCheck(Solution solution,Calculations c){
         ArrayList<Schedule> schedules = solution.getSchedules();
         ArrayList<Schedule> dupli = new ArrayList<>();
         ArrayList<Integer> dupliii = new ArrayList<>();
@@ -92,6 +92,7 @@ public class Main {
         int invalids = 0;
         Set<Integer> bl = new HashSet<>();
         for (Schedule s : schedules){
+            c.calculateSchedule(s);
             if(!finalCheckSchedule(s)){
                 valid = false;
                 invalids++;
@@ -129,7 +130,7 @@ public class Main {
         System.out.println("Count of blocks covered twice : " + convert(duplicates));
         System.out.println("Count of schedules that can be covered by station drivers : " + convert(stationDrivers));
         System.out.println("Total duration : " + convert(solution.getTotalDuration()));
-        System.out.println("Total Cost : " + convert(solution.getTotalCost()));
+        System.out.println("Total Cost : " + convert(solution.getTotalPaymentDrivers()));
         System.out.println("Total Time Wasted : " + convert(solution.getTotalTimeWasted()));
 //        System.out.println(dupli);
 //        System.out.println(dupliii);

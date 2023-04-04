@@ -4,7 +4,6 @@ import model.PossibleSolution;
 import model.Schedule;
 import model.Solution;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 public class LargeNeighbourhoodSearch {
@@ -51,8 +50,8 @@ public class LargeNeighbourhoodSearch {
         int minutes = 0;
         int countIterations = 0;
 
-        Solution current = new Solution(initial);
-        Solution best = new Solution(initial);
+        Solution current = initial;
+        Solution best = initial.clone();
 
 
         System.out.println("\nStarting Large Neighbourhood Search...\n");
@@ -60,19 +59,20 @@ public class LargeNeighbourhoodSearch {
         while((currentTime - startTime) < maxDuration){
             PossibleSolution possibleSolution;
 
-            int destructions = getRandomNumberInRange(10,30);
+            int destructions = getRandomNumberInRange(20,100);
 
             possibleSolution = builders.destruct2(current,destructions);
+
             if(possibleSolution != null) {
+                //System.out.println("VALID NEW SOLU");
                 double deltaE2 = possibleSolution.getNewCost() - possibleSolution.getOldCost();
-                //System.out.println(deltaE2);
                 if (deltaE2 < 0) {
+                    System.out.println("OLD " + possibleSolution.getOldCost());
+                    System.out.println("NEW " + possibleSolution.getNewCost());
                     current = possibleSolution.getNewSolution();
-                    if (current.getTotalCost() < best.getTotalCost()) {
-                        best = new Solution(current);
-                    }
-                }else{
-                    current = possibleSolution.getOldSolution();
+                }
+                if (current.getTotalCost() < best.getTotalCost()) {
+                    best = possibleSolution.getNewSolution();
                 }
             }
 
@@ -81,7 +81,7 @@ public class LargeNeighbourhoodSearch {
 
             if ((currentTime - tempTime) > 60000) {
                 minutes++;
-                System.out.printf("The program is currently running %d minute(s) [%s iterations;  cost %s; duration %s; time wasted %s].%n", minutes, convert(countIterations), convert(best.getTotalCost()), convert(best.getTotalDuration()),convert(best.getTotalTimeWasted()));
+                System.out.printf("The program is currently running %d minute(s) [%s iterations;  cost %s; duration %s; time wasted %s].%n", minutes, convert(countIterations), convert(best.getTotalPaymentDrivers()), convert(best.getTotalDuration()),convert(best.getTotalTimeWasted()));
                 tempTime = currentTime;
             }
         }

@@ -1,15 +1,16 @@
 package model;
 
 import global.Parameters;
+import util.LNS.InfoBestFit;
 
 import java.util.ArrayList;
-
-import static util.LNS.DestroyRepair.getRandomNumberInRange;
+import java.util.Objects;
 
 public class Solution implements Cloneable{
     private ArrayList<Schedule> schedules;
     private int totalCost;
-    private int totalCostPerMinute;
+    private int totalPaymentDrivers;
+    private int totalPaymentPerMinute;
     private int totalDuration;
     private int blocksExecuted;
     private int totalDrivers;
@@ -21,13 +22,13 @@ public class Solution implements Cloneable{
 
     public Solution() {
         this.schedules = new ArrayList<>();
-        this.totalCost = 999999999;
+        this.totalCost = 9999999;
     }
 
     public Solution(Solution other) {
         this.schedules = new ArrayList<>(other.schedules);
-        this.totalCost = other.totalCost;
-        this.totalCostPerMinute = other.totalCostPerMinute;
+        this.totalPaymentDrivers = other.totalPaymentDrivers;
+        this.totalPaymentPerMinute = other.totalPaymentPerMinute;
         this.totalDuration = other.totalDuration;
         this.blocksExecuted = other.blocksExecuted;
         this.totalDrivers = other.totalDrivers;
@@ -37,12 +38,21 @@ public class Solution implements Cloneable{
         this.averageDuration = other.averageDuration;
         this.driversWorkingLessThen6hours = other.driversWorkingLessThen6hours;
     }
-    public void insertBlock(){
-
+    public void insertBestFit(InfoBestFit bestFit){
+        for (Schedule s : schedules){
+            if (s.getId() == bestFit.getScheduleID()){
+                if(bestFit.getIndex() == s.getBlocks().size()){
+                    s.getBlocks().add(bestFit.getBlock());
+                }else{
+                    s.getBlocks().add(bestFit.getIndex(),bestFit.getBlock());
+                }
+                return;
+            }
+        }
     }
 
-    public int getTotalCost() {
-        return totalCost;
+    public int getTotalPaymentDrivers() {
+        return totalPaymentDrivers;
     }
 
     public int getTotalDuration() {
@@ -58,7 +68,6 @@ public class Solution implements Cloneable{
         calculateBlocks();
         calculateDrivers();
         calculateDurations();
-        calculateTimeWasted();
     }
 
     public void calculateBlocks(){
@@ -85,21 +94,28 @@ public class Solution implements Cloneable{
         }
     }
 
-    public void calculateCost(){
+    public void calculateDriverPayment(){
         Parameters parameters = new Parameters();
         if(!schedules.isEmpty()){
-            totalCost = 0;
-            totalCostPerMinute = 0;
+            totalPaymentDrivers = 0;
+            totalPaymentPerMinute = 0;
             totalDuration = 0;
             for (Schedule s : schedules){
                 totalDuration += s.getDuration();
                 if(s.getType()==0){
-                    totalCost += parameters.getSalary();
+                    totalPaymentDrivers += parameters.getSalary();
                 }else{
-                    totalCost += (parameters.getSalary() * parameters.getCostFraction());
+                    totalPaymentDrivers += (parameters.getSalary() * parameters.getCostFraction());
                 }
             }
         }
+    }
+
+    public void calculateCost(){
+        calculateDriverPayment();
+        calculateTimeWasted();
+
+        totalCost = totalPaymentDrivers + totalTimeWasted;
     }
 
     public void calculateDurations(){
@@ -127,6 +143,10 @@ public class Solution implements Cloneable{
         }
     }
 
+    public int getTotalCost() {
+        return totalCost;
+    }
+
     public int getBlocksExecuted() {
         return blocksExecuted;
     }
@@ -139,10 +159,19 @@ public class Solution implements Cloneable{
         this.schedules = new ArrayList<>(schedules);
     }
 
+    public Schedule getScheduleByID(Integer ID){
+        for(Schedule s : schedules){
+            if(Objects.equals(s.getId(), ID)){
+                return s;
+            }
+        }
+        return null;
+    }
+
     @Override
     public String toString() {
         return "Solution{" +
-                "totalCost=" + totalCost +
+                "totalCost=" + totalPaymentDrivers +
                 ", blocksExecuted=" + blocksExecuted +
                 ", totalDrivers=" + totalDrivers +
                 ", totalRegularDrivers=" + totalRegularDrivers +

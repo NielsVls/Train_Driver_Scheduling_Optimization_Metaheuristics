@@ -53,6 +53,13 @@ public class GreedyBaseAlgo {
         return solution;
     }
 
+    public Solution runRandomInitialSolution(){
+        Solution solution = new Solution();
+        solution.setSchedules(makeRandomSolution());
+        solution.calculateSolution();
+        return solution;
+    }
+
     public ArrayList<Schedule> makeSchedulesByID() {
         ArrayList<Schedule> schedules = new ArrayList<>();
         Schedule schedule1 = new Schedule();
@@ -136,6 +143,43 @@ public class GreedyBaseAlgo {
             newschedule.setStartDay(b.getStartWeekday());
             c.calculateSchedule(newschedule);
             schedules.add(newschedule);
+        }
+        int counter = 0;
+        for (Schedule s : schedules) {
+            s.setId(counter);
+            c.calculateSchedule(s);
+            counter++;
+        }
+        return schedules;
+    }
+
+    public ArrayList<Schedule> makeRandomSolution(){
+        ArrayList<Schedule> schedules = new ArrayList<>();
+        Schedule schedule1 = new Schedule();
+        schedules.add(schedule1);
+        ArrayList<Block> tempBlocks = new ArrayList<>(blocks);
+        Collections.shuffle(tempBlocks);
+        for (Block b : blocks) {
+            int size = schedules.size();
+            int counter = 0;
+            for (Schedule s : schedules) {
+                if (bestFitBlock(b, s)) {
+                    break;
+                }
+                counter++;
+            }
+
+            //Add to new schedule
+            if (counter == size) {
+                Schedule newschedule = new Schedule();
+                newschedule.getBlocks().add(b.getId());
+                newschedule.setClosestDepot(findClosestDepot(b));
+                newschedule.setStartStation(b.getStartLoc());
+                newschedule.setStartDay(b.getStartWeekday());
+                c.calculateSchedule(newschedule);
+                //calculateDuration(newschedule);
+                schedules.add(newschedule);
+            }
         }
         int counter = 1;
         for (Schedule s : schedules) {

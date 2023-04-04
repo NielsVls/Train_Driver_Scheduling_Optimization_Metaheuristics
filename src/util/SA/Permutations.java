@@ -33,7 +33,7 @@ public class Permutations {
         //Saving the old solution
         Solution oldSolution = solution;
         solution.calculateSolution();
-        int oldCost = oldSolution.getTotalCost();
+        int oldCost = oldSolution.getTotalPaymentDrivers();
 
         //Making the new solution and list of schedules we can edit
         Solution newSolution = solution;
@@ -90,7 +90,7 @@ public class Permutations {
                 newSolution.getSchedules().add(tempS1);
                 newSolution.getSchedules().add(tempS2);
                 newSolution.calculateCost();
-                return new PossibleSolution(newSolution, oldCost, newSolution.getTotalCost());
+                return new PossibleSolution(newSolution, oldCost, newSolution.getTotalPaymentDrivers());
             }
         }
         return null;
@@ -100,7 +100,7 @@ public class Permutations {
         //Saving the old solution
         Solution oldSolution = solution;
         solution.calculateSolution();
-        int oldCost = oldSolution.getTotalCost();
+        int oldCost = oldSolution.getTotalPaymentDrivers();
 
         //Making the new solution and list of schedules we can edit
         Solution newSolution = solution;
@@ -155,7 +155,7 @@ public class Permutations {
                 }
                 newSolution.getSchedules().add(tempS2);
                 newSolution.calculateCost();
-                return new PossibleSolution(newSolution, oldCost, newSolution.getTotalCost());
+                return new PossibleSolution(newSolution, oldCost, newSolution.getTotalPaymentDrivers());
             }
         }
         return null;

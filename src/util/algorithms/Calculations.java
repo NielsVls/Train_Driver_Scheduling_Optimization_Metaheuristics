@@ -243,7 +243,6 @@ public class Calculations {
     }
 
     public boolean checkSchedule(Schedule s){
-
         return (checkDuration(s) && breakCheck(s) && s.getTimeWorkingWithoutBreak() <= parameters.getMaximumDurationBeforeBreak() && s.getTimeWorkingWithoutBreak() > 0);
     }
 

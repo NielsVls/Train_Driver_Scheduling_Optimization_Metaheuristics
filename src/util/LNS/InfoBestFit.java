@@ -14,7 +14,6 @@ public class InfoBestFit {
         this.scheduleID = scheduleID;
         this.index = index;
         this.cost = cost;
-
     }
 
     public Integer getBlock() {
@@ -31,6 +30,22 @@ public class InfoBestFit {
 
     public int getCost() {
         return cost;
+    }
+
+    public void setBlock(Integer block) {
+        this.block = block;
+    }
+
+    public void setScheduleID(int scheduleID) {
+        this.scheduleID = scheduleID;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public void setCost(int cost) {
+        this.cost = cost;
     }
 
     @Override

@@ -35,6 +35,9 @@ public class SimulatedAnnealing {
                 if (deltaE < 0 || acceptanceProbability(deltaE, temperature)) {
                     currentSolution = possibleSolution.getNewSolution();
                 }
+//                if (currentSolution.getTotalPaymentDrivers() < bestSolution.getTotalPaymentDrivers()) {
+//                    bestSolution = currentSolution;
+//                }
                 if (currentSolution.getTotalCost() < bestSolution.getTotalCost()) {
                     bestSolution = currentSolution;
                 }
@@ -46,7 +49,7 @@ public class SimulatedAnnealing {
 
             if ((currentTime - tempTime) > 60000) {
                 minutes++;
-                System.out.printf("The program is currently running %d minute(s) [%s iterations; temperature %f; cost %s; duration %s; time wasted %s].%n", minutes, convert(countIterations), temperature, convert(bestSolution.getTotalCost()), convert(bestSolution.getTotalDuration()),convert(bestSolution.getTotalTimeWasted()));
+                System.out.printf("The program is currently running %d minute(s) [%s iterations; temperature %f; cost %s; duration %s; time wasted %s].%n", minutes, convert(countIterations), temperature, convert(bestSolution.getTotalPaymentDrivers()), convert(bestSolution.getTotalDuration()),convert(bestSolution.getTotalTimeWasted()));
                 tempTime = currentTime;
             }
         }
