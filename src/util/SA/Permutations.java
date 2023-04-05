@@ -80,11 +80,10 @@ public class Permutations {
         if (checkSwap(tempS1, block2, blockIndex1) &&
                 checkSwap(tempS2, block1, blockIndex2)) {
 
-            int diff1 = calculateCost(s1, tempS1);
-            int diff2 = calculateCost(s2, tempS2);
+            int diff1 = c.calculateCost(s1, tempS1);
+            int diff2 = c.calculateCost(s2, tempS2);
 
-            if ((diff1 + diff2) > 0) {
-                //System.out.println("SCHEDULE "+ s1.getId() + " --> " + s2.getId() +str + " COMPLETED.");
+            if ((diff1 + diff2) < 0) {
                 newSolution.getSchedules().remove(s1);
                 newSolution.getSchedules().remove(s2);
                 newSolution.getSchedules().add(tempS1);
@@ -144,10 +143,10 @@ public class Permutations {
 
         if (checkSwap(tempS2, block1, blockIndex2) && checkRemove(tempS1,blockIndex1)) {
 
-            int diff1 = calculateCost(s1, tempS1);
-            int diff2 = calculateCost(s2, tempS2);
+            int diff1 = c.calculateCost(s1, tempS1);
+            int diff2 = c.calculateCost(s2, tempS2);
 
-            if ((diff1 + diff2) > 0) {
+            if ((diff1 + diff2) < 0) {
                 newSolution.getSchedules().remove(s1);
                 newSolution.getSchedules().remove(s2);
                 if(!tempS1.getBlocks().isEmpty()){

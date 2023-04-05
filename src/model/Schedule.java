@@ -202,6 +202,16 @@ public class Schedule implements Cloneable{
         this.totalCost = totalCost;
     }
 
+    public void costCalc(){
+        int total = 0;
+        total += timeWasted * 10;
+        total += duration * 1;
+        total += travelTime * 8;
+        if(isLocal){
+            total -= 1000;
+        }
+        totalCost = total;
+    }
     @Override
     public String toString() {
         String valid = "INVALID";

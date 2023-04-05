@@ -17,7 +17,6 @@ public class Solution implements Cloneable{
     private int totalRegularDrivers;
     private int totalStationDrivers;
     private int totalTimeWasted;
-    private double averageDuration;
     private int driversWorkingLessThen6hours;
 
     public Solution() {
@@ -35,7 +34,6 @@ public class Solution implements Cloneable{
         this.totalRegularDrivers = other.totalRegularDrivers;
         this.totalStationDrivers = other.totalStationDrivers;
         this.totalTimeWasted = other.totalTimeWasted;
-        this.averageDuration = other.averageDuration;
         this.driversWorkingLessThen6hours = other.driversWorkingLessThen6hours;
     }
     public void insertBestFit(InfoBestFit bestFit){
@@ -83,18 +81,20 @@ public class Solution implements Cloneable{
         totalDrivers = 0;
         totalRegularDrivers = 0;
         totalStationDrivers = 0;
-
         for (Schedule s: schedules){
-            if(s.getType() == 0){
-                totalRegularDrivers++;
-            }else{
-                totalStationDrivers++;
+            if(!s.getBlocks().isEmpty()){
+                if(s.getType() == 0){
+                    totalRegularDrivers++;
+                }else{
+                    totalStationDrivers++;
+                }
+                totalDrivers++;
             }
-            totalDrivers++;
         }
     }
 
     public void calculateCost(){
+        totalCost = 0;
         totalPaymentDrivers = 0;
         totalDuration =0;
         totalTimeWasted =0;
@@ -102,8 +102,10 @@ public class Solution implements Cloneable{
         if(!schedules.isEmpty()){
             for (Schedule s: schedules){
                 if(!s.getBlocks().isEmpty()){
+                    s.costCalc();
                     totalTimeWasted += s.getTimeWasted();
                     totalDuration += s.getDuration();
+                    totalCost += s.getTotalCost();
                     if(s.isLocal()){
                         totalPaymentDrivers += p.getSalary() * p.getCostFraction();
                     }else{
@@ -115,17 +117,13 @@ public class Solution implements Cloneable{
     }
 
     public void calculateDurations(){
-        averageDuration = 0.0;
         driversWorkingLessThen6hours = 0;
         if(!schedules.isEmpty()){
-            int totalduration = 0;
             for (Schedule s : schedules){
-                totalduration += s.getDuration();
                 if(s.getDuration() < 300){
                     driversWorkingLessThen6hours++;
                 }
             }
-            averageDuration = totalduration/ schedules.size();
         }
 
     }
@@ -163,7 +161,6 @@ public class Solution implements Cloneable{
                 ", totalDrivers=" + totalDrivers +
                 ", totalRegularDrivers=" + totalRegularDrivers +
                 ", totalStationDrivers=" + totalStationDrivers +
-                ", averageDuration=" + averageDuration +
                 ", driversWorkingLessThen6hours=" + driversWorkingLessThen6hours +
                 '}';
     }

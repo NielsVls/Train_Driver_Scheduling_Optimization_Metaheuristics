@@ -73,7 +73,7 @@ public class Main {
         //finalSolutionCheck(baseSolution,calculations);
 
         Permutations permutations = new Permutations(calculations);
-        Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,60000, permutations);
+        Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,300000, permutations);
         finalSolutionCheck(endSolSA,calculations);
 
 //        DestroyRepair builders = new DestroyRepair(calculations);
