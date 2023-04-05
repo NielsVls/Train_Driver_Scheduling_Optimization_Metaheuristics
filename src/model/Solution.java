@@ -94,28 +94,24 @@ public class Solution implements Cloneable{
         }
     }
 
-    public void calculateDriverPayment(){
-        Parameters parameters = new Parameters();
+    public void calculateCost(){
+        totalPaymentDrivers = 0;
+        totalDuration =0;
+        totalTimeWasted =0;
+        Parameters p = new Parameters();
         if(!schedules.isEmpty()){
-            totalPaymentDrivers = 0;
-            totalPaymentPerMinute = 0;
-            totalDuration = 0;
-            for (Schedule s : schedules){
-                totalDuration += s.getDuration();
-                if(s.getType()==0){
-                    totalPaymentDrivers += parameters.getSalary();
-                }else{
-                    totalPaymentDrivers += (parameters.getSalary() * parameters.getCostFraction());
+            for (Schedule s: schedules){
+                if(!s.getBlocks().isEmpty()){
+                    totalTimeWasted += s.getTimeWasted();
+                    totalDuration += s.getDuration();
+                    if(s.isLocal()){
+                        totalPaymentDrivers += p.getSalary() * p.getCostFraction();
+                    }else{
+                        totalPaymentDrivers += p.getSalary();
+                    }
                 }
             }
         }
-    }
-
-    public void calculateCost(){
-        calculateDriverPayment();
-        calculateTimeWasted();
-
-        totalCost = totalPaymentDrivers + totalTimeWasted;
     }
 
     public void calculateDurations(){
@@ -132,15 +128,6 @@ public class Solution implements Cloneable{
             averageDuration = totalduration/ schedules.size();
         }
 
-    }
-
-    public void calculateTimeWasted(){
-        totalTimeWasted = 0;
-        if(!schedules.isEmpty()){
-            for (Schedule s : schedules){
-                totalTimeWasted += s.getTimeWasted();
-            }
-        }
     }
 
     public int getTotalCost() {

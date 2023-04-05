@@ -4,6 +4,8 @@ import model.Station;
 import model.Solution;
 import util.LNS.DestroyRepair;
 import util.LNS.LargeNeighbourhoodSearch;
+import util.SA.Permutations;
+import util.SA.SimulatedAnnealing;
 import util.algorithms.Calculations;
 import global.Parameters;
 import util.algorithms.GreedyBaseAlgo;
@@ -57,8 +59,8 @@ public class Main {
         //RUN THE ALGORITHM TO GET THE BASE SOLUTION
         Calculations calculations = new Calculations(blocks,stations,breakStations,depots,parameters,travelmatrix,consmatrix,consbreakmatrix);
         GreedyBaseAlgo algoTest = new GreedyBaseAlgo(calculations);
-//        Solution baseSolution = algoTest.runInitialSolution();
-//        finalSolutionCheck(baseSolution,calculations);
+        Solution baseSolution = algoTest.runInitialSolution();
+        finalSolutionCheck(baseSolution,calculations);
 
 
         //Solution baseSolution = algoTest.runTimeBasedInitialSolution();
@@ -67,16 +69,16 @@ public class Main {
 //        Solution baseSolution = algoTest.run1BlockPerScheduleInitialSolution();
 //        finalSolutionCheck(baseSolution,calculations);
 
-        Solution baseSolution = algoTest.runRandomInitialSolution();
-        finalSolutionCheck(baseSolution,calculations);
+        //Solution baseSolution = algoTest.runRandomInitialSolution();
+        //finalSolutionCheck(baseSolution,calculations);
 
-//        Permutations permutations = new Permutations(calculations);
-//        Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,60000, permutations);
-//        finalSolutionCheck(endSolSA);
+        Permutations permutations = new Permutations(calculations);
+        Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,60000, permutations);
+        finalSolutionCheck(endSolSA,calculations);
 
-        DestroyRepair builders = new DestroyRepair(calculations);
-        Solution endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,60000,builders);
-        finalSolutionCheck(endSolLNS,calculations);
+//        DestroyRepair builders = new DestroyRepair(calculations);
+//        Solution endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,300000,builders);
+//        finalSolutionCheck(endSolLNS,calculations);
 
     }
 

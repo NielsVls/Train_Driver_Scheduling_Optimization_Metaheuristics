@@ -40,6 +40,8 @@ public class Calculations {
         calculateTimeWithoutBreak(s);
         //Calculates the time that is wasted in the schedule, so the driver isn't doing anything
         calculateTimeWaste(s);
+        //Calculates the time that is travelled during a schedule, also the average per block
+        calculateTravelTime(s);
     }
 
     void calculateStartTime(Schedule s){
@@ -176,6 +178,31 @@ public class Calculations {
         return waste;
     }
 
+    public int calculateTravelTime(Schedule s){
+        int travel = 0;
+        int fromDepot = travelmatrix[s.getClosestDepot()][s.getStartStation()];
+        if (s.getBlocks().size() > 1) {
+            for (int i = 0; i < s.getBlocks().size() - 2; i++) {
+                Block a = blocks.get(s.getBlocks().get(i) - 1);
+                Block b = blocks.get(s.getBlocks().get(i + 1) - 1);
+
+                if (a.getId() == s.getBreakAfterBlock()) {
+                    int travelToAndFromBreak = calculateTravelTimeFromBreak(stations.get(a.getEndLoc() - 1), stations.get(b.getStartLoc() - 1)) + calculateTravelTimeToBreak(stations.get(a.getEndLoc() - 1), stations.get(b.getStartLoc() - 1));
+                    travel += travelToAndFromBreak;
+                } else {
+                    travel += travelmatrix[a.getEndLoc()][b.getStartLoc()];
+                }
+            }
+        }
+        Block last = blocks.get(s.getBlocks().get(s.getBlocks().size()-1)-1);
+        int toDepot = travelmatrix[last.getEndLoc()][s.getClosestDepot()];
+        travel += fromDepot + toDepot;
+        s.setTravelTime(travel);
+        double travelPerBlock = travel/s.getBlocks().size();
+        s.setTravelTimePerBlock(travelPerBlock);
+        return travel;
+    }
+
     public int calculateTravelTimeToBreak(Station a, Station b) {
         int closest = 99999;
         int closestStation = 0;
@@ -245,7 +272,75 @@ public class Calculations {
     public boolean checkSchedule(Schedule s){
         return (checkDuration(s) && breakCheck(s) && s.getTimeWorkingWithoutBreak() <= parameters.getMaximumDurationBeforeBreak() && s.getTimeWorkingWithoutBreak() > 0);
     }
+    public int calculateCost(Schedule oldS, Schedule newS){
+        int cost;
+        //double feasibility =0; //Feasability //TODO CHECK IF NECESSARY
 
+        double diffLD; //Local driver
+        double diffWT; //Wasted Time
+        double diffDur; //Duration
+        double diffTT; //Travel Time
+        double diffTC; //Total Cost
 
+        if(oldS.getBlocks().isEmpty()){
+            //TOTAL COST + LOCAL DRIVER
+            if(newS.isLocal()){
+                diffTC = parameters.getSalary()*parameters.getCostFraction();
+                diffLD = -1;
+            }else{
+                diffTC = parameters.getSalary();
+                diffLD = 0;
+            }
+
+            //WASTED TIME
+            diffWT = newS.getTimeWasted();
+
+            //TRAVEL TIME
+            diffTT = newS.getTravelTimePerBlock();
+
+            //TOTAL DURATION
+            diffDur = newS.getDuration();
+
+            cost = (int) (diffWT * 5 + diffDur * 1 + diffTC * 10 + diffTT * 8 + diffLD * 1000);
+            return cost;
+        }
+
+        // 1 SCHEDULE REMOVED
+        if (newS.getDuration() == 0) {
+            return -10000 ;
+        }
+
+        //ERROR DETECTION
+        if(oldS.getDuration() == 0){
+            System.out.println(oldS);
+            System.out.println("\n-------------------\n");
+            System.out.println(newS);
+        }
+
+        //TOTAL COST + LOCAL DRIVER
+        if(newS.isLocal() && !oldS.isLocal()){
+            diffTC = parameters.getSalary()*parameters.getCostFraction() - parameters.getSalary();
+            diffLD = -1;
+        } else if (!newS.isLocal() && oldS.isLocal()) {
+            diffTC = parameters.getSalary() - parameters.getSalary()*parameters.getCostFraction();
+            diffLD = 1;
+        } else {
+            diffTC = 0;
+            diffLD = 0;
+        }
+
+        //WASTED TIME
+        diffWT = newS.getTimeWasted() - oldS.getTimeWasted();
+
+        //TRAVEL TIME
+        diffTT = newS.getTravelTimePerBlock() - oldS.getTravelTimePerBlock();
+
+        //TOTAL DURATION
+        diffDur = newS.getDuration() - oldS.getDuration();
+
+        //NEGATIVE IS GOOD
+        cost = (int) (diffWT * 5 + diffDur * 1 + diffTC * 10 + diffTT * 8 + diffLD * 1000);
+        return cost;
+    }
 
 }

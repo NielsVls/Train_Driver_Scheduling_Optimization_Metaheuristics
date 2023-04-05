@@ -1,6 +1,5 @@
 package util.LNS;
 
-import global.Parameters;
 import model.*;
 import util.algorithms.Calculations;
 
@@ -19,7 +18,7 @@ public class DestroyRepair {
         changedSchedules = new ArrayList<>();
     }
 
-    public PossibleSolution destruct2(Solution solution, int destructions){
+    public PossibleSolution destructAndRepair(Solution solution, int destructions){
         Solution oldSolution = new Solution(solution);
         Solution newSolution = oldSolution.clone();
 
@@ -42,7 +41,7 @@ public class DestroyRepair {
         while(removed < destructions){
             int sId1 = 0;
             Schedule s1 = newSolution.getSchedules().get(sId1);
-            while (s1 == null) {
+            while (s1 == null || s1.getBlocks().isEmpty()) {
                 sId1 = getRandomNumberInRange(0, newSolution.getSchedules().size() - 1);
                 s1 = newSolution.getSchedules().get(sId1);
                 if (s1 == null){
@@ -81,7 +80,6 @@ public class DestroyRepair {
         for(Integer block : removedBlocks){
             InfoBestFit bestFit = greedyLNS.bestFitBlock(blocks.get(block-1),newSolution.getSchedules());
             if(bestFit == null){
-                //System.out.println("NO GOOD FIT FOUND");
                 return null;
             }else{
                 bestFits.add(bestFit);

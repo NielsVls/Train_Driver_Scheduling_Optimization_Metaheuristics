@@ -82,7 +82,6 @@ public class GreedyBaseAlgo {
                 newschedule.setStartStation(b.getStartLoc());
                 newschedule.setStartDay(b.getStartWeekday());
                 c.calculateSchedule(newschedule);
-                //calculateDuration(newschedule);
                 schedules.add(newschedule);
             }
         }
@@ -119,7 +118,6 @@ public class GreedyBaseAlgo {
                 newschedule.setStartStation(b.getStartLoc());
                 newschedule.setStartDay(b.getStartWeekday());
                 c.calculateSchedule(newschedule);
-                //calculateDuration(newschedule);
                 schedules.add(newschedule);
             }
         }
@@ -162,6 +160,7 @@ public class GreedyBaseAlgo {
         for (Block b : blocks) {
             int size = schedules.size();
             int counter = 0;
+            Collections.shuffle(schedules);
             for (Schedule s : schedules) {
                 if (bestFitBlock(b, s)) {
                     break;
@@ -177,7 +176,6 @@ public class GreedyBaseAlgo {
                 newschedule.setStartStation(b.getStartLoc());
                 newschedule.setStartDay(b.getStartWeekday());
                 c.calculateSchedule(newschedule);
-                //calculateDuration(newschedule);
                 schedules.add(newschedule);
             }
         }
@@ -201,15 +199,11 @@ public class GreedyBaseAlgo {
             c.calculateSchedule(s);
             return true;
         }
-
         if (checkBreakFit(b, s)) {
             if (checkNormalFit(b, s)) {
                 // BREAK : YES ||| BLOCK : YES
                 //If this block is added, there can be a break between temporary last and the new block
-                int previousDur = s.getDuration();
-                int lastBlock = s.getBlocks().get(s.getBlocks().size() - 1);
                 s.getBlocks().add(b.getId());
-                s.getBreakPossibleAfterBlocks().add(lastBlock);
                 c.calculateSchedule(s);
                 //TotalDuration checked here
                 if (c.checkDuration(s)) {
@@ -217,12 +211,7 @@ public class GreedyBaseAlgo {
                     return true;
                 } else {
                     s.getBlocks().remove(s.getBlocks().size() - 1);
-                    s.getBreakPossibleAfterBlocks().remove(s.getBreakPossibleAfterBlocks().size() - 1);
-                    if (s.getBreakPossibleAfterBlocks().isEmpty()) {
-                        s.setBreakAfterBlock(-1);
-                    }
                     c.calculateSchedule(s);
-                    s.setDuration(previousDur);
                     //BLOCK NOT ADDED
                     return false;
                 }
@@ -230,17 +219,14 @@ public class GreedyBaseAlgo {
         } else if (checkNormalFit(b, s)) {
             // BREAK : NO ||| BLOCK : YES
             //The block can be added but there can be no break
-            int previousDur = s.getDuration();
             s.getBlocks().add(b.getId());
             c.calculateSchedule(s);
-            //TotalDuration checked here
             if (c.checkDuration(s)) {
                 //BLOCK ADDED
                 return true;
             } else {
                 s.getBlocks().remove(s.getBlocks().size() - 1);
                 c.calculateSchedule(s);
-                s.setDuration(previousDur);
                 //BLOCK NOT ADDED
                 return false;
             }

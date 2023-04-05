@@ -35,9 +35,6 @@ public class SimulatedAnnealing {
                 if (deltaE < 0 || acceptanceProbability(deltaE, temperature)) {
                     currentSolution = possibleSolution.getNewSolution();
                 }
-//                if (currentSolution.getTotalPaymentDrivers() < bestSolution.getTotalPaymentDrivers()) {
-//                    bestSolution = currentSolution;
-//                }
                 if (currentSolution.getTotalCost() < bestSolution.getTotalCost()) {
                     bestSolution = currentSolution;
                 }

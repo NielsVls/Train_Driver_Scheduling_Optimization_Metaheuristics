@@ -1,7 +1,6 @@
 package util.LNS;
 
 import model.PossibleSolution;
-import model.Schedule;
 import model.Solution;
 
 import java.util.Random;
@@ -13,14 +12,6 @@ public class LargeNeighbourhoodSearch {
             System.out.println("worse accepted");
             return true;
         }else return false;
-    }
-
-    public static void count(Solution s){
-        int count = 0;
-        for(Schedule sc : s.getSchedules()){
-            count += sc.getBlocks().size();
-        }
-        System.out.println("COUNT : " + count);
     }
 
     public static String convert(int number) {
@@ -59,12 +50,11 @@ public class LargeNeighbourhoodSearch {
         while((currentTime - startTime) < maxDuration){
             PossibleSolution possibleSolution;
 
-            int destructions = getRandomNumberInRange(20,100);
+            int destructions = getRandomNumberInRange(50,150);
 
-            possibleSolution = builders.destruct2(current,destructions);
+            possibleSolution = builders.destructAndRepair(current,destructions);
 
             if(possibleSolution != null) {
-                //System.out.println("VALID NEW SOLU");
                 double deltaE2 = possibleSolution.getNewCost() - possibleSolution.getOldCost();
                 if (deltaE2 < 0) {
                     System.out.println("OLD " + possibleSolution.getOldCost());

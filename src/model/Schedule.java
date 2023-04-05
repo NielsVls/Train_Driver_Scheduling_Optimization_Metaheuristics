@@ -18,11 +18,15 @@ public class Schedule implements Cloneable{
     int breakAfterBlock;
     ArrayList<Integer> breakPossibleAfterBlocks;
     int timeWasted;
+    int travelTime;
+    double travelTimePerBlock;
+    int totalCost;
 
     public Schedule(){
         breakAfterBlock = -1;
         blocks = new ArrayList<>();
         breakPossibleAfterBlocks = new ArrayList<>();
+        totalCost = 99999999;
     }
 
     public Schedule(Schedule s){
@@ -40,6 +44,9 @@ public class Schedule implements Cloneable{
         this.breakAfterBlock = s.breakAfterBlock;
         this.breakPossibleAfterBlocks = new ArrayList<>(s.breakPossibleAfterBlocks);
         this.timeWasted = s.timeWasted;
+        this.travelTime = s.travelTime;
+        this.travelTimePerBlock = s.travelTimePerBlock;
+        this.totalCost = s.totalCost;
     }
 
     @Override
@@ -169,6 +176,30 @@ public class Schedule implements Cloneable{
 
     public void setTimeWasted(int timeWasted) {
         this.timeWasted = timeWasted;
+    }
+
+    public int getTravelTime() {
+        return travelTime;
+    }
+
+    public void setTravelTime(int travelTime) {
+        this.travelTime = travelTime;
+    }
+
+    public double getTravelTimePerBlock() {
+        return travelTimePerBlock;
+    }
+
+    public void setTravelTimePerBlock(double travelTimePerBlock) {
+        this.travelTimePerBlock = travelTimePerBlock;
+    }
+
+    public int getTotalCost() {
+        return totalCost;
+    }
+
+    public void setTotalCost(int totalCost) {
+        this.totalCost = totalCost;
     }
 
     @Override

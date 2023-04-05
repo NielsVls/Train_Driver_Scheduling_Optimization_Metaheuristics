@@ -3,11 +3,9 @@ package util.LNS;
 import global.Parameters;
 import model.Block;
 import model.Schedule;
-import model.Solution;
 import model.Station;
 import util.algorithms.Calculations;
 
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 
 
@@ -43,14 +41,27 @@ public class GreedyLNS {
         int scheduleID = -1;
         for (Schedule s: schedules) {
             Schedule temp = new Schedule(s);
-            for(int i = 0; i <= s.getBlocks().size(); i++){
-                if(i == 0){
+            for(int i = 0; i <= s.getBlocks().size(); i++) {
+                if(s.getBlocks().isEmpty()){
+                    temp.getBlocks().add(b);
+                    c.calculateSchedule(temp);
+                    if(c.checkDuration(temp)){
+                        int sCost = c.calculateCost(s,temp);
+                        if(sCost < cost){
+                            cost = sCost;
+                            indexInSchedule = 0;
+                            scheduleID = s.getId();
+                        }
+                    }
+                    temp.getBlocks().remove(b);
+                    break;
+                } else if(i == 0){
                     Integer blockAfter = temp.getBlocks().get(0);
                     if(consmatrix[b][blockAfter] == 1){
                         temp.getBlocks().add(0,b);
                         c.calculateSchedule(temp);
                         if(c.checkSchedule(temp)){
-                            int sCost = calculateCost2(s,temp);
+                            int sCost = c.calculateCost(s,temp);
                             if(sCost < cost){
                                 cost = sCost;
                                 indexInSchedule = 0;
@@ -66,7 +77,7 @@ public class GreedyLNS {
                         temp.getBlocks().add(b);
                         c.calculateSchedule(temp);
                         if(c.checkSchedule(temp)){
-                            int sCost = calculateCost2(s,temp);
+                            int sCost = c.calculateCost(s,temp);
                             if(sCost < cost){
                                 cost = sCost;
                                 indexInSchedule = i;
@@ -83,7 +94,7 @@ public class GreedyLNS {
                         temp.getBlocks().add(i,b);
                         c.calculateSchedule(temp);
                         if(c.checkSchedule(temp)){
-                            int sCost = calculateCost2(s,temp);
+                            int sCost = c.calculateCost(s,temp);
                             if(sCost < cost){
                                 cost = sCost;
                                 indexInSchedule = i;
@@ -103,10 +114,41 @@ public class GreedyLNS {
         }
     }
 
-    private int calculateCost2(Schedule oldS, Schedule newS) {
+    private int calculateCost(Schedule oldS, Schedule newS) {
+
+        //double feasibility =0; //Feasability //TODO CHECK IF NECESSARY
+
+        double diffLD; //Local driver
+        double diffWT; //Wasted Time
+        double diffDur; //Duration
+        double diffTT; //Travel Time
+        double diffCPM; //
+        double diffTC; //Total Cost
+
+        if(oldS.getBlocks().isEmpty()){
+            //TOTAL COST + LOCAL DRIVER
+            if(newS.isLocal()){
+                diffTC = parameters.getSalary()*parameters.getCostFraction();
+                diffLD = 1;
+            }else{
+                diffTC = parameters.getSalary();
+                diffLD = 0;
+            }
+
+            //WASTED TIME
+            diffWT = c.calculateTimeWaste(newS);
+
+            //TRAVEL TIME
+            diffTT = 0;
+
+            //TOTAL DURATION
+            diffDur = newS.getDuration();
+
+            return (int) (diffWT * 1 + diffDur * 1 + diffTC * -10 + diffTT * 1 + diffLD * -1000);
+        }
+
         if (newS.getDuration() == 0) {
-            System.out.println("NEW DURATION = 0");
-            return oldS.getDuration();
+            return 0;
         }
 
         if(oldS.getDuration() == 0){
@@ -125,16 +167,15 @@ public class GreedyLNS {
             newCostPerMinute = (parameters.getCostFraction() * parameters.getSalary()) / newS.getDuration();
         }
 
-        int diffvalid = 0;
-        if(!oldS.isValid() && newS.isValid()){
-            diffvalid = 1;
-        } else if (oldS.isValid() && !newS.isValid()) {
-            diffvalid = -1;
-        }
-        double diffWT = oldWastedTime - newWastedTime;
-        double diffCPM = oldCostPerMinute - newCostPerMinute;
+//        if(!oldS.isValid() && newS.isValid()){
+//            diffvalid = 1;
+//        } else if (oldS.isValid() && !newS.isValid()) {
+//            diffvalid = -1;
+//        }
+         diffWT = oldWastedTime - newWastedTime;
+         diffCPM = oldCostPerMinute - newCostPerMinute;
 
         //A positive result equals an improvement
-        return (int) (diffWT * 1 + diffCPM * 0 + diffvalid * 1000);
+        return (int) (diffWT * 1 + diffCPM * 0);
     }
 }
