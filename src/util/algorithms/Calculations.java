@@ -231,6 +231,34 @@ public class Calculations {
         return travelmatrix[closestStation][b.getID()];
     }
 
+    public int calculateTravelTimeToBreak(Integer a, Integer b) {
+        int closest = 99999;
+        int closestStation = 0;
+        int distance;
+        for (Station s : breakStations) {
+            distance = travelmatrix[a][s.getID()] + travelmatrix[s.getID()][b];
+            if (distance < closest) {
+                closest = distance;
+                closestStation = s.getID();
+            }
+        }
+        return travelmatrix[a][closestStation];
+    }
+
+    public int calculateTravelTimeFromBreak(Integer a, Integer b) {
+        int closest = 99999;
+        int closestStation = 0;
+        int distance;
+        for (Station s : breakStations) {
+            distance = travelmatrix[a][s.getID()] + travelmatrix[s.getID()][b];
+            if (distance < closest) {
+                closest = distance;
+                closestStation = s.getID();
+            }
+        }
+        return travelmatrix[closestStation][b];
+    }
+
     public boolean checkDuration(Schedule s) {
         Block last = blocks.get(s.getBlocks().get(s.getBlocks().size() - 1) - 1);
         int travel = travelmatrix[last.getEndLoc()][s.getClosestDepot()];
@@ -342,5 +370,7 @@ public class Calculations {
         cost = (int) (diffWT * 5 + diffDur * 1 + diffTC * 10 + diffTT * 8 + diffLD * 1000);
         return cost;
     }
+
+
 
 }

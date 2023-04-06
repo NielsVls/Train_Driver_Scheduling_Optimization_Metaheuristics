@@ -50,7 +50,7 @@ public class LargeNeighbourhoodSearch {
         while((currentTime - startTime) < maxDuration){
             PossibleSolution possibleSolution;
 
-            int destructions = getRandomNumberInRange(50,150);
+            int destructions = getRandomNumberInRange(10,100);
 
             possibleSolution = builders.destructAndRepair(current,destructions);
 

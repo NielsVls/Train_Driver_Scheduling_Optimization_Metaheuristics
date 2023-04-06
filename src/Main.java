@@ -9,6 +9,7 @@ import util.SA.SimulatedAnnealing;
 import util.algorithms.Calculations;
 import global.Parameters;
 import util.algorithms.GreedyBaseAlgo;
+import util.algorithms.Validator;
 import util.dataReader.DataReader;
 
 import java.util.ArrayList;
@@ -59,9 +60,12 @@ public class Main {
         //RUN THE ALGORITHM TO GET THE BASE SOLUTION
         Calculations calculations = new Calculations(blocks,stations,breakStations,depots,parameters,travelmatrix,consmatrix,consbreakmatrix);
         GreedyBaseAlgo algoTest = new GreedyBaseAlgo(calculations);
+        Validator validator = new Validator(calculations);
+
         Solution baseSolution = algoTest.runInitialSolution();
         finalSolutionCheck(baseSolution,calculations);
-
+        System.out.println("\n ================================ \n");
+        validator.validate(baseSolution);
 
         //Solution baseSolution = algoTest.runTimeBasedInitialSolution();
         // finalSolutionCheck(baseSolution,calculations);
@@ -72,14 +76,14 @@ public class Main {
         //Solution baseSolution = algoTest.runRandomInitialSolution();
         //finalSolutionCheck(baseSolution,calculations);
 
-        Permutations permutations = new Permutations(calculations);
-        Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,300000, permutations);
-        finalSolutionCheck(endSolSA,calculations);
+//        Permutations permutations = new Permutations(calculations);
+//        Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,300000, permutations);
+//        finalSolutionCheck(endSolSA,calculations);
 
 //        DestroyRepair builders = new DestroyRepair(calculations);
 //        Solution endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,300000,builders);
 //        finalSolutionCheck(endSolLNS,calculations);
-
+        //validator.validate(endSolSA);
     }
 
     //Final check of the schedules if the result is valid
