@@ -45,9 +45,12 @@ public class Calculations {
     }
 
     void calculateStartTime(Schedule s){
+
         ArrayList<Integer> sblocks = s.getBlocks();
 
         Block first = blocks.get(sblocks.get(0) - 1);
+        int depot = findClosestDepot(first);
+        s.setClosestDepot(depot);
         int travel = travelmatrix[s.getClosestDepot()][s.getStartStation()];
 
         int startTime = first.getDepartureTime() - travel - parameters.getCheckInTime();
@@ -91,6 +94,7 @@ public class Calculations {
             s.setTimeWorkingWithoutBreak(timeSinceLastBreak);
         }
     }
+
 
     void calculateBreak(Schedule s) {
         breaksPossible(s);
@@ -369,6 +373,19 @@ public class Calculations {
         //NEGATIVE IS GOOD
         cost = (int) (diffWT * 5 + diffDur * 1 + diffTC * 10 + diffTT * 8 + diffLD * 1000);
         return cost;
+    }
+
+    public int findClosestDepot(Block b) {
+        int closest = 0;
+        int distance = 9999;
+        for (Station s : depots) {
+            int travel = travelmatrix[s.getID()][b.getStartLoc()];
+            if (travel < distance) {
+                closest = s.getID();
+                distance = travel;
+            }
+        }
+        return closest;
     }
 
 

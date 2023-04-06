@@ -161,8 +161,11 @@ public class Permutations {
     }
 
     private boolean checkRemove(Schedule s, int index) {
-        if(s.getBlocks().isEmpty() || index == 0 || index == s.getBlocks().size()){
+        if(s.getBlocks().isEmpty()){
             return true;
+        }
+        if(index == 0 || index == s.getBlocks().size()){
+            return c.checkSchedule(s);
         }
         Integer before = s.getBlocks().get(index-1);
         Integer after = s.getBlocks().get(index);

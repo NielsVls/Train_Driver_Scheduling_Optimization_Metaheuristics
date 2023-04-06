@@ -65,7 +65,7 @@ public class Main {
         Solution baseSolution = algoTest.runInitialSolution();
         finalSolutionCheck(baseSolution,calculations);
         System.out.println("\n ================================ \n");
-        validator.validate(baseSolution);
+        //validator.validate(baseSolution);
 
         //Solution baseSolution = algoTest.runTimeBasedInitialSolution();
         // finalSolutionCheck(baseSolution,calculations);
@@ -76,9 +76,9 @@ public class Main {
         //Solution baseSolution = algoTest.runRandomInitialSolution();
         //finalSolutionCheck(baseSolution,calculations);
 
-//        Permutations permutations = new Permutations(calculations);
-//        Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,300000, permutations);
-//        finalSolutionCheck(endSolSA,calculations);
+        Permutations permutations = new Permutations(calculations);
+        Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,300000, permutations);
+        finalSolutionCheck(endSolSA,calculations);
 
 //        DestroyRepair builders = new DestroyRepair(calculations);
 //        Solution endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,300000,builders);
