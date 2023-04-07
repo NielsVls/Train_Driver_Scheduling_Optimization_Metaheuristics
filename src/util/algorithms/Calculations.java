@@ -30,6 +30,9 @@ public class Calculations {
     }
 
     public void calculateSchedule(Schedule s){
+        if(s.getBlocks().isEmpty()){
+            return;
+        }
         //Calculate how late the schedule starts (with the travel from the depot included)
         calculateStartTime(s);
         //Calculate when a break can be taken
@@ -333,7 +336,7 @@ public class Calculations {
             //TOTAL DURATION
             diffDur = newS.getDuration();
 
-            cost = (int) (diffWT * 5 + diffDur * 1 + diffTC * 10 + diffTT * 8 + diffLD * 1000);
+            cost = (int) (diffWT * 2 + diffDur * 1 + diffTC * 1000 + diffTT * 8 + diffLD * 10000);
             return cost;
         }
 
@@ -371,7 +374,7 @@ public class Calculations {
         diffDur = newS.getDuration() - oldS.getDuration();
 
         //NEGATIVE IS GOOD
-        cost = (int) (diffWT * 5 + diffDur * 1 + diffTC * 10 + diffTT * 8 + diffLD * 1000);
+        cost = (int) (diffWT * 2 + diffDur * 1 + diffTC * 1000 + diffTT * 8 + diffLD * 10000);
         return cost;
     }
 

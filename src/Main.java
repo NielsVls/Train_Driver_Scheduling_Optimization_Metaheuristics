@@ -76,8 +76,11 @@ public class Main {
         //Solution baseSolution = algoTest.runRandomInitialSolution();
         //finalSolutionCheck(baseSolution,calculations);
 
+        int minutes = 2;
+        int milis = minutes * 60000;
+
         Permutations permutations = new Permutations(calculations);
-        Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,300000, permutations);
+        Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,milis, permutations);
         finalSolutionCheck(endSolSA,calculations);
 
 //        DestroyRepair builders = new DestroyRepair(calculations);
@@ -94,10 +97,14 @@ public class Main {
         int duplicates = 0;
         int blockscovered = 0;
         int stationDrivers = 0;
+        int empty = 0;
         boolean valid = true;
         int invalids = 0;
         Set<Integer> bl = new HashSet<>();
         for (Schedule s : schedules){
+            if(s.getBlocks().isEmpty()){
+                empty++;
+            }
             c.calculateSchedule(s);
             if(!finalCheckSchedule(s)){
                 valid = false;
@@ -130,7 +137,7 @@ public class Main {
             System.out.println("The following solution is INVALID.");
             System.out.println("There are " + convert(invalids) + " invalid schedules.");
         }
-        System.out.println("Drivers needed : " + convert(solution.getSchedules().size()));
+        System.out.println("Drivers needed : " + convert(solution.getSchedules().size() - empty));
         System.out.println("Amount of blocks : " + convert(blocks.size()));
         System.out.println("Count of blocks covered : " + convert(blockscovered));
         System.out.println("Count of blocks covered twice : " + convert(duplicates));
@@ -147,8 +154,9 @@ public class Main {
         ArrayList<Integer> scheduleBlocks = schedule.getBlocks();
         if(scheduleBlocks.isEmpty()){
             System.out.println("Schedule is empty but not remove.");
-            return false;
-        }else if(scheduleBlocks.size() == 1){
+            return true;
+        }else
+            if(scheduleBlocks.size() == 1){
             if (schedule.getDuration() > 300 && schedule.getBreakAfterBlock() == -1){
                 System.out.println("The schedule consist of 1 block [" + scheduleBlocks.get(0) + "] and takes longer then accepted ("+schedule.getDuration()+").");
                 return false;

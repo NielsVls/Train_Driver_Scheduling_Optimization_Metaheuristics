@@ -44,7 +44,7 @@ public class Permutations {
         int sId2 = 0;
         Schedule s1 = schedules.get(sId1);
         Schedule s2 = schedules.get(sId1);
-        while (sId1 == sId2 || s1 == null || s2 == null) {
+        while (sId1 == sId2 || s1 == null || s2 == null || s1.getBlocks().isEmpty() || s2.getBlocks().isEmpty()) {
             sId1 = getRandomNumberInRange(0, schedules.size() - 1);
             sId2 = getRandomNumberInRange(0, schedules.size() - 1);
             s1 = schedules.get(sId1);
@@ -110,7 +110,7 @@ public class Permutations {
         int sId2 = 0;
         Schedule s1 = schedules.get(sId1);
         Schedule s2 = schedules.get(sId1);
-        while (sId1 == sId2 || s1 == null || s2 == null) {
+        while (sId1 == sId2 || s1 == null || s2 == null || s1.getBlocks().isEmpty()) {
             sId1 = getRandomNumberInRange(0, schedules.size() - 1);
             sId2 = getRandomNumberInRange(0, schedules.size() - 1);
             s1 = schedules.get(sId1);
@@ -169,35 +169,9 @@ public class Permutations {
         }
         Integer before = s.getBlocks().get(index-1);
         Integer after = s.getBlocks().get(index);
-        return consmatrix[before][after] == 1;
-    }
-
-    private int calculateCost(Schedule oldS, Schedule newS) {
-        if (newS.getDuration() == 0) {
-            return oldS.getDuration();
-        }
-        double oldCostPerMinute = parameters.getSalary() / oldS.getDuration();
-        double newCostPerMinute = parameters.getSalary() / newS.getDuration();
-
-        double oldWastedTime = c.calculateTimeWaste(oldS);
-        double newWastedTime = c.calculateTimeWaste(newS);
-
-        if (!oldS.isLocal() && newS.isLocal()) {
-            newCostPerMinute = (parameters.getCostFraction() * parameters.getSalary()) / newS.getDuration();
-        }
-        int diffvalid = 0;
-        if(!oldS.isValid() && newS.isValid()){
-            diffvalid = 1;
-        } else if (oldS.isValid() && !newS.isValid()) {
-            diffvalid = -1;
-        }
-        double diffWT = oldWastedTime - newWastedTime;
-        double diffCPM = oldCostPerMinute - newCostPerMinute;
-
-        int result = (int) (diffWT * 1 + diffCPM * 1 + diffvalid * 1000);
-
-        //A positive result equals an improvement
-        return result;
+        if(consmatrix[before][after] == 1){
+            return c.checkSchedule(s);
+        }else{return false;}
     }
 
     public boolean checkSwap(Schedule schedule, int block, int index) {
@@ -211,14 +185,14 @@ public class Permutations {
             if (consmatrix[block][after.getId()] == 1) {
                 schedule.getBlocks().add(0, block);
                 c.calculateSchedule(schedule);
-                return c.checkDuration(schedule);
+                return c.checkSchedule(schedule);
             }else{return false;}
         } else if (index == schedule.getBlocks().size()) {
             Block before = blocks.get(schedule.getBlocks().get(index - 1) - 1);
             if (consmatrix[before.getId()][block] == 1) {
                 schedule.getBlocks().add(index, block);
                 c.calculateSchedule(schedule);
-                return c.checkDuration(schedule);
+                return c.checkSchedule(schedule);
             }else{return false;}
         } else {
             Block before = blocks.get(schedule.getBlocks().get(index - 1) - 1);
@@ -227,7 +201,7 @@ public class Permutations {
             if (consmatrix[before.getId()][block] == 1 && consmatrix[block][after.getId()] == 1) {
                 schedule.getBlocks().add(index, block);
                 c.calculateSchedule(schedule);
-                return c.checkDuration(schedule);
+                return c.checkSchedule(schedule);
             }else{return false;}
         }
     }

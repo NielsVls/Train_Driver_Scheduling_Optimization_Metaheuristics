@@ -91,6 +91,14 @@ public class GreedyBaseAlgo {
             c.calculateSchedule(s);
             counter++;
         }
+
+        //TEST
+        int max = 5;
+        for(int i = 0 ; i < max ; i++){
+            Schedule schedule = new Schedule();
+            schedules.add(schedule);
+        }
+
         return schedules;
     }
 
