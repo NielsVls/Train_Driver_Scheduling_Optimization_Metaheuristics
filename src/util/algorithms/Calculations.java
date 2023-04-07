@@ -98,7 +98,6 @@ public class Calculations {
         }
     }
 
-
     void calculateBreak(Schedule s) {
         breaksPossible(s);
         Block last = blocks.get(s.getBlocks().get(s.getBlocks().size() - 1) - 1);
@@ -320,7 +319,7 @@ public class Calculations {
         if(oldS.getBlocks().isEmpty()){
             //TOTAL COST + LOCAL DRIVER
             if(newS.isLocal()){
-                diffTC = parameters.getSalary()*parameters.getCostFraction();
+                diffTC = parameters.getSalary() * parameters.getCostFraction();
                 diffLD = -1;
             }else{
                 diffTC = parameters.getSalary();
@@ -336,13 +335,13 @@ public class Calculations {
             //TOTAL DURATION
             diffDur = newS.getDuration();
 
-            cost = (int) (diffWT * 2 + diffDur * 1 + diffTC * 1000 + diffTT * 8 + diffLD * 10000);
+            cost = (int) (diffWT * 2 + diffDur * 1 + diffTC * 10000 + diffTT * 5 + diffLD * 10000);
             return cost;
         }
 
         // 1 SCHEDULE REMOVED
         if (newS.getDuration() == 0) {
-            return -10000 ;
+            return -1000000;
         }
 
         //ERROR DETECTION
@@ -374,7 +373,7 @@ public class Calculations {
         diffDur = newS.getDuration() - oldS.getDuration();
 
         //NEGATIVE IS GOOD
-        cost = (int) (diffWT * 2 + diffDur * 1 + diffTC * 1000 + diffTT * 8 + diffLD * 10000);
+        cost = (int) (diffWT * 2 + diffDur * 1 + diffTC * 10 + diffTT * 5 + diffLD * 10000);
         return cost;
     }
 

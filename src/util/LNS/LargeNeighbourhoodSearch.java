@@ -50,7 +50,7 @@ public class LargeNeighbourhoodSearch {
         while((currentTime - startTime) < maxDuration){
             PossibleSolution possibleSolution;
 
-            int destructions = getRandomNumberInRange(10,100);
+            int destructions = getRandomNumberInRange(5,15);
 
             possibleSolution = builders.destructAndRepair(current,destructions);
 
@@ -77,7 +77,7 @@ public class LargeNeighbourhoodSearch {
         }
 
         System.out.println("Iterations: " + convert(countIterations));
-        System.out.println("Iterations/second: " + convert((countIterations/maxDuration)));
+        System.out.println("Iterations/second: " + convert((countIterations/(maxDuration/1000))));
         System.out.println("FINISHED");
         return best;
     }

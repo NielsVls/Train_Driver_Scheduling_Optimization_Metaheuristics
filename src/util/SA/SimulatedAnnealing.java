@@ -53,7 +53,7 @@ public class SimulatedAnnealing {
 
         System.out.println("\nEndTemperature: " + convert((int) temperature));
         System.out.println("Iterations: " + convert(countIterations));
-        System.out.println("Iterations/second: " + convert((countIterations/maxDuration)));
+        System.out.println("Iterations/second: " + convert((countIterations/(maxDuration/1000))));
         System.out.println("FINISHED\n");
         return bestSolution;
     }

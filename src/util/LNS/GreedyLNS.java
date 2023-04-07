@@ -42,10 +42,12 @@ public class GreedyLNS {
         for (Schedule s: schedules) {
             Schedule temp = new Schedule(s);
             for(int i = 0; i <= s.getBlocks().size(); i++) {
+
+                // EMPTY SCHEDULE
                 if(s.getBlocks().isEmpty()){
                     temp.getBlocks().add(b);
                     c.calculateSchedule(temp);
-                    if(c.checkDuration(temp)){
+                    if(c.checkSchedule(temp)){
                         int sCost = c.calculateCost(s,temp);
                         if(sCost < cost){
                             cost = sCost;
@@ -55,6 +57,8 @@ public class GreedyLNS {
                     }
                     temp.getBlocks().remove(b);
                     break;
+
+                    //FIRST PLACE IN THE SCHEDULE
                 } else if(i == 0){
                     Integer blockAfter = temp.getBlocks().get(0);
                     if(consmatrix[b][blockAfter] == 1){
@@ -71,6 +75,7 @@ public class GreedyLNS {
                         temp.getBlocks().remove(b);
                         break;
                     }
+                    //LAST PLACE IN THE SCHEDULE
                 } else if (i == temp.getBlocks().size()) {
                     Integer blockBefore = temp.getBlocks().get(temp.getBlocks().size()-1);
                     if(consmatrix[blockBefore][b] == 1){
@@ -87,6 +92,8 @@ public class GreedyLNS {
                         temp.getBlocks().remove(b);
                         break;
                     }
+
+                    //ANYWHERE ELSE IN THE SCHEDULE
                 } else {
                     Integer blockBefore = temp.getBlocks().get(i-1);
                     Integer blockAfter = temp.getBlocks().get(i);
@@ -112,70 +119,5 @@ public class GreedyLNS {
         }else{
             return null;
         }
-    }
-
-    private int calculateCost(Schedule oldS, Schedule newS) {
-
-        //double feasibility =0; //Feasability //TODO CHECK IF NECESSARY
-
-        double diffLD; //Local driver
-        double diffWT; //Wasted Time
-        double diffDur; //Duration
-        double diffTT; //Travel Time
-        double diffCPM; //
-        double diffTC; //Total Cost
-
-        if(oldS.getBlocks().isEmpty()){
-            //TOTAL COST + LOCAL DRIVER
-            if(newS.isLocal()){
-                diffTC = parameters.getSalary()*parameters.getCostFraction();
-                diffLD = 1;
-            }else{
-                diffTC = parameters.getSalary();
-                diffLD = 0;
-            }
-
-            //WASTED TIME
-            diffWT = c.calculateTimeWaste(newS);
-
-            //TRAVEL TIME
-            diffTT = 0;
-
-            //TOTAL DURATION
-            diffDur = newS.getDuration();
-
-            return (int) (diffWT * 1 + diffDur * 1 + diffTC * -10 + diffTT * 1 + diffLD * -1000);
-        }
-
-        if (newS.getDuration() == 0) {
-            return 0;
-        }
-
-        if(oldS.getDuration() == 0){
-            System.out.println(oldS);
-            System.out.println("\n-------------------\n");
-            System.out.println(newS);
-        }
-
-        double oldCostPerMinute = (double) parameters.getSalary() / oldS.getDuration();
-        double newCostPerMinute = (double) parameters.getSalary() / newS.getDuration();
-
-        double oldWastedTime = c.calculateTimeWaste(oldS);
-        double newWastedTime = c.calculateTimeWaste(newS);
-
-        if (!oldS.isLocal() && newS.isLocal()) {
-            newCostPerMinute = (parameters.getCostFraction() * parameters.getSalary()) / newS.getDuration();
-        }
-
-//        if(!oldS.isValid() && newS.isValid()){
-//            diffvalid = 1;
-//        } else if (oldS.isValid() && !newS.isValid()) {
-//            diffvalid = -1;
-//        }
-         diffWT = oldWastedTime - newWastedTime;
-         diffCPM = oldCostPerMinute - newCostPerMinute;
-
-        //A positive result equals an improvement
-        return (int) (diffWT * 1 + diffCPM * 0);
     }
 }

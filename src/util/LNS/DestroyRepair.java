@@ -18,6 +18,12 @@ public class DestroyRepair {
         changedSchedules = new ArrayList<>();
     }
 
+    /*
+
+    TODO: TRY TO IMPLEMENT THE CHECKMOVE FROM THE SA IN THE LNS.
+
+    */
+
     public PossibleSolution destructAndRepair(Solution solution, int destructions){
         Solution oldSolution = new Solution(solution);
         Solution newSolution = oldSolution.clone();
@@ -60,6 +66,7 @@ public class DestroyRepair {
             }
             Integer block1 = tempS1.getBlocks().get(blockIndex1);
             tempS1.getBlocks().remove(blockIndex1);
+
             //Keep track of the removed blocks
             removedBlocks.add(block1);
             newSolution.getSchedules().remove(s1);
@@ -70,6 +77,7 @@ public class DestroyRepair {
             removed++;
         }
 
+        //REPAIR
         ArrayList<InfoBestFit> bestFits = new ArrayList<>();
 
         GreedyLNS greedyLNS = new GreedyLNS(c);

@@ -11,22 +11,12 @@ public class Permutations {
 
     Calculations c;
     private ArrayList<Block> blocks;
-    private ArrayList<Station> stations;
-    private ArrayList<Station> breakStations;
     private int[][] consmatrix;
-    private int[][] consbreakmatrix;
-    private int[][] travelmatrix;
-    private Parameters parameters;
 
     public Permutations(Calculations c) {
         this.c = c;
         this.blocks = c.blocks;
-        this.stations = c.stations;
-        this.breakStations = c.breakStations;
         this.consmatrix = c.consmatrix;
-        this.consbreakmatrix = c.consbreakmatrix;
-        this.travelmatrix = c.travelmatrix;
-        this.parameters = c.parameters;
     }
 
     public PossibleSolution switch2Blocks(Solution solution) {

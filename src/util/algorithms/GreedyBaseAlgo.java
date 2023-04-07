@@ -92,12 +92,14 @@ public class GreedyBaseAlgo {
             counter++;
         }
 
-        //TEST
-        int max = 5;
-        for(int i = 0 ; i < max ; i++){
-            Schedule schedule = new Schedule();
-            schedules.add(schedule);
-        }
+        //OPTIONAL: ADDING EMPTY SCHEDULES
+//        int max = 5;
+//        for(int i = 0 ; i < max ; i++){
+//            Schedule schedule = new Schedule();
+//            schedule.setId(counter);
+//            schedules.add(schedule);
+//            counter++;
+//        }
 
         return schedules;
     }

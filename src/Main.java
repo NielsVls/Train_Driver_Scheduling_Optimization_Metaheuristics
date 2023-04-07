@@ -62,16 +62,16 @@ public class Main {
         GreedyBaseAlgo algoTest = new GreedyBaseAlgo(calculations);
         Validator validator = new Validator(calculations);
 
-        Solution baseSolution = algoTest.runInitialSolution();
-        finalSolutionCheck(baseSolution,calculations);
+//        Solution baseSolution = algoTest.runInitialSolution();
+//        finalSolutionCheck(baseSolution,calculations);
         System.out.println("\n ================================ \n");
         //validator.validate(baseSolution);
 
         //Solution baseSolution = algoTest.runTimeBasedInitialSolution();
         // finalSolutionCheck(baseSolution,calculations);
 
-//        Solution baseSolution = algoTest.run1BlockPerScheduleInitialSolution();
-//        finalSolutionCheck(baseSolution,calculations);
+        Solution baseSolution = algoTest.run1BlockPerScheduleInitialSolution();
+        finalSolutionCheck(baseSolution,calculations);
 
         //Solution baseSolution = algoTest.runRandomInitialSolution();
         //finalSolutionCheck(baseSolution,calculations);
@@ -79,13 +79,13 @@ public class Main {
         int minutes = 2;
         int milis = minutes * 60000;
 
-        Permutations permutations = new Permutations(calculations);
-        Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,milis, permutations);
-        finalSolutionCheck(endSolSA,calculations);
+//        Permutations permutations = new Permutations(calculations);
+//        Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,milis, permutations);
+//        finalSolutionCheck(endSolSA,calculations);
 
-//        DestroyRepair builders = new DestroyRepair(calculations);
-//        Solution endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,300000,builders);
-//        finalSolutionCheck(endSolLNS,calculations);
+        DestroyRepair builders = new DestroyRepair(calculations);
+        Solution endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,milis,builders);
+        finalSolutionCheck(endSolLNS,calculations);
         //validator.validate(endSolSA);
     }
 
@@ -145,8 +145,6 @@ public class Main {
         System.out.println("Total duration : " + convert(solution.getTotalDuration()));
         System.out.println("Total Cost : " + convert(solution.getTotalPaymentDrivers()));
         System.out.println("Total Time Wasted : " + convert(solution.getTotalTimeWasted()));
-//        System.out.println(dupli);
-//        System.out.println(dupliii);
     }
 
     static boolean finalCheckSchedule(Schedule schedule){
