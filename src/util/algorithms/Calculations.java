@@ -2,11 +2,11 @@ package util.algorithms;
 
 import global.Parameters;
 import model.Block;
-import model.Driver;
 import model.Schedule;
 import model.Station;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Calculations {
     public final ArrayList<Block> blocks;
@@ -17,8 +17,9 @@ public class Calculations {
     public final int[][] travelmatrix;
     public final int[][] consmatrix;
     public final int[][] consbreakmatrix;
+    public final Random random;
 
-    public Calculations(ArrayList<Block> blocks, ArrayList<Station> stations, ArrayList<Station> breakStations, ArrayList<Station> depots, Parameters parameters, int[][] travelmatrix, int[][] consmatrix, int[][] consbreakmatrix) {
+    public Calculations(ArrayList<Block> blocks, ArrayList<Station> stations, ArrayList<Station> breakStations, ArrayList<Station> depots, Parameters parameters, int[][] travelmatrix, int[][] consmatrix, int[][] consbreakmatrix, Random random) {
         this.blocks = blocks;
         this.stations = stations;
         this.breakStations = breakStations;
@@ -27,6 +28,7 @@ public class Calculations {
         this.travelmatrix = travelmatrix;
         this.consmatrix = consmatrix;
         this.consbreakmatrix = consbreakmatrix;
+        this.random = random;
     }
 
     public void calculateSchedule(Schedule s){

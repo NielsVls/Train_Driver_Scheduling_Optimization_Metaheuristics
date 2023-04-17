@@ -1,8 +1,5 @@
-import model.Block;
-import model.Schedule;
-import model.Station;
-import model.Solution;
-import util.LNS.DestroyRepair;
+import model.*;
+import util.LNS.Rebuild;
 import util.LNS.LargeNeighbourhoodSearch;
 import util.SA.Permutations;
 import util.SA.SimulatedAnnealing;
@@ -12,10 +9,7 @@ import util.algorithms.GreedyBaseAlgo;
 import util.algorithms.Validator;
 import util.dataReader.DataReader;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class Main {
 
@@ -57,35 +51,38 @@ public class Main {
         consmatrix = consecutiveInMatrix();
         consbreakmatrix = consecutiveBreakInMatrix();
 
+        Random random = new Random();
         //RUN THE ALGORITHM TO GET THE BASE SOLUTION
-        Calculations calculations = new Calculations(blocks,stations,breakStations,depots,parameters,travelmatrix,consmatrix,consbreakmatrix);
+        Calculations calculations = new Calculations(blocks,stations,breakStations,depots,parameters,travelmatrix,consmatrix,consbreakmatrix, random);
         GreedyBaseAlgo algoTest = new GreedyBaseAlgo(calculations);
         Validator validator = new Validator(calculations);
 
-//        Solution baseSolution = algoTest.runInitialSolution();
-//        finalSolutionCheck(baseSolution,calculations);
+        Solution baseSolution = algoTest.runInitialSolution();
+        finalSolutionCheck(baseSolution,calculations);
         System.out.println("\n ================================ \n");
         //validator.validate(baseSolution);
 
         //Solution baseSolution = algoTest.runTimeBasedInitialSolution();
         // finalSolutionCheck(baseSolution,calculations);
 
-        Solution baseSolution = algoTest.run1BlockPerScheduleInitialSolution();
-        finalSolutionCheck(baseSolution,calculations);
+//        Solution baseSolution = algoTest.run1BlockPerScheduleInitialSolution();
+//        finalSolutionCheck(baseSolution,calculations);
 
         //Solution baseSolution = algoTest.runRandomInitialSolution();
         //finalSolutionCheck(baseSolution,calculations);
 
-        int minutes = 2;
+        int minutes = 5;
         int milis = minutes * 60000;
 
-//        Permutations permutations = new Permutations(calculations);
-//        Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,milis, permutations);
-//        finalSolutionCheck(endSolSA,calculations);
+        Permutations permutations = new Permutations(calculations);
+        Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,milis, permutations);
+        finalSolutionCheck(endSolSA,calculations);
+        System.out.println("FINAL COST : " + endSolSA.getTotalCost());
 
-        DestroyRepair builders = new DestroyRepair(calculations);
+        Rebuild builders = new Rebuild(calculations);
         Solution endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,milis,builders);
         finalSolutionCheck(endSolLNS,calculations);
+        System.out.println("FINAL COST : " + endSolLNS.getTotalCost());
         //validator.validate(endSolSA);
     }
 

@@ -198,8 +198,6 @@ public class Permutations {
 
     public int getRandomNumberInRange(int min, int max) {
         if (min >= max) return 1;
-        Random r = new Random();
-        int number = r.nextInt((max - min) + 1) + min;
-        return number;
+        return c.random.nextInt((max - min) + 1) + min;
     }
 }

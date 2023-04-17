@@ -153,6 +153,16 @@ public class Solution implements Cloneable{
         return null;
     }
 
+    public int schedulesWith1Block(){
+        int counter =0;
+        for (Schedule s : schedules){
+            if (s.getBlocks().size() == 1){
+                counter++;
+            }
+        }
+        return counter;
+    }
+
     @Override
     public String toString() {
         return "Solution{" +

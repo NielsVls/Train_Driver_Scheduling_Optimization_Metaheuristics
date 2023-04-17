@@ -3,7 +3,7 @@ package util.LNS;
 import model.PossibleSolution;
 import model.Solution;
 
-import java.util.Random;
+import static util.LNS.Rebuild.getRandomNumberInRange;
 
 public class LargeNeighbourhoodSearch {
 
@@ -27,14 +27,7 @@ public class LargeNeighbourhoodSearch {
         return builder.toString();
     }
 
-    public static int getRandomNumberInRange(int min, int max) {
-        if (min >= max) return 1;
-        Random r = new Random();
-        int number = r.nextInt((max - min) + 1) + min;
-        return number;
-    }
-
-    public static Solution runSimulationTMP(Solution initial, int maxDuration, DestroyRepair builders) {
+    public static Solution runSimulationTMP(Solution initial, int maxDuration, Rebuild builders) {
         long startTime = System.currentTimeMillis();
         long currentTime = System.currentTimeMillis();
         long tempTime = System.currentTimeMillis();
@@ -42,7 +35,7 @@ public class LargeNeighbourhoodSearch {
         int countIterations = 0;
 
         Solution current = initial;
-        Solution best = initial.clone();
+        Solution best = current.clone();
 
 
         System.out.println("\nStarting Large Neighbourhood Search...\n");
@@ -57,12 +50,11 @@ public class LargeNeighbourhoodSearch {
             if(possibleSolution != null) {
                 double deltaE2 = possibleSolution.getNewCost() - possibleSolution.getOldCost();
                 if (deltaE2 < 0) {
-                    System.out.println("OLD " + possibleSolution.getOldCost());
-                    System.out.println("NEW " + possibleSolution.getNewCost());
                     current = possibleSolution.getNewSolution();
+                    current.calculateSolution();
                 }
                 if (current.getTotalCost() < best.getTotalCost()) {
-                    best = possibleSolution.getNewSolution();
+                    best = current;
                 }
             }
 

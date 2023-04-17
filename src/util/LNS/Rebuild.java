@@ -1,28 +1,25 @@
 package util.LNS;
 
-import model.*;
+import model.Block;
+import model.PossibleSolution;
+import model.Schedule;
+import model.Solution;
 import util.algorithms.Calculations;
 
 import java.util.*;
 
-public class DestroyRepair {
+public class Rebuild {
     static Calculations c;
     private static ArrayList<Block> blocks;
     private static ArrayList<Integer> removedBlocks;
     private static ArrayList<Schedule> changedSchedules;
 
-    public DestroyRepair(Calculations c){
-        DestroyRepair.c = c;
+    public Rebuild(Calculations c){
+        Rebuild.c = c;
         blocks = c.blocks;
         removedBlocks = new ArrayList<>();
         changedSchedules = new ArrayList<>();
     }
-
-    /*
-
-    TODO: TRY TO IMPLEMENT THE CHECKMOVE FROM THE SA IN THE LNS.
-
-    */
 
     public PossibleSolution destructAndRepair(Solution solution, int destructions){
         Solution oldSolution = new Solution(solution);
@@ -35,24 +32,27 @@ public class DestroyRepair {
         result.setOldSolution(oldSolution);
         result.setOldCost(oldCost);
 
-
-        if(solution == null){
-            return null;
-        }
-
         removedBlocks.clear();
         int removed = 0;
 
         //REMOVE
         while(removed < destructions){
-            int sId1 = 0;
-            Schedule s1 = newSolution.getSchedules().get(sId1);
+            int sId1;
+            Schedule s1 = null;
+
+            int testCounter =0;
             while (s1 == null || s1.getBlocks().isEmpty()) {
+                testCounter++;
                 sId1 = getRandomNumberInRange(0, newSolution.getSchedules().size() - 1);
                 s1 = newSolution.getSchedules().get(sId1);
                 if (s1 == null){
+                    System.out.println("Schedule was null");
                     return null;
                 }
+            }
+
+            if(testCounter > 3){
+                System.out.println("Counter is greater then 3 :  -->" + testCounter);
             }
 
             c.calculateSchedule(s1);
@@ -65,11 +65,12 @@ public class DestroyRepair {
                 blockIndex1 = 0;
             }
             Integer block1 = tempS1.getBlocks().get(blockIndex1);
-            tempS1.getBlocks().remove(blockIndex1);
+            tempS1.getBlocks().remove(block1);
 
             //Keep track of the removed blocks
             removedBlocks.add(block1);
             newSolution.getSchedules().remove(s1);
+
             if(!tempS1.getBlocks().isEmpty()){
                 newSolution.getSchedules().add(tempS1);
                 c.calculateSchedule(tempS1);
@@ -77,13 +78,14 @@ public class DestroyRepair {
             removed++;
         }
 
+
         //REPAIR
         ArrayList<InfoBestFit> bestFits = new ArrayList<>();
 
-        GreedyLNS greedyLNS = new GreedyLNS(c);
+        GreedyLNSAlgo greedyLNS = new GreedyLNSAlgo(c);
         Collections.shuffle(removedBlocks);
 
-        //FIRST CHECK
+        //FIND BEST FIT FOR EVERY REMOVED BLOCK
         changedSchedules.clear();
         for(Integer block : removedBlocks){
             InfoBestFit bestFit = greedyLNS.bestFitBlock(blocks.get(block-1),newSolution.getSchedules());
@@ -94,12 +96,12 @@ public class DestroyRepair {
             }
         }
 
+        //RE-ADD THE REMOVED BLOCKS STARTING FROM THE LOWEST COST
         while(!bestFits.isEmpty()){
-            //ADD THE LOWEST COST
             bestFits.sort(new BestFitComparator());
             newSolution.insertBestFit(bestFits.get(0));
             c.calculateSchedule(newSolution.getScheduleByID(bestFits.get(0).getScheduleID()));
-            changedSchedules.add(0,newSolution.getScheduleByID(bestFits.get(0).getScheduleID()));
+            changedSchedules.add(newSolution.getScheduleByID(bestFits.get(0).getScheduleID()));
             removedBlocks.remove(bestFits.get(0).getBlock());
             bestFits.remove(0);
 
@@ -134,6 +136,7 @@ public class DestroyRepair {
                     }
                 }
             }
+            changedSchedules.remove(0);
         }
 
         newSolution.calculateSolution();
@@ -144,15 +147,15 @@ public class DestroyRepair {
 
     public static int getRandomNumberInRange(int min, int max) {
         if (min >= max) return 1;
-        Random r = new Random();
-        int number = r.nextInt((max - min) + 1) + min;
-        return number;
+        return c.random.nextInt((max - min) + 1) + min;
     }
 }
 
 class BestFitComparator implements Comparator<InfoBestFit> {
     @Override
     public int compare(InfoBestFit o1, InfoBestFit o2) {
-            return o1.getCost() - o2.getCost();
+        Integer cost1 = o1.getCost();
+        Integer cost2 = o2.getCost();
+        return cost1.compareTo(cost2);
     }
 }
