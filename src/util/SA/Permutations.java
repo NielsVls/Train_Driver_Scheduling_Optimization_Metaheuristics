@@ -10,8 +10,8 @@ import java.util.Random;
 public class Permutations {
 
     Calculations c;
-    private ArrayList<Block> blocks;
-    private int[][] consmatrix;
+    private final ArrayList<Block> blocks;
+    private final int[][] consmatrix;
 
     public Permutations(Calculations c) {
         this.c = c;
@@ -20,25 +20,27 @@ public class Permutations {
     }
 
     public PossibleSolution switch2Blocks(Solution solution) {
-        //Saving the old solution
-        Solution oldSolution = solution;
-        solution.calculateSolution();
-        int oldCost = oldSolution.getTotalPaymentDrivers();
+        Solution oldSolution = new Solution(solution);
+        Solution newSolution = oldSolution.clone();
 
-        //Making the new solution and list of schedules we can edit
-        Solution newSolution = solution;
-        ArrayList<Schedule> schedules = newSolution.getSchedules();
+        //Saving the old solution
+        oldSolution.calculateSolution();
+        int oldCost = oldSolution.getTotalCost();
+
+        PossibleSolution result = new PossibleSolution();
+        result.setOldSolution(oldSolution);
+        result.setOldCost(oldCost);
 
         //Picking random schedules out of all schedules
-        int sId1 = 0;
-        int sId2 = 0;
-        Schedule s1 = schedules.get(sId1);
-        Schedule s2 = schedules.get(sId1);
-        while (sId1 == sId2 || s1 == null || s2 == null || s1.getBlocks().isEmpty() || s2.getBlocks().isEmpty()) {
-            sId1 = getRandomNumberInRange(0, schedules.size() - 1);
-            sId2 = getRandomNumberInRange(0, schedules.size() - 1);
-            s1 = schedules.get(sId1);
-            s2 = schedules.get(sId2);
+        int sId1 = -1;
+        int sId2 = -1;
+        Schedule s1 = null;
+        Schedule s2 = null;
+        while (sId1 == sId2 || s1.getBlocks().isEmpty() || s2.getBlocks().isEmpty()) {
+            sId1 = getRandomNumberInRange(0, newSolution.getSchedules().size() - 1);
+            sId2 = getRandomNumberInRange(0, newSolution.getSchedules().size() - 1);
+            s1 = newSolution.getSchedules().get(sId1);
+            s2 = newSolution.getSchedules().get(sId2);
             if (s1 == null || s2 == null) return null;
         }
 
@@ -78,33 +80,45 @@ public class Permutations {
                 newSolution.getSchedules().remove(s2);
                 newSolution.getSchedules().add(tempS1);
                 newSolution.getSchedules().add(tempS2);
-                newSolution.calculateCost();
-                return new PossibleSolution(newSolution, oldCost, newSolution.getTotalPaymentDrivers());
+                newSolution.calculateSolution();
+                result.setNewSolution(newSolution);
+                result.setNewCost(newSolution.getTotalCost());
+                return result;
             }
         }
         return null;
     }
 
     public PossibleSolution moveBlock(Solution solution) {
-        //Saving the old solution
-        Solution oldSolution = solution;
-        solution.calculateSolution();
-        int oldCost = oldSolution.getTotalPaymentDrivers();
+        Solution oldSolution = new Solution(solution);
+        Solution newSolution = oldSolution.clone();
 
-        //Making the new solution and list of schedules we can edit
-        Solution newSolution = solution;
-        ArrayList<Schedule> schedules = newSolution.getSchedules();
+        oldSolution.calculateCost();
+        int oldCost = oldSolution.getTotalCost();
+
+        PossibleSolution result = new PossibleSolution();
+        result.setOldSolution(oldSolution);
+        result.setOldCost(oldCost);
+
+//        //Saving the old solution
+//        Solution oldSolution = solution;
+//        oldSolution.calculateSolution();
+//        int oldCost = oldSolution.getTotalCost();
+//
+//        //Making the new solution and list of schedules we can edit
+//        Solution newSolution = solution;
+//        ArrayList<Schedule> schedules = newSolution.getSchedules();
 
         //Picking random schedules out of all schedules
-        int sId1 = 0;
-        int sId2 = 0;
-        Schedule s1 = schedules.get(sId1);
-        Schedule s2 = schedules.get(sId1);
-        while (sId1 == sId2 || s1 == null || s2 == null || s1.getBlocks().isEmpty()) {
-            sId1 = getRandomNumberInRange(0, schedules.size() - 1);
-            sId2 = getRandomNumberInRange(0, schedules.size() - 1);
-            s1 = schedules.get(sId1);
-            s2 = schedules.get(sId2);
+        int sId1 = -1;
+        int sId2 = -1;
+        Schedule s1 = null;
+        Schedule s2 = null;
+        while (sId1 == sId2 || s1.getBlocks().isEmpty()) {
+            sId1 = getRandomNumberInRange(0, newSolution.getSchedules().size() - 1);
+            sId2 = getRandomNumberInRange(0, newSolution.getSchedules().size() - 1);
+            s1 = newSolution.getSchedules().get(sId1);
+            s2 = newSolution.getSchedules().get(sId2);
             if (s1 == null || s2 == null) return null;
         }
 
@@ -143,12 +157,20 @@ public class Permutations {
                     newSolution.getSchedules().add(tempS1);
                 }
                 newSolution.getSchedules().add(tempS2);
-                newSolution.calculateCost();
-                return new PossibleSolution(newSolution, oldCost, newSolution.getTotalPaymentDrivers());
+                //newSolution.calculateCost();
+                //return new PossibleSolution(newSolution, oldCost, newSolution.getTotalPaymentDrivers());
+                newSolution.calculateSolution();
+                result.setNewSolution(newSolution);
+                result.setNewCost(newSolution.getTotalCost());
+                return result;
             }
         }
         return null;
     }
+
+//    public PossibleSolution removeSchedule(Solution solution){
+//
+//    }
 
     private boolean checkRemove(Schedule s, int index) {
         if(s.getBlocks().isEmpty()){

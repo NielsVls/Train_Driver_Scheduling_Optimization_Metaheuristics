@@ -12,13 +12,14 @@ public class SimulatedAnnealing {
         int minutes = 0;
         int countIterations = 0;
 
-        double temperature = 1000000000;
-        double alfa = 0.9999999;
+        double temperature = 10000000;
+        double alfa = 0.999999;
 
         System.out.println("Starting Simulated Annealing...");
 
         Solution currentSolution = initialSolution;
-        Solution bestSolution = initialSolution;
+        //Solution bestSolution = initialSolution;
+        Solution bestSolution = initialSolution.clone();
 
         while ((currentTime - startTime) < maxDuration && temperature > 1) {
             PossibleSolution possibleSolution = new PossibleSolution();
@@ -33,7 +34,9 @@ public class SimulatedAnnealing {
 
                 double deltaE = possibleSolution.getNewCost() - possibleSolution.getOldCost();
                 if (deltaE < 0 || acceptanceProbability(deltaE, temperature)) {
+                    //currentSolution = possibleSolution.getNewSolution();
                     currentSolution = possibleSolution.getNewSolution();
+                    currentSolution.calculateSolution();
                 }
                 if (currentSolution.getTotalCost() < bestSolution.getTotalCost()) {
                     bestSolution = currentSolution;

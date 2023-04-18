@@ -301,6 +301,9 @@ public class Calculations {
             return blockBeforeBreak.equals(s.getBlocks().get(0));
         }
         int index = s.getBlocks().indexOf(blockBeforeBreak);
+        if(index == s.getBlocks().size()-1){
+            return true;
+        }
         Integer blockAfterBreak = s.getBlocks().get(index+1);
         return consbreakmatrix[blockBeforeBreak][blockAfterBreak] == 1;
     }

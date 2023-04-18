@@ -6,7 +6,6 @@ import util.SA.SimulatedAnnealing;
 import util.algorithms.Calculations;
 import global.Parameters;
 import util.algorithms.GreedyBaseAlgo;
-import util.algorithms.Validator;
 import util.dataReader.DataReader;
 
 import java.util.*;
@@ -55,12 +54,11 @@ public class Main {
         //RUN THE ALGORITHM TO GET THE BASE SOLUTION
         Calculations calculations = new Calculations(blocks,stations,breakStations,depots,parameters,travelmatrix,consmatrix,consbreakmatrix, random);
         GreedyBaseAlgo algoTest = new GreedyBaseAlgo(calculations);
-        Validator validator = new Validator(calculations);
 
         Solution baseSolution = algoTest.runInitialSolution();
         finalSolutionCheck(baseSolution,calculations);
+        System.out.println("FINAL COST : " + baseSolution.getTotalCost());
         System.out.println("\n ================================ \n");
-        //validator.validate(baseSolution);
 
         //Solution baseSolution = algoTest.runTimeBasedInitialSolution();
         // finalSolutionCheck(baseSolution,calculations);
@@ -71,19 +69,32 @@ public class Main {
         //Solution baseSolution = algoTest.runRandomInitialSolution();
         //finalSolutionCheck(baseSolution,calculations);
 
-        int minutes = 5;
+        int minutes = 2;
         int milis = minutes * 60000;
 
-        Permutations permutations = new Permutations(calculations);
-        Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,milis, permutations);
-        finalSolutionCheck(endSolSA,calculations);
-        System.out.println("FINAL COST : " + endSolSA.getTotalCost());
+        //SIMULATED ANNEALING
+//        Permutations permutations = new Permutations(calculations);
+//        Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,milis, permutations);
+//        finalSolutionCheck(endSolSA,calculations);
+//        System.out.println("FINAL COST : " + endSolSA.getTotalCost());
 
+        //LARGE NEIGHBOURHOOD SEARCH
         Rebuild builders = new Rebuild(calculations);
         Solution endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,milis,builders);
         finalSolutionCheck(endSolLNS,calculations);
         System.out.println("FINAL COST : " + endSolLNS.getTotalCost());
-        //validator.validate(endSolSA);
+
+
+        for(int i = 1; i <= 5 ; i++){
+            System.out.println("=====================================================================");
+            System.out.println("\n TEST "+i);
+
+            Solution endLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,milis,builders);
+            finalSolutionCheck(endLNS,calculations);
+            System.out.println("FINAL COST : " + endLNS.getTotalCost()+"\n\n");
+        }
+
+        //ADAPTIVE LARGE NEIGHBOURHOOD SEARCH
     }
 
     //Final check of the schedules if the result is valid
@@ -162,6 +173,7 @@ public class Main {
                 int a = scheduleBlocks.get(i);
                 int b = scheduleBlocks.get(i+1);
                 if(consmatrix[a][b] != 1){
+                    System.out.println(schedule);
                     System.out.println("The following blocks aren't consecutive: " + a + " & " + b + ".");
                     return false;
                 }

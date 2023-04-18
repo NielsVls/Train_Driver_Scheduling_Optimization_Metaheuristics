@@ -39,20 +39,13 @@ public class Rebuild {
         while(removed < destructions){
             int sId1;
             Schedule s1 = null;
-
-            int testCounter =0;
             while (s1 == null || s1.getBlocks().isEmpty()) {
-                testCounter++;
                 sId1 = getRandomNumberInRange(0, newSolution.getSchedules().size() - 1);
                 s1 = newSolution.getSchedules().get(sId1);
                 if (s1 == null){
                     System.out.println("Schedule was null");
                     return null;
                 }
-            }
-
-            if(testCounter > 3){
-                System.out.println("Counter is greater then 3 :  -->" + testCounter);
             }
 
             c.calculateSchedule(s1);
@@ -67,15 +60,18 @@ public class Rebuild {
             Integer block1 = tempS1.getBlocks().get(blockIndex1);
             tempS1.getBlocks().remove(block1);
 
-            //Keep track of the removed blocks
-            removedBlocks.add(block1);
-            newSolution.getSchedules().remove(s1);
+            if(checkRemove2(tempS1,blockIndex1)){
+                //tempS1.getBlocks().remove(block1);
+                //Keep track of the removed blocks
+                removedBlocks.add(block1);
+                newSolution.getSchedules().remove(s1);
 
-            if(!tempS1.getBlocks().isEmpty()){
-                newSolution.getSchedules().add(tempS1);
-                c.calculateSchedule(tempS1);
+                if(!tempS1.getBlocks().isEmpty()){
+                    newSolution.getSchedules().add(tempS1);
+                    c.calculateSchedule(tempS1);
+                }
+                removed++;
             }
-            removed++;
         }
 
 
@@ -143,6 +139,31 @@ public class Rebuild {
         result.setNewSolution(newSolution);
         result.setNewCost(newSolution.getTotalCost());
         return result;
+    }
+
+    private boolean checkRemove(Schedule s, Integer block){
+        Schedule temp = new Schedule(s);
+        temp.getBlocks().remove(block);
+
+        if(temp.getBlocks().isEmpty()){
+            return true;
+        }
+        c.calculateSchedule(temp);
+        return c.checkSchedule(temp);
+    }
+
+    private boolean checkRemove2(Schedule s, int index) {
+        if(s.getBlocks().isEmpty()){
+            return true;
+        }
+        if(index == 0 || index == s.getBlocks().size()){
+            return c.checkSchedule(s);
+        }
+        Integer before = s.getBlocks().get(index-1);
+        Integer after = s.getBlocks().get(index);
+        if(c.consmatrix[before][after] == 1){
+            return c.checkSchedule(s);
+        }else{return false;}
     }
 
     public static int getRandomNumberInRange(int min, int max) {
