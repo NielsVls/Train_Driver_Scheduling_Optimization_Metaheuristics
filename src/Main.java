@@ -184,6 +184,7 @@ public class Main {
                     return false;
                 }
                 if(schedule.getDuration() > parameters.getMaximumShiftLengthWeekend()){
+                    System.out.println(schedule);
                     System.out.println("The shift is longer then allowed.");
                     return false;
                 }

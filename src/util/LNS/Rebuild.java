@@ -60,8 +60,9 @@ public class Rebuild {
             Integer block1 = tempS1.getBlocks().get(blockIndex1);
             tempS1.getBlocks().remove(block1);
 
+            c.calculateSchedule(tempS1);
+
             if(checkRemove2(tempS1,blockIndex1)){
-                //tempS1.getBlocks().remove(block1);
                 //Keep track of the removed blocks
                 removedBlocks.add(block1);
                 newSolution.getSchedules().remove(s1);

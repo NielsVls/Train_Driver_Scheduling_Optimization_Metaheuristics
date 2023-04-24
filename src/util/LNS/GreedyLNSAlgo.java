@@ -42,7 +42,7 @@ public class GreedyLNSAlgo {
         for (Schedule s: schedules) {
             Schedule temp = new Schedule(s);
             for(int i = 0; i <= s.getBlocks().size(); i++) {
-                if(checkSwap(temp,b,i)){
+                if(checkAdd(temp,b,i)){
                     int sCost = c.calculateCost(s,temp);
                     if(sCost < cost){
                         cost = sCost;
@@ -51,6 +51,7 @@ public class GreedyLNSAlgo {
                     }
                 }
                 temp.getBlocks().remove(b);
+                c.calculateSchedule(s);
             }
         }
         if(scheduleID != -1){
@@ -60,11 +61,11 @@ public class GreedyLNSAlgo {
         }
     }
 
-    public boolean checkSwap(Schedule schedule, int block, int index) {
+    public boolean checkAdd(Schedule schedule, int block, int index) {
         if (schedule.getBlocks().isEmpty()) {
             schedule.getBlocks().add(block);
             c.calculateSchedule(schedule);
-            return true;
+            return c.checkSchedule(schedule);
         }
         if (index == 0) {
             Block after = blocks.get(schedule.getBlocks().get(0) - 1);
@@ -76,14 +77,13 @@ public class GreedyLNSAlgo {
         } else if (index == schedule.getBlocks().size()) {
             Block before = blocks.get(schedule.getBlocks().get(index - 1) - 1);
             if (c.consmatrix[before.getId()][block] == 1) {
-                schedule.getBlocks().add(index, block);
+                schedule.getBlocks().add(block);
                 c.calculateSchedule(schedule);
                 return c.checkSchedule(schedule);
             }else{return false;}
         } else {
             Block before = blocks.get(schedule.getBlocks().get(index - 1) - 1);
             Block after = blocks.get(schedule.getBlocks().get(index) - 1);
-
             if (c.consmatrix[before.getId()][block] == 1 && c.consmatrix[block][after.getId()] == 1) {
                 schedule.getBlocks().add(index, block);
                 c.calculateSchedule(schedule);
