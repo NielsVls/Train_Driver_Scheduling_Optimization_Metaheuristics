@@ -7,9 +7,9 @@ public class InfoBestFit {
     Integer block;
     int scheduleID;
     int index;
-    int cost;
+    double cost;
 
-    public InfoBestFit(Integer block, int scheduleID, int index, int cost) {
+    public InfoBestFit(Integer block, int scheduleID, int index, double cost) {
         this.block = block;
         this.scheduleID = scheduleID;
         this.index = index;
@@ -28,7 +28,7 @@ public class InfoBestFit {
         return index;
     }
 
-    public int getCost() {
+    public double getCost() {
         return cost;
     }
 
@@ -44,7 +44,7 @@ public class InfoBestFit {
         this.index = index;
     }
 
-    public void setCost(int cost) {
+    public void setCost(double cost) {
         this.cost = cost;
     }
 

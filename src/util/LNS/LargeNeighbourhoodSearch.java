@@ -63,7 +63,7 @@ public class LargeNeighbourhoodSearch {
 
             if ((currentTime - tempTime) > 60000) {
                 minutes++;
-                System.out.printf("The program is currently running %d minute(s) [%s iterations;  cost %s; duration %s; time wasted %s].%n", minutes, convert(countIterations), convert(best.getTotalPaymentDrivers()), convert(best.getTotalDuration()),convert(best.getTotalTimeWasted()));
+                System.out.printf("The program is currently running %d minute(s) [%s iterations;  cost %s; duration %s; time wasted %s].%n", minutes, convert(countIterations), convert(best.getTotalCost()), convert(best.getTotalDuration()),convert(best.getTotalTimeWasted()));
                 tempTime = currentTime;
             }
         }

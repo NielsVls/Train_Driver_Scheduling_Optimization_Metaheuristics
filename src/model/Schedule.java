@@ -1,5 +1,7 @@
 package model;
 
+import global.Parameters;
+
 import java.util.ArrayList;
 
 public class Schedule implements Cloneable{
@@ -20,7 +22,7 @@ public class Schedule implements Cloneable{
     int timeWasted;
     int travelTime;
     double travelTimePerBlock;
-    int totalCost;
+    double totalCost;
 
     public Schedule(){
         breakAfterBlock = -1;
@@ -63,6 +65,20 @@ public class Schedule implements Cloneable{
         } catch (CloneNotSupportedException e) {
             // Should not happen since we are Cloneable
             throw new InternalError(e);
+        }
+    }
+
+    public void calculateCost(){
+        Parameters parameters = new Parameters();
+
+        if(duration > 0 && duration < 360){
+            totalCost = 360 * parameters.getCostPerMinute();
+        }else{
+            totalCost = duration * parameters.getCostPerMinute();
+        }
+
+        if(isLocal){
+            totalCost = totalCost * parameters.getCostFraction();
         }
     }
 
@@ -194,7 +210,7 @@ public class Schedule implements Cloneable{
         this.travelTimePerBlock = travelTimePerBlock;
     }
 
-    public int getTotalCost() {
+    public double getTotalCost() {
         return totalCost;
     }
 
@@ -202,16 +218,6 @@ public class Schedule implements Cloneable{
         this.totalCost = totalCost;
     }
 
-    public void costCalc(){
-        int total = 0;
-        total += timeWasted * 10;
-        total += duration * 1;
-        total += travelTime * 8;
-        if(isLocal){
-            total -= 1000;
-        }
-        totalCost = total;
-    }
     @Override
     public String toString() {
         String valid = "INVALID";

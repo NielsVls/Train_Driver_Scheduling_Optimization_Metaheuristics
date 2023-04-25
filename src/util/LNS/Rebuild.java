@@ -176,8 +176,8 @@ public class Rebuild {
 class BestFitComparator implements Comparator<InfoBestFit> {
     @Override
     public int compare(InfoBestFit o1, InfoBestFit o2) {
-        Integer cost1 = o1.getCost();
-        Integer cost2 = o2.getCost();
+        Double cost1 = o1.getCost();
+        Double cost2 = o2.getCost();
         return cost1.compareTo(cost2);
     }
 }

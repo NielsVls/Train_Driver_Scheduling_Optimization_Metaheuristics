@@ -36,14 +36,14 @@ public class GreedyLNSAlgo {
     //True means that Block b is added to Schedule s
     public InfoBestFit bestFitBlock(Block block, ArrayList<Schedule> schedules){
         Integer b = block.getId();
-        int cost = 9999999;
+        double cost = 9999999;
         int indexInSchedule = -1;
         int scheduleID = -1;
         for (Schedule s: schedules) {
             Schedule temp = new Schedule(s);
             for(int i = 0; i <= s.getBlocks().size(); i++) {
                 if(checkAdd(temp,b,i)){
-                    int sCost = c.calculateCost(s,temp);
+                    double sCost = c.calculateCost(s,temp);
                     if(sCost < cost){
                         cost = sCost;
                         indexInSchedule = i;

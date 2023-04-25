@@ -1,8 +1,6 @@
 import model.*;
 import util.LNS.Rebuild;
 import util.LNS.LargeNeighbourhoodSearch;
-import util.SA.Permutations;
-import util.SA.SimulatedAnnealing;
 import util.algorithms.BlockComparator;
 import util.algorithms.Calculations;
 import global.Parameters;
@@ -58,7 +56,6 @@ public class Main {
 
         Solution baseSolution = algoTest.runInitialSolution();
         finalSolutionCheck(baseSolution,calculations);
-        System.out.println("FINAL COST : " + baseSolution.getTotalCost());
         System.out.println("\n ================================ \n");
 
         //Solution baseSolution = algoTest.runTimeBasedInitialSolution();
@@ -70,22 +67,20 @@ public class Main {
         //Solution baseSolution = algoTest.runRandomInitialSolution();
         //finalSolutionCheck(baseSolution,calculations);
 
-        int minutes = 2;
+        int minutes = 5;
         int milis = minutes * 60000;
 
         //SIMULATED ANNEALING
 //        Permutations permutations = new Permutations(calculations);
 //        Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,milis, permutations);
 //        finalSolutionCheck(endSolSA,calculations);
-//        System.out.println("FINAL COST : " + endSolSA.getTotalCost());
 
         //LARGE NEIGHBOURHOOD SEARCH
         Rebuild builders = new Rebuild(calculations);
         Solution endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,milis,builders);
         finalSolutionCheck(endSolLNS,calculations);
-        System.out.println("FINAL COST : " + endSolLNS.getTotalCost());
 
-        System.out.println("Combinatorial Bound: " + combinatorialBound2());
+        System.out.println("Combinatorial Bound: " + combinatorialBound());
 
 //        for(int i = 1; i <= 5 ; i++){
 //            System.out.println("=====================================================================");
@@ -93,7 +88,6 @@ public class Main {
 //
 //            Solution endLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,milis,builders);
 //            finalSolutionCheck(endLNS,calculations);
-//            System.out.println("FINAL COST : " + endLNS.getTotalCost()+"\n\n");
 //        }
 
         //ADAPTIVE LARGE NEIGHBOURHOOD SEARCH
@@ -108,6 +102,8 @@ public class Main {
         int blockscovered = 0;
         int stationDrivers = 0;
         int empty = 0;
+        int shortSchedules = 0;
+        int shortage = 0;
         boolean valid = true;
         int invalids = 0;
         Set<Integer> bl = new HashSet<>();
@@ -119,6 +115,10 @@ public class Main {
             if(!finalCheckSchedule(s)){
                 valid = false;
                 invalids++;
+            }
+            if(s.getDuration() < 360){
+                shortSchedules++;
+                shortage += (360 - s.getDuration());
             }
             for(Integer i : s.getBlocks()){
                 blockscovered++;
@@ -153,8 +153,9 @@ public class Main {
         System.out.println("Count of blocks covered twice : " + convert(duplicates));
         System.out.println("Count of schedules that can be covered by station drivers : " + convert(stationDrivers));
         System.out.println("Total duration : " + convert(solution.getTotalDuration()));
-        System.out.println("Total Cost : " + convert(solution.getTotalPaymentDrivers()));
+        System.out.println("Total Cost : " + convert(solution.getTotalCost()));
         System.out.println("Total Time Wasted : " + convert(solution.getTotalTimeWasted()));
+        System.out.println("Drivers that are working less than 6 hours (get paid more then worked for) : " + (shortSchedules - empty) + ", with " + shortage + " minutes.");
     }
 
     static boolean finalCheckSchedule(Schedule schedule){
@@ -385,29 +386,7 @@ public class Main {
         return matrix;
     }
 
-    static void combinatorialBound(){
-        ArrayList<Block> tempblocks = new ArrayList<>(blocks);
-        tempblocks.sort(new BlockComparator());
-        Schedule schedule = new Schedule();
-        for(Block b : tempblocks){
-            if(schedule.getBlocks().isEmpty()){
-                schedule.getBlocks().add(b.getId());
-                schedule.setStartTime(b.getDepartureTime());
-            }else{
-                Block last = blocks.get(schedule.getBlocks().get(schedule.getBlocks().size()-1)-1);
-                if (last.getEndWeekday() == b.getStartWeekday() && (last.getArrivalTime() <= b.getDepartureTime())){
-                    schedule.getBlocks().add(b.getId());
-                } else if (last.getEndWeekday()+1 == b.getStartWeekday()) {
-                    schedule.getBlocks().add(b.getId());
-                }
-            }
-        }
-
-
-        System.out.println(schedule);
-    }
-
-    static double combinatorialBound2(){
+    static double combinatorialBound(){
         ArrayList<Block> tempblocks = new ArrayList<>(blocks);
         tempblocks.sort(new BlockComparator());
         int start = tempblocks.get(0).getDepartureTime();

@@ -413,7 +413,7 @@ public class Calculations {
 //        return cost;
 //    }
 
-    public int calculateCost(Schedule oldS, Schedule newS){
+    public int calculateCost2(Schedule oldS, Schedule newS){
         int cost;
 
         double diffLD; //Local driver
@@ -462,6 +462,31 @@ public class Calculations {
         return cost;
     }
 
+    public double calculateCost(Schedule oldS, Schedule newS){
+        double oldcost;
+        if(oldS.getDuration() > 0 && oldS.getDuration() < 360){
+            oldcost = 360 * parameters.getCostPerMinute();
+        }else{
+            oldcost = oldS.getDuration() * parameters.getCostPerMinute();
+        }
+
+        double newcost;
+        if(newS.getDuration() > 0 && newS.getDuration() < 360){
+            newcost = 360 * parameters.getCostPerMinute();
+        }else{
+            newcost = newS.getDuration() * parameters.getCostPerMinute();
+        }
+
+        if(oldS.isLocal()){
+            oldcost = oldcost * parameters.getCostFraction();
+        }
+        if(newS.isLocal()){
+            newcost = newcost * parameters.getCostFraction();
+        }
+
+        double cost = newcost - oldcost;
+        return cost;
+    }
     public int findClosestDepot(Block b) {
         int closest = 0;
         int distance = 9999;

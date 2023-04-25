@@ -9,8 +9,6 @@ import java.util.Objects;
 public class Solution implements Cloneable{
     private ArrayList<Schedule> schedules;
     private int totalCost;
-    private int totalPaymentDrivers;
-    private int totalPaymentPerMinute;
     private int totalDuration;
     private int blocksExecuted;
     private int totalDrivers;
@@ -26,8 +24,6 @@ public class Solution implements Cloneable{
 
     public Solution(Solution other) {
         this.schedules = new ArrayList<>(other.schedules);
-        this.totalPaymentDrivers = other.totalPaymentDrivers;
-        this.totalPaymentPerMinute = other.totalPaymentPerMinute;
         this.totalDuration = other.totalDuration;
         this.blocksExecuted = other.blocksExecuted;
         this.totalDrivers = other.totalDrivers;
@@ -47,10 +43,6 @@ public class Solution implements Cloneable{
                 return;
             }
         }
-    }
-
-    public int getTotalPaymentDrivers() {
-        return totalPaymentDrivers;
     }
 
     public int getTotalDuration() {
@@ -95,22 +87,16 @@ public class Solution implements Cloneable{
 
     public void calculateCost(){
         totalCost = 0;
-        totalPaymentDrivers = 0;
         totalDuration =0;
         totalTimeWasted =0;
         Parameters p = new Parameters();
         if(!schedules.isEmpty()){
             for (Schedule s: schedules){
                 if(!s.getBlocks().isEmpty()){
-                    s.costCalc();
+                    s.calculateCost();
                     totalTimeWasted += s.getTimeWasted();
                     totalDuration += s.getDuration();
                     totalCost += s.getTotalCost();
-                    if(s.isLocal()){
-                        totalPaymentDrivers += p.getSalary() * p.getCostFraction();
-                    }else{
-                        totalPaymentDrivers += p.getSalary();
-                    }
                 }
             }
         }
@@ -166,7 +152,6 @@ public class Solution implements Cloneable{
     @Override
     public String toString() {
         return "Solution{" +
-                "totalCost=" + totalPaymentDrivers +
                 ", blocksExecuted=" + blocksExecuted +
                 ", totalDrivers=" + totalDrivers +
                 ", totalRegularDrivers=" + totalRegularDrivers +

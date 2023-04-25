@@ -216,7 +216,7 @@ public class GreedyBaseAlgo {
                 s.getBlocks().add(b.getId());
                 c.calculateSchedule(s);
                 //TotalDuration checked here
-                if (c.checkDuration(s)) {
+                if (c.checkSchedule(s)) {
                     //BLOCK ADDED
                     return true;
                 } else {
@@ -231,7 +231,7 @@ public class GreedyBaseAlgo {
             //The block can be added but there can be no break
             s.getBlocks().add(b.getId());
             c.calculateSchedule(s);
-            if (c.checkDuration(s)) {
+            if (c.checkSchedule(s)) {
                 //BLOCK ADDED
                 return true;
             } else {
