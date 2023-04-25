@@ -4,6 +4,7 @@ public class Parameters {
 
     final double costFraction;
     final int salary;
+    final double costPerMinute;
     final int minimumShiftLength;
     final int maximumShiftLengthWeekday;
     final int maximumShiftLengthWeekend;
@@ -26,6 +27,7 @@ public class Parameters {
         this.maximumTimeBetweenBlocks = 600;
         this.checkInTime = 20;
         this.checkOutTime = 5;
+        this.costPerMinute = 0.21;
     }
 
     public double getCostFraction() {
@@ -70,5 +72,9 @@ public class Parameters {
 
     public int getCheckOutTime() {
         return checkOutTime;
+    }
+
+    public double getCostPerMinute() {
+        return costPerMinute;
     }
 }
