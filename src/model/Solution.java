@@ -2,6 +2,7 @@ package model;
 
 import global.Parameters;
 import util.LNS.InfoBestFit;
+import util.LNS.InfoRegretFit;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -33,6 +34,19 @@ public class Solution implements Cloneable{
         this.driversWorkingLessThen6hours = other.driversWorkingLessThen6hours;
     }
     public void insertBestFit(InfoBestFit bestFit){
+        for (Schedule s : schedules){
+            if (s.getId() == bestFit.getScheduleID()){
+                if(bestFit.getIndex() == s.getBlocks().size()){
+                    s.getBlocks().add(bestFit.getBlock());
+                }else{
+                    s.getBlocks().add(bestFit.getIndex(),bestFit.getBlock());
+                }
+                return;
+            }
+        }
+    }
+
+    public void insertRegretFit(InfoRegretFit bestFit){
         for (Schedule s : schedules){
             if (s.getId() == bestFit.getScheduleID()){
                 if(bestFit.getIndex() == s.getBlocks().size()){

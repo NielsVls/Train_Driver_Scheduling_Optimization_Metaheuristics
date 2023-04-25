@@ -80,7 +80,7 @@ public class Main {
         Solution endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,milis,builders);
         finalSolutionCheck(endSolLNS,calculations);
 
-        System.out.println("Combinatorial Bound: " + combinatorialBound());
+        //System.out.println("Combinatorial Bound: " + combinatorialBound());
 
 //        for(int i = 1; i <= 5 ; i++){
 //            System.out.println("=====================================================================");

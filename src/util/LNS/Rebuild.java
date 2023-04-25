@@ -21,7 +21,7 @@ public class Rebuild {
         changedSchedules = new ArrayList<>();
     }
 
-    public PossibleSolution destructAndRepair(Solution solution, int destructions){
+    public PossibleSolution randomDestruct (Solution solution, int destructions, int repairmethod){
         Solution oldSolution = new Solution(solution);
         Solution newSolution = oldSolution.clone();
 
@@ -62,7 +62,7 @@ public class Rebuild {
 
             c.calculateSchedule(tempS1);
 
-            if(checkRemove2(tempS1,blockIndex1)){
+            if(checkRemove(tempS1,blockIndex1)){
                 //Keep track of the removed blocks
                 removedBlocks.add(block1);
                 newSolution.getSchedules().remove(s1);
@@ -75,12 +75,21 @@ public class Rebuild {
             }
         }
 
+        if(repairmethod == 1){
+            //BEST FIT REPAIR METHOD
+            result = bestFitRepair(newSolution, result);
+        }else{
+            //REGRET FIT REPAIR METHOD
+            result = bestRegretFitRepair(newSolution,result);
+        }
+        return result;
+    }
 
-        //REPAIR
+    public PossibleSolution bestFitRepair(Solution newSolution, PossibleSolution result){
+
         ArrayList<InfoBestFit> bestFits = new ArrayList<>();
-
         GreedyLNSAlgo greedyLNS = new GreedyLNSAlgo(c);
-        Collections.shuffle(removedBlocks);
+        //Collections.shuffle(removedBlocks);
 
         //FIND BEST FIT FOR EVERY REMOVED BLOCK
         changedSchedules.clear();
@@ -142,18 +151,73 @@ public class Rebuild {
         return result;
     }
 
-    private boolean checkRemove(Schedule s, Integer block){
-        Schedule temp = new Schedule(s);
-        temp.getBlocks().remove(block);
+    public PossibleSolution bestRegretFitRepair(Solution newSolution, PossibleSolution result){
 
-        if(temp.getBlocks().isEmpty()){
-            return true;
+        ArrayList<InfoRegretFit> bestRegrets = new ArrayList<>();
+        GreedyLNSAlgo greedyLNS = new GreedyLNSAlgo(c);
+
+        //FIND BEST FIT FOR EVERY REMOVED BLOCK
+        changedSchedules.clear();
+        for(Integer block : removedBlocks){
+            InfoRegretFit bestFit = greedyLNS.bestRegretFitBlock(blocks.get(block-1),newSolution.getSchedules());
+            if(bestFit == null){
+                return null;
+            }else{
+                bestRegrets.add(bestFit);
+            }
         }
-        c.calculateSchedule(temp);
-        return c.checkSchedule(temp);
+
+        //RE-ADD THE REMOVED BLOCKS STARTING FROM THE LOWEST COST
+        while(!bestRegrets.isEmpty()){
+            bestRegrets.sort(new RegretFitComparator());
+            newSolution.insertRegretFit(bestRegrets.get(0));
+            c.calculateSchedule(newSolution.getScheduleByID(bestRegrets.get(0).getScheduleID()));
+            changedSchedules.add(newSolution.getScheduleByID(bestRegrets.get(0).getScheduleID()));
+            removedBlocks.remove(bestRegrets.get(0).getBlock());
+            bestRegrets.remove(0);
+
+            if(bestRegrets.isEmpty()){
+                break;
+            }
+            //IF MULTIPLE BLOCKS ARE PLANNED TO BE ADDED TO THE SAME SCHEDULE, WE RECHECK THEIR BEST FIT
+            for(InfoRegretFit b : bestRegrets){
+                if(changedSchedules.get(0) == newSolution.getScheduleByID(b.getScheduleID())){
+                    InfoRegretFit bestFit = greedyLNS.bestRegretFitBlock(blocks.get(b.getBlock()-1),newSolution.getSchedules());
+                    if(bestFit == null){
+                        return null;
+                    }else{
+                        //RESET THE CURRENT BESTFIT
+                        b.setCost(bestFit.getCost());
+                        b.setSecondCost(bestFit.getSecondCost());
+                        b.setBlock(bestFit.getBlock());
+                        b.setIndex(bestFit.getIndex());
+                        b.setScheduleID(bestFit.getScheduleID());
+                    }
+                }
+            }
+
+            for(Integer block : removedBlocks){
+                InfoRegretFit bestFit = greedyLNS.bestRegretFitBlock(blocks.get(block-1),changedSchedules);
+                if(bestFit != null){
+                    for(InfoRegretFit bestFitOld : bestRegrets){
+                        if(Objects.equals(bestFitOld.getBlock(), bestFit.getBlock()) && bestFitOld.getRegret() > bestFit.getRegret()){
+                            bestRegrets.remove(bestFitOld);
+                            bestRegrets.add(bestFit);
+                            break;
+                        }
+                    }
+                }
+            }
+            changedSchedules.remove(0);
+        }
+
+        newSolution.calculateSolution();
+        result.setNewSolution(newSolution);
+        result.setNewCost(newSolution.getTotalCost());
+        return result;
     }
 
-    private boolean checkRemove2(Schedule s, int index) {
+    private boolean checkRemove(Schedule s, int index) {
         if(s.getBlocks().isEmpty()){
             return true;
         }
@@ -179,5 +243,14 @@ class BestFitComparator implements Comparator<InfoBestFit> {
         Double cost1 = o1.getCost();
         Double cost2 = o2.getCost();
         return cost1.compareTo(cost2);
+    }
+}
+
+class RegretFitComparator implements Comparator<InfoRegretFit> {
+    @Override
+    public int compare(InfoRegretFit o1, InfoRegretFit o2) {
+        Double cost1 = o1.getRegret();
+        Double cost2 = o2.getRegret();
+        return cost2.compareTo(cost1);
     }
 }

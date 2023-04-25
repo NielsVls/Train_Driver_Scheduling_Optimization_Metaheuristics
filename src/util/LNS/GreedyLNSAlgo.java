@@ -61,6 +61,37 @@ public class GreedyLNSAlgo {
         }
     }
 
+    public InfoRegretFit bestRegretFitBlock(Block block, ArrayList<Schedule> schedules){
+        Integer b = block.getId();
+        double cost = 999999;
+        double secondcost = 9999999;
+        int indexInSchedule = -1;
+        int scheduleID = -1;
+        for (Schedule s: schedules) {
+            Schedule temp = new Schedule(s);
+            for(int i = 0; i <= s.getBlocks().size(); i++) {
+                if(checkAdd(temp,b,i)){
+                    double sCost = c.calculateCost(s,temp);
+                    if(sCost < cost){
+                        secondcost = cost;
+                        cost = sCost;
+                        indexInSchedule = i;
+                        scheduleID = s.getId();
+                    }else if(sCost < secondcost){
+                        secondcost = sCost;
+                    }
+                }
+                temp.getBlocks().remove(b);
+                c.calculateSchedule(s);
+            }
+        }
+        if(scheduleID != -1){
+            return new InfoRegretFit(b,scheduleID,indexInSchedule,cost,secondcost);
+        }else{
+            return null;
+        }
+    }
+
     public boolean checkAdd(Schedule schedule, int block, int index) {
         if (schedule.getBlocks().isEmpty()) {
             schedule.getBlocks().add(block);

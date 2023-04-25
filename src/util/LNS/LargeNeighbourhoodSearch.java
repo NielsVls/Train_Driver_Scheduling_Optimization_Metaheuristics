@@ -3,6 +3,7 @@ package util.LNS;
 import model.PossibleSolution;
 import model.Solution;
 
+import static util.LNS.Rebuild.c;
 import static util.LNS.Rebuild.getRandomNumberInRange;
 
 public class LargeNeighbourhoodSearch {
@@ -44,8 +45,14 @@ public class LargeNeighbourhoodSearch {
             PossibleSolution possibleSolution;
 
             int destructions = getRandomNumberInRange(5,15);
+            int destroymethod = 1;
+            int repairmethod = 2;
 
-            possibleSolution = builders.destructAndRepair(current,destructions);
+            switch (destroymethod){
+                case 1: possibleSolution = builders.randomDestruct(current,destructions,repairmethod);
+                break;
+                default: possibleSolution = builders.randomDestruct(current,destructions,repairmethod);
+            }
 
             if(possibleSolution != null) {
                 double deltaE2 = possibleSolution.getNewCost() - possibleSolution.getOldCost();
