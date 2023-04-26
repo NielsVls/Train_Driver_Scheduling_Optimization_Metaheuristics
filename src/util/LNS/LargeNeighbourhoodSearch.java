@@ -28,7 +28,7 @@ public class LargeNeighbourhoodSearch {
         return builder.toString();
     }
 
-    public static Solution runSimulationTMP(Solution initial, int maxDuration, Rebuild builders) {
+    public static Solution runSimulationTMP(Solution initial, int maxDuration, Rebuild builders, int min, int max) {
         long startTime = System.currentTimeMillis();
         long currentTime = System.currentTimeMillis();
         long tempTime = System.currentTimeMillis();
@@ -44,15 +44,16 @@ public class LargeNeighbourhoodSearch {
         while((currentTime - startTime) < maxDuration){
             PossibleSolution possibleSolution;
 
-            int destructions = getRandomNumberInRange(5,15);
-            int destroymethod = 1;
-            int repairmethod = 2;
+            int destructions = getRandomNumberInRange(min,max);
+            int destroymethod = getRandomNumberInRange(1,2);
+            int repairmethod = getRandomNumberInRange(1,2);
 
-            switch (destroymethod){
-                case 1: possibleSolution = builders.randomDestruct(current,destructions,repairmethod);
-                break;
-                default: possibleSolution = builders.randomDestruct(current,destructions,repairmethod);
-            }
+
+            possibleSolution = switch (destroymethod) {
+                case 1 -> builders.randomDestruct(current, destructions, repairmethod);
+                case 2 -> builders.destructByTime(current, destructions, repairmethod);
+                default -> builders.randomDestruct(current, destructions, repairmethod);
+            };
 
             if(possibleSolution != null) {
                 double deltaE2 = possibleSolution.getNewCost() - possibleSolution.getOldCost();

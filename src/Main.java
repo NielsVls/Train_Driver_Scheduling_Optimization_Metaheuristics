@@ -67,7 +67,7 @@ public class Main {
         //Solution baseSolution = algoTest.runRandomInitialSolution();
         //finalSolutionCheck(baseSolution,calculations);
 
-        int minutes = 5;
+        int minutes = 8;
         int milis = minutes * 60000;
 
         //SIMULATED ANNEALING
@@ -77,18 +77,20 @@ public class Main {
 
         //LARGE NEIGHBOURHOOD SEARCH
         Rebuild builders = new Rebuild(calculations);
-        Solution endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,milis,builders);
-        finalSolutionCheck(endSolLNS,calculations);
+//        Solution endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,milis,builders);
+//        finalSolutionCheck(endSolLNS,calculations);
 
         //System.out.println("Combinatorial Bound: " + combinatorialBound());
+        int[] mins = {5,10,25,50,75,125};
+        int[] maxs = {15,30,50,100,150,200};
 
-//        for(int i = 1; i <= 5 ; i++){
-//            System.out.println("=====================================================================");
-//            System.out.println("\n TEST "+i);
-//
-//            Solution endLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,milis,builders);
-//            finalSolutionCheck(endLNS,calculations);
-//        }
+        for(int i = 1; i <= 6 ; i++){
+            System.out.println("=====================================================================");
+            System.out.println("\n TEST "+i);
+
+            Solution endLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,milis,builders,mins[i-1],maxs[i-1]);
+            finalSolutionCheck(endLNS,calculations);
+        }
 
         //ADAPTIVE LARGE NEIGHBOURHOOD SEARCH
     }

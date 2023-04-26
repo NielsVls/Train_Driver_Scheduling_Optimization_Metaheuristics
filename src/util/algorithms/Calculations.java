@@ -271,34 +271,7 @@ public class Calculations {
         return travelmatrix[closestStation][b];
     }
 
-    public boolean checkDuration(Schedule s) {
-        Block last = blocks.get(s.getBlocks().get(s.getBlocks().size() - 1) - 1);
-        int travel = travelmatrix[last.getEndLoc()][s.getClosestDepot()];
-
-        if(!breakCheck(s)){
-            s.setValid(false);
-            return false;
-        }
-
-        int duration = travel + s.getDuration();
-        boolean needBreak = duration >= parameters.getMaximumDurationBeforeBreak();
-
-        if (needBreak) {
-            if(duration <= parameters.getMaximumShiftLengthWeekend() && s.getBreakAfterBlock() != -1 && s.getTimeWorkingWithoutBreak() < parameters.getMaximumDurationBeforeBreak()){
-                s.setValid(true);
-                return true;
-            }
-        } else {
-            if(duration <= parameters.getMaximumShiftLengthWeekend() && s.getTimeWorkingWithoutBreak() < parameters.getMaximumDurationBeforeBreak()){
-                s.setValid(true);
-                return true;
-            }
-        }
-        s.setValid(false);
-        return false;
-    }
-
-    public boolean checkDuration2(Schedule s){
+    public boolean checkDuration(Schedule s){
         if(!breakCheck(s)){
             s.setValid(false);
             return false;
@@ -339,7 +312,7 @@ public class Calculations {
     }
 
     public boolean checkSchedule(Schedule s){
-        return (checkDuration2(s) && breakCheck(s) && s.getTimeWorkingWithoutBreak() <= parameters.getMaximumDurationBeforeBreak() && s.getTimeWorkingWithoutBreak() > 0);
+        return (checkDuration(s) && breakCheck(s) && s.getTimeWorkingWithoutBreak() <= parameters.getMaximumDurationBeforeBreak() && s.getTimeWorkingWithoutBreak() > 0);
     }
 
     //EXTRA COSTPARAM
