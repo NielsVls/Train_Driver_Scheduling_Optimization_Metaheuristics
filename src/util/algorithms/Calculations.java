@@ -47,6 +47,8 @@ public class Calculations {
         calculateTimeWaste(s);
         //Calculates the time that is travelled during a schedule, also the average per block
         calculateTravelTime(s);
+        //Check if the schedule is local or not
+        possibleForStationDriver(s);
     }
 
     void calculateStartTime(Schedule s){
@@ -145,6 +147,22 @@ public class Calculations {
                 }
             }
         }
+    }
+
+    void possibleForStationDriver(Schedule s){
+        int driver = blocks.get(s.getBlocks().get(0)-1).getLocalDriver();
+        for(Integer i : s.getBlocks()){
+            Block b = blocks.get(i-1);
+            if(b.getLocalDriver() == 0){
+                s.setDriverType(0);
+                return;
+            }
+            if(b.getLocalDriver() != driver){
+                s.setDriverType(0);
+                return;
+            }
+        }
+        s.setDriverType(driver);
     }
 
     public int calculateTimeWaste(Schedule s) {
@@ -348,10 +366,10 @@ public class Calculations {
             newcost = newS.getDuration() * parameters.getCostPerMinute();
         }
 
-        if(oldS.isLocal()){
+        if(oldS.getDriverType() != 0){
             oldcost = oldcost * parameters.getCostFraction();
         }
-        if(newS.isLocal()){
+        if(newS.getDriverType() != 0){
             newcost = newcost * parameters.getCostFraction();
         }
 

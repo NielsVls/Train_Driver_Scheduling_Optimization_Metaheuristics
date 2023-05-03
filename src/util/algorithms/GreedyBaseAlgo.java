@@ -60,31 +60,16 @@ public class GreedyBaseAlgo {
         return solution;
     }
 
-    public ArrayList<Schedule> makeSchedulesByID() {
-        ArrayList<Schedule> schedules = new ArrayList<>();
-        Schedule schedule1 = new Schedule();
-        schedules.add(schedule1);
-        for (Block b : blocks) {
-            int size = schedules.size();
-            int counter = 0;
-            for (Schedule s : schedules) {
-                if (bestFitBlock(b, s)) {
-                    break;
-                }
-                counter++;
-            }
+    public Solution runStationDriverSolution(){
+        Solution solution = new Solution();
+        solution.setSchedules(makeStationDriverSchedules());
+        solution.calculateSolution();
+        return solution;
+    }
 
-            //Add to new schedule
-            if (counter == size) {
-                Schedule newschedule = new Schedule();
-                newschedule.getBlocks().add(b.getId());
-                newschedule.setClosestDepot(findClosestDepot(b));
-                newschedule.setStartStation(b.getStartLoc());
-                newschedule.setStartDay(b.getStartWeekday());
-                c.calculateSchedule(newschedule);
-                schedules.add(newschedule);
-            }
-        }
+    public ArrayList<Schedule> makeSchedulesByID() {
+
+        ArrayList<Schedule> schedules = makeSchedulesForList(blocks);
         int counter = 1;
         for (Schedule s : schedules) {
             s.setId(counter);
@@ -105,32 +90,9 @@ public class GreedyBaseAlgo {
     }
 
     public ArrayList<Schedule> makeSchedulesByTime() {
-        ArrayList<Schedule> schedules = new ArrayList<>();
-        Schedule schedule1 = new Schedule();
-        schedules.add(schedule1);
         ArrayList<Block> tempBlocks = new ArrayList<>(blocks);
         Collections.sort(tempBlocks, new BlockComparator());
-        for (Block b : blocks) {
-            int size = schedules.size();
-            int counter = 0;
-            for (Schedule s : schedules) {
-                if (bestFitBlock(b, s)) {
-                    break;
-                }
-                counter++;
-            }
-
-            //Add to new schedule
-            if (counter == size) {
-                Schedule newschedule = new Schedule();
-                newschedule.getBlocks().add(b.getId());
-                newschedule.setClosestDepot(findClosestDepot(b));
-                newschedule.setStartStation(b.getStartLoc());
-                newschedule.setStartDay(b.getStartWeekday());
-                c.calculateSchedule(newschedule);
-                schedules.add(newschedule);
-            }
-        }
+        ArrayList<Schedule> schedules = makeSchedulesForList(tempBlocks);
         int counter = 1;
         for (Schedule s : schedules) {
             s.setId(counter);
@@ -162,15 +124,66 @@ public class GreedyBaseAlgo {
     }
 
     public ArrayList<Schedule> makeRandomSolution(){
+
+        ArrayList<Block> tempBlocks = new ArrayList<>(blocks);
+        Collections.shuffle(tempBlocks);
+        ArrayList<Schedule> schedules = makeSchedulesForList(tempBlocks);
+        int counter = 1;
+        for (Schedule s : schedules) {
+            s.setId(counter);
+            c.calculateSchedule(s);
+            counter++;
+        }
+        return schedules;
+    }
+
+    public ArrayList<Schedule> makeStationDriverSchedules(){
+        ArrayList<Block> regularBlocks = new ArrayList<>();
+        ArrayList<Block> stationBlocks1 = new ArrayList<>();
+        ArrayList<Block> stationBlocks2 = new ArrayList<>();
+        ArrayList<Block> stationBlocks3 = new ArrayList<>();
+        ArrayList<Block> stationBlocks4 = new ArrayList<>();
+        ArrayList<Block> stationBlocks5 = new ArrayList<>();
+        ArrayList<Block> stationBlocks6 = new ArrayList<>();
+
+        for(Block b : blocks){
+            switch (b.getLocalDriver()) {
+                case 0 -> regularBlocks.add(b);
+                case 1 -> stationBlocks1.add(b);
+                case 2 -> stationBlocks2.add(b);
+                case 3 -> stationBlocks3.add(b);
+                case 4 -> stationBlocks4.add(b);
+                case 5 -> stationBlocks5.add(b);
+                case 6 -> stationBlocks6.add(b);
+            }
+        }
+
+        ArrayList<Schedule> schedules = new ArrayList<>();
+        schedules.addAll(makeSchedulesForList(regularBlocks));
+        schedules.addAll(makeSchedulesForList(stationBlocks1));
+        schedules.addAll(makeSchedulesForList(stationBlocks2));
+        schedules.addAll(makeSchedulesForList(stationBlocks3));
+        schedules.addAll(makeSchedulesForList(stationBlocks4));
+        schedules.addAll(makeSchedulesForList(stationBlocks5));
+        schedules.addAll(makeSchedulesForList(stationBlocks6));
+
+        int counter = 1;
+        for (Schedule s : schedules) {
+            s.setId(counter);
+            c.calculateSchedule(s);
+            counter++;
+        }
+
+        return schedules;
+    }
+
+    public ArrayList<Schedule> makeSchedulesForList(ArrayList<Block> list){
         ArrayList<Schedule> schedules = new ArrayList<>();
         Schedule schedule1 = new Schedule();
         schedules.add(schedule1);
-        ArrayList<Block> tempBlocks = new ArrayList<>(blocks);
-        Collections.shuffle(tempBlocks);
-        for (Block b : blocks) {
+        for (Block b : list) {
             int size = schedules.size();
             int counter = 0;
-            Collections.shuffle(schedules);
             for (Schedule s : schedules) {
                 if (bestFitBlock(b, s)) {
                     break;
@@ -189,15 +202,9 @@ public class GreedyBaseAlgo {
                 schedules.add(newschedule);
             }
         }
-        int counter = 1;
-        for (Schedule s : schedules) {
-            s.setId(counter);
-            c.calculateSchedule(s);
-            counter++;
-        }
+
         return schedules;
     }
-
 
     //True means that Block b is added to Schedule s
     public boolean bestFitBlock(Block b, Schedule s) {

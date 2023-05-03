@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class Schedule implements Cloneable{
     Integer id;
-    boolean isLocal;
+    int driverType;
     boolean isValid;
     int duration;
     int startStation;
@@ -14,7 +14,6 @@ public class Schedule implements Cloneable{
     int startTime;
     ArrayList<Integer> blocks;
     int closestDepot;
-    int type;
     int timeWorkingBeforeBreak;
     int timeWorkingWithoutBreak;
     int breakAfterBlock;
@@ -33,14 +32,13 @@ public class Schedule implements Cloneable{
 
     public Schedule(Schedule s){
         this.id = s.id;
-        this.isLocal = s.isLocal;
+        this.driverType = s.driverType;
         this.duration = s.duration;
         this.startStation = s.startStation;
         this.startTime = s.startTime;
         this.startDay = s.startDay;
         this.blocks = new ArrayList<>(s.blocks);
         this.closestDepot = s.closestDepot;
-        this.type = s.type;
         this.timeWorkingBeforeBreak = s.timeWorkingBeforeBreak;
         this.timeWorkingWithoutBreak = s.timeWorkingWithoutBreak;
         this.breakAfterBlock = s.breakAfterBlock;
@@ -77,7 +75,7 @@ public class Schedule implements Cloneable{
             totalCost = duration * parameters.getCostPerMinute();
         }
 
-        if(isLocal){
+        if(driverType != 0){
             totalCost = totalCost * parameters.getCostFraction();
         }
     }
@@ -98,8 +96,8 @@ public class Schedule implements Cloneable{
         this.startDay = startDay;
     }
 
-    public boolean isLocal() {
-        return isLocal;
+    public int getDriverType() {
+        return driverType;
     }
 
     public int getDuration() {
@@ -114,8 +112,8 @@ public class Schedule implements Cloneable{
         return blocks;
     }
 
-    public void setLocal(boolean local) {
-        isLocal = local;
+    public void setDriverType(int driverType) {
+        this.driverType = driverType;
     }
 
     public void setDuration(int duration) {
@@ -124,14 +122,6 @@ public class Schedule implements Cloneable{
 
     public void setStartStation(int startStation) {
         this.startStation = startStation;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
     }
 
     public int getTimeWorkingWithoutBreak() {
@@ -234,14 +224,14 @@ public class Schedule implements Cloneable{
                     "\nTime since Last Break=" + timeWorkingWithoutBreak +
                     "\nBREAKS?=" + breakPossibleAfterBlocks +
                     "\nblocks=" + blocks +
-                    "\nCan it be done by a local station driver? " + isLocal() + " --> " + getType() +
+                    "\nType of driver= " + getDriverType() +
                     " }\n";
         }else{
             return "\n" + valid + " Schedule " + id +" {\n" +
                     "duration =" + duration +
                     "\nstartTime=" + startTime +
                     "\nblocks=" + blocks +
-                    "\nCan it be done by a local station driver? " + isLocal() + " --> " + getType() +
+                    "\nType of driver= " + getDriverType() +
                     " }\n";
         }
 

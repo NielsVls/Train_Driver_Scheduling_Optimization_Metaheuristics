@@ -89,7 +89,7 @@ public class Solution implements Cloneable{
         totalStationDrivers = 0;
         for (Schedule s: schedules){
             if(!s.getBlocks().isEmpty()){
-                if(s.getType() == 0){
+                if(s.getDriverType() == 0){
                     totalRegularDrivers++;
                 }else{
                     totalStationDrivers++;

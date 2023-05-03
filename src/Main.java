@@ -1,8 +1,6 @@
 import model.*;
 import util.LNS.Rebuild;
-import util.LNS.LargeNeighbourhoodSearch;
 import util.SA.Permutations;
-import util.SA.SimulatedAnnealing;
 import util.algorithms.BlockComparator;
 import util.algorithms.Calculations;
 import global.Parameters;
@@ -25,6 +23,8 @@ public class Main {
     private static int[][] consbreakmatrix;
 
     public static void main(String[] args) throws Exception {
+
+        //============================================= VARIABLES =============================================
 
         //Initialize the parameters
         parameters = new Parameters();
@@ -56,35 +56,39 @@ public class Main {
         Calculations calculations = new Calculations(blocks,stations,breakStations,depots,parameters,travelmatrix,consmatrix,consbreakmatrix, random);
         GreedyBaseAlgo algoTest = new GreedyBaseAlgo(calculations);
 
-        Solution baseSolution = algoTest.runInitialSolution();
-        finalSolutionCheck(baseSolution,calculations);
-        System.out.println("\n ================================ \n");
-
-        //System.out.println(combinatorialBound2(calculations));
-
-        //Solution baseSolution = algoTest.runTimeBasedInitialSolution();
-        // finalSolutionCheck(baseSolution,calculations);
-
-//        Solution baseSolution = algoTest.run1BlockPerScheduleInitialSolution();
-//        finalSolutionCheck(baseSolution,calculations);
-
-        //Solution baseSolution = algoTest.runRandomInitialSolution();
-        //finalSolutionCheck(baseSolution,calculations);
-
         int minutes = 5;
         int milis = minutes * 60000;
 
-        //SIMULATED ANNEALING
+        //============================================= BASE SOLUTIONS =============================================
+
+        Solution baseSolution = algoTest.runInitialSolution();
+        finalSolutionCheck(baseSolution,calculations);
+
+        baseSolution = algoTest.runTimeBasedInitialSolution();
+        finalSolutionCheck(baseSolution,calculations);
+
+        baseSolution = algoTest.run1BlockPerScheduleInitialSolution();
+        finalSolutionCheck(baseSolution,calculations);
+
+        baseSolution = algoTest.runRandomInitialSolution();
+        finalSolutionCheck(baseSolution,calculations);
+
+        baseSolution = algoTest.runStationDriverSolution();
+        finalSolutionCheck(baseSolution,calculations);
+
+        System.out.println("\n =================================================================================== \n");
+        //============================================= SIMULATED ANNEALING =============================================
+
         Permutations permutations = new Permutations(calculations);
 //        Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,milis, permutations);
 //        finalSolutionCheck(endSolSA,calculations);
 
-        //LARGE NEIGHBOURHOOD SEARCH
+        //============================================= ADAPTIVE LNS =============================================
+
         Rebuild builders = new Rebuild(calculations);
 //        Solution endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,milis,builders);
 //        finalSolutionCheck(endSolLNS,calculations);
 
-        //System.out.println("Combinatorial Bound: " + combinatorialBound());
         int[] mins = {5,10,25,50,75,125};
         int[] maxs = {15,30,50,100,150,200};
 
@@ -101,8 +105,6 @@ public class Main {
 //            Solution endLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,milis,builders,10,20);
 //            finalSolutionCheck(endLNS,calculations);
 //        }
-
-        //ADAPTIVE LARGE NEIGHBOURHOOD SEARCH
     }
 
     //Final check of the schedules if the result is valid
@@ -141,7 +143,7 @@ public class Main {
                     bl.add(i);
                 }
             }
-            if(s.isLocal()){stationDrivers++;}
+            if(s.getDriverType() != 0){stationDrivers++;}
         }
 
         for(Schedule s: schedules){
