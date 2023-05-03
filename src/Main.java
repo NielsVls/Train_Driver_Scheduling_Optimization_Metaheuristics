@@ -1,6 +1,8 @@
 import model.*;
 import util.LNS.Rebuild;
 import util.LNS.LargeNeighbourhoodSearch;
+import util.SA.Permutations;
+import util.SA.SimulatedAnnealing;
 import util.algorithms.BlockComparator;
 import util.algorithms.Calculations;
 import global.Parameters;
@@ -58,6 +60,8 @@ public class Main {
         finalSolutionCheck(baseSolution,calculations);
         System.out.println("\n ================================ \n");
 
+        //System.out.println(combinatorialBound2(calculations));
+
         //Solution baseSolution = algoTest.runTimeBasedInitialSolution();
         // finalSolutionCheck(baseSolution,calculations);
 
@@ -67,11 +71,11 @@ public class Main {
         //Solution baseSolution = algoTest.runRandomInitialSolution();
         //finalSolutionCheck(baseSolution,calculations);
 
-        int minutes = 8;
+        int minutes = 5;
         int milis = minutes * 60000;
 
         //SIMULATED ANNEALING
-//        Permutations permutations = new Permutations(calculations);
+        Permutations permutations = new Permutations(calculations);
 //        Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,milis, permutations);
 //        finalSolutionCheck(endSolSA,calculations);
 
@@ -84,13 +88,19 @@ public class Main {
         int[] mins = {5,10,25,50,75,125};
         int[] maxs = {15,30,50,100,150,200};
 
-        for(int i = 1; i <= 6 ; i++){
-            System.out.println("=====================================================================");
-            System.out.println("\n TEST "+i);
-
-            Solution endLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,milis,builders,mins[i-1],maxs[i-1]);
-            finalSolutionCheck(endLNS,calculations);
-        }
+//        for(int i = 1; i <= 5 ; i++){
+//
+//            System.out.println("=====================================================================");
+//            System.out.println("\n TEST SA "+i);
+//            Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,milis, permutations);
+//            finalSolutionCheck(endSolSA,calculations);
+//
+//            System.out.println("=====================================================================");
+//            System.out.println("\n TEST LNS "+i);
+//
+//            Solution endLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,milis,builders,10,20);
+//            finalSolutionCheck(endLNS,calculations);
+//        }
 
         //ADAPTIVE LARGE NEIGHBOURHOOD SEARCH
     }
@@ -396,6 +406,48 @@ public class Main {
         int duration = (1440-start) + end + parameters.getCheckInTime() + parameters.getCheckOutTime();
 
         return duration * parameters.getCostPerMinute();
+    }
+
+    static double combinatorialBound2(Calculations c){
+        ArrayList<Block> tempblocks = new ArrayList<>(blocks);
+        tempblocks.sort(new BlockComparator());
+
+        ArrayList<Schedule> schedules = new ArrayList<>();
+        Schedule first = new Schedule();
+        first.getBlocks().add(tempblocks.get(0).getId());
+        schedules.add(first);
+        for(Block b : tempblocks){
+            if(b.equals(tempblocks.get(0))){continue;}
+            boolean added = false;
+            for(Schedule s : schedules){
+                Block last = blocks.get(s.getBlocks().get(s.getBlocks().size()-1)-1);
+                if(b.getDepartureTime() >= last.getArrivalTime()){
+                    s.getBlocks().add(b.getId());
+                    added = true;
+                    break;
+                }
+            }
+            if(added){continue;}
+            Schedule ns = new Schedule();
+            ns.getBlocks().add(b.getId());
+            schedules.add(ns);
+        }
+
+        double duration =0;
+        for(Schedule s : schedules){
+            if(s.getBlocks().size() > 1){
+                Block one = blocks.get(s.getBlocks().get(0)-1);
+                Block end = blocks.get(s.getBlocks().get(s.getBlocks().size()-1)-1);
+
+                if(one.getStartWeekday() != end.getEndWeekday()){
+                    duration += end.getArrivalTime() + (1440 - one.getDepartureTime());
+                }else{
+                    duration += (end.getArrivalTime() - one.getDepartureTime());
+                }
+            }
+        }
+        return duration * parameters.getCostPerMinute();
+
     }
     public static String convert(int number) {
         String numberString = String.valueOf(number);

@@ -271,17 +271,37 @@ public class Calculations {
         return travelmatrix[closestStation][b];
     }
 
+    public boolean isNightShift (Schedule s){
+        int startNight = 89;
+        int endNight = 271;
+
+        int startShift = s.getStartTime();
+        int endShift = s.getStartTime() + s.getDuration();
+        if(endShift > 1440){
+            endShift -= 1440;
+        }
+
+        return (startShift <= endNight) && (endShift >= startNight);
+    }
+
     public boolean checkDuration(Schedule s){
-        if(!breakCheck(s)){
+
+        // CHECK IF THE DURATION IS VALID
+        int maxDur;
+        if(isNightShift(s)){
+            maxDur = parameters.getMaximumShiftLengthNight();
+        }else if(s.getStartDay() == 6 || s.getStartDay() == 7){
+            maxDur = parameters.getMaximumShiftLengthWeekend();
+        }else{
+            maxDur = parameters.getMaximumShiftLengthWeekday();
+        }
+
+        if(s.getDuration() > maxDur){
             s.setValid(false);
             return false;
         }
 
-        if(s.getDuration() > parameters.getMaximumShiftLengthWeekend()){
-            s.setValid(false);
-            return false;
-        }
-
+        // CHECK TIME WORKING BEFORE OR/AND  AFTER BREAK
         if(s.getBreakAfterBlock() != -1){
             if(s.getTimeWorkingBeforeBreak() > parameters.getMaximumDurationBeforeBreak() || s.getTimeWorkingWithoutBreak() > parameters.getMaximumDurationBeforeBreak()){
                 s.setValid(false);
@@ -310,131 +330,9 @@ public class Calculations {
         Integer blockAfterBreak = s.getBlocks().get(index+1);
         return consbreakmatrix[blockBeforeBreak][blockAfterBreak] == 1;
     }
-
     public boolean checkSchedule(Schedule s){
         return (checkDuration(s) && breakCheck(s) && s.getTimeWorkingWithoutBreak() <= parameters.getMaximumDurationBeforeBreak() && s.getTimeWorkingWithoutBreak() > 0);
     }
-
-    //EXTRA COSTPARAM
-//    public int calculateCost(Schedule oldS, Schedule newS){
-//        int cost;
-//
-//        double diffLD; //Local driver
-//        double diffWT; //Wasted Time
-//        double diffDur; //Duration
-//        double diffTT; //Travel Time
-//        double diffTC; //Total Cost
-//
-//        if(oldS.getBlocks().isEmpty()){
-//            //TOTAL COST + LOCAL DRIVER
-//            if(newS.isLocal()){
-//                diffTC = parameters.getSalary() * parameters.getCostFraction();
-//                diffLD = -1;
-//            }else{
-//                diffTC = parameters.getSalary();
-//                diffLD = 0;
-//            }
-//
-//            //WASTED TIME
-//            diffWT = newS.getTimeWasted();
-//
-//            //TRAVEL TIME
-//            diffTT = newS.getTravelTimePerBlock();
-//
-//            //TOTAL DURATION
-//            diffDur = newS.getDuration();
-//
-//            cost = (int) (diffWT * 2 + diffDur * 1 + diffTC * 10000 + diffTT * 5 + diffLD * 10000);
-//            return cost;
-//        }
-//
-//        // 1 SCHEDULE REMOVED
-//        if (newS.getDuration() == 0) {
-//            return -1000000;
-//        }
-//
-//        //ERROR DETECTION
-//        if(oldS.getDuration() == 0){
-//            System.out.println(oldS);
-//            System.out.println("\n-------------------\n");
-//            System.out.println(newS);
-//        }
-//
-//        //TOTAL COST + LOCAL DRIVER
-//        if(newS.isLocal() && !oldS.isLocal()){
-//            diffTC = parameters.getSalary()*parameters.getCostFraction() - parameters.getSalary();
-//            diffLD = -1;
-//        } else if (!newS.isLocal() && oldS.isLocal()) {
-//            diffTC = parameters.getSalary() - parameters.getSalary()*parameters.getCostFraction();
-//            diffLD = 1;
-//        } else {
-//            diffTC = 0;
-//            diffLD = 0;
-//        }
-//
-//        //WASTED TIME
-//        diffWT = newS.getTimeWasted() - oldS.getTimeWasted();
-//
-//        //TRAVEL TIME
-//        diffTT = newS.getTravelTimePerBlock() - oldS.getTravelTimePerBlock();
-//
-//        //TOTAL DURATION
-//        diffDur = newS.getDuration() - oldS.getDuration();
-//
-//        //NEGATIVE IS GOOD
-//        cost = (int) (diffWT * 2 + diffDur * 1 + diffTC * 10 + diffTT * 5 + diffLD * 10000);
-//        return cost;
-//    }
-
-    public int calculateCost2(Schedule oldS, Schedule newS){
-        int cost;
-
-        double diffLD; //Local driver
-        double diffTC; //Total Cost
-
-        if(oldS.getBlocks().isEmpty()){
-            //TOTAL COST + LOCAL DRIVER
-            if(newS.isLocal()){
-                diffTC = parameters.getSalary() * parameters.getCostFraction();
-                diffLD = -1;
-            }else{
-                diffTC = parameters.getSalary();
-                diffLD = 0;
-            }
-
-            cost = (int) ( diffTC * 10000 +  diffLD * 10000);
-            return cost;
-        }
-
-        // 1 SCHEDULE REMOVED
-        if (newS.getDuration() == 0) {
-            return -1000000;
-        }
-
-        //ERROR DETECTION
-        if(oldS.getDuration() == 0){
-            System.out.println(oldS);
-            System.out.println("\n-------------------\n");
-            System.out.println(newS);
-        }
-
-        //TOTAL COST + LOCAL DRIVER
-        if(newS.isLocal() && !oldS.isLocal()){
-            diffTC = parameters.getSalary()*parameters.getCostFraction() - parameters.getSalary();
-            diffLD = -1;
-        } else if (!newS.isLocal() && oldS.isLocal()) {
-            diffTC = parameters.getSalary() - parameters.getSalary()*parameters.getCostFraction();
-            diffLD = 1;
-        } else {
-            diffTC = 0;
-            diffLD = 0;
-        }
-
-        //NEGATIVE IS GOOD
-        cost = (int) ( diffTC * 10 + diffLD * 10000);
-        return cost;
-    }
-
     public double calculateCost(Schedule oldS, Schedule newS){
         double oldcost;
         if(oldS.getDuration() > 0 && oldS.getDuration() < 360){
