@@ -67,7 +67,7 @@ public class Main {
         Permutations permutations = new Permutations(calculations);
         Rebuild builders = new Rebuild(calculations);
 
-        int minutes = 5;
+        int minutes = 1;
         int milis = minutes * 60000;
 
         //============================================= BASE SOLUTIONS =============================================
@@ -107,8 +107,8 @@ public class Main {
         //============================================= ADAPTIVE LNS =============================================
 
 
-//        Solution endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(timeBasedbaseSolution,milis,builders);
-//        finalSolutionCheck(endSolLNS,calculations);
+        Solution endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(timeBasedbaseSolution,milis,builders);
+        finalSolutionCheck(endSolLNS,calculations);
 //
 //        endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(timeBasedbaseSolution,milis,builders,10,50);
 //        finalSolutionCheck(endSolLNS,calculations);

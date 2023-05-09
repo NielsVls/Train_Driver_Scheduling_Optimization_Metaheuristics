@@ -3,6 +3,10 @@ package util.LNS;
 import model.PossibleSolution;
 import model.Solution;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -67,6 +71,10 @@ public class LargeNeighbourhoodSearch {
     }
 
     public static Solution runSimulationTMP(Solution initial, int maxDuration, Rebuild builders) {
+        ArrayList<Integer> costgraph = new ArrayList<>();
+        ArrayList<Long> timegraph = new ArrayList<>();
+        costgraph.add(initial.getTotalCost());
+        timegraph.add(0L);
         long startTime = System.currentTimeMillis();
         long currentTime = System.currentTimeMillis();
         long tempTime = System.currentTimeMillis();
@@ -76,7 +84,7 @@ public class LargeNeighbourhoodSearch {
         ArrayList<Double> rewardDestroy = new ArrayList<>();
         ArrayList<Double> rewardRepair = new ArrayList<>();
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 7; i++) {
             rewardDestroy.add(10.0);
         }
         for (int i = 0; i < 2; i++) {
@@ -141,6 +149,9 @@ public class LargeNeighbourhoodSearch {
                     best = current;
                     points = 10;
                 }
+                if(points == 5){
+                    System.out.println("5");
+                }
             }
 
             countIterations++;
@@ -181,12 +192,38 @@ public class LargeNeighbourhoodSearch {
                 System.out.printf("The program is currently running %d minute(s) [%s iterations;  cost %s; duration %s; time wasted %s].%n", minutes, convert(countIterations), convert(best.getTotalCost()), convert(best.getTotalDuration()),convert(best.getTotalTimeWasted()));
                 tempTime = currentTime;
             }
+
+            costgraph.add(best.getTotalCost());
+            timegraph.add((currentTime-startTime));
         }
 
         System.out.println("Iterations: " + convert(countIterations));
         System.out.println("Iterations/second: " + convert((countIterations/(maxDuration/1000))));
         System.out.println("FINISHED");
+
+        LocalDate currentDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        String dateString = currentDate.format(formatter);
+        String cost = String.valueOf(best.getTotalCost());
+        writeCsv(costgraph,timegraph,".//Data//Output//" + dateString + "_" + cost + ".csv");
         return best;
     }
 
+    public static void writeCsv(ArrayList<Integer> data, ArrayList <Long> time, String filename) {
+
+        try {
+            FileWriter writer = new FileWriter(filename);
+
+            for (int i = 0; i < data.size(); i++) {
+                writer.append(data.get(i).toString()).append(",").append(time.get(i).toString());
+                writer.append("\n");
+            }
+
+            writer.flush();
+            writer.close();
+            System.out.println("CSV file created successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
