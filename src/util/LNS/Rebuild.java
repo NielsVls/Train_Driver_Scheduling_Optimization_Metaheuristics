@@ -81,7 +81,7 @@ public class Rebuild {
             }
         }
 
-        if (repairmethod == 1) {
+        if (repairmethod == 0) {
             //BEST FIT REPAIR METHOD
             result = bestFitRepair(newSolution, result);
         } else {
@@ -123,7 +123,6 @@ public class Rebuild {
                 if (s.getBlocks().contains(bINT)) {
                     Schedule tempS1 = new Schedule(s);
                     int index = tempS1.getBlocks().indexOf(bINT);
-                    //c.calculateSchedule(tempS1);
                     tempS1.getBlocks().remove(bINT);
                     c.calculateSchedule(tempS1);
                     if (checkRemove(tempS1, index)) {
@@ -131,14 +130,13 @@ public class Rebuild {
                         newSolution.getSchedules().remove(s);
                         if (!tempS1.getBlocks().isEmpty()) {
                             newSolution.getSchedules().add(tempS1);
-                            //c.calculateSchedule(tempS1);
                         }
                     }
                     break;
                 }
             }
         }
-        if (repairmethod == 1) {
+        if (repairmethod == 0) {
             //BEST FIT REPAIR METHOD
             result = bestFitRepair(newSolution, result);
         } else {
@@ -146,6 +144,91 @@ public class Rebuild {
             result = bestRegretFitRepair(newSolution, result);
         }
         return result;
+    }
+
+    public PossibleSolution destructByLocation(Solution solution, int repairmethod) {
+        Solution oldSolution = new Solution(solution);
+        Solution newSolution = oldSolution.clone();
+
+        oldSolution.calculateCost();
+        int oldCost = oldSolution.getTotalCost();
+
+        PossibleSolution result = new PossibleSolution();
+        result.setOldSolution(oldSolution);
+        result.setOldCost(oldCost);
+
+        removedBlocks.clear();
+
+        //Find Random Location
+        int max = c.stations.size();
+        int station = getRandomNumberInRange(1, max);
+
+
+        for (Block b : blocks) {
+            if (b.getStartLoc() == station || b.getEndLoc() == station) {
+                Integer bINT = b.getId();
+                //find schedule
+                for (Schedule s : newSolution.getSchedules()) {
+                    if (s.getBlocks().contains(bINT)) {
+                        Schedule tempS1 = new Schedule(s);
+                        int index = tempS1.getBlocks().indexOf(bINT);
+                        tempS1.getBlocks().remove(bINT);
+                        c.calculateSchedule(tempS1);
+                        if (checkRemove(tempS1, index)) {
+                            removedBlocks.add(bINT);
+                            newSolution.getSchedules().remove(s);
+                            if (!tempS1.getBlocks().isEmpty()) {
+                                newSolution.getSchedules().add(tempS1);
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (repairmethod == 0) {
+            //BEST FIT REPAIR METHOD
+            result = bestFitRepair(newSolution, result);
+        } else {
+            //REGRET FIT REPAIR METHOD
+            result = bestRegretFitRepair(newSolution, result);
+        }
+        return result;
+    }
+
+    public PossibleSolution destructSchedule(Solution solution, int repairmethod){
+        Solution oldSolution = new Solution(solution);
+        Solution newSolution = oldSolution.clone();
+
+        oldSolution.calculateCost();
+        int oldCost = oldSolution.getTotalCost();
+
+        PossibleSolution result = new PossibleSolution();
+        result.setOldSolution(oldSolution);
+        result.setOldCost(oldCost);
+
+        removedBlocks.clear();
+
+        //Find Random Schedule
+        int max = newSolution.getSchedules().size() -1;
+        int schedule = getRandomNumberInRange(0, max);
+
+        Schedule destroyed = newSolution.getSchedules().get(schedule);
+
+        removedBlocks.addAll(destroyed.getBlocks());
+
+        newSolution.getSchedules().remove(destroyed);
+
+        if (repairmethod == 0) {
+            //BEST FIT REPAIR METHOD
+            result = bestFitRepair(newSolution, result);
+        } else {
+            //REGRET FIT REPAIR METHOD
+            result = bestRegretFitRepair(newSolution, result);
+        }
+        return result;
+
     }
 
     private boolean checkRemove(Schedule s, int index) {

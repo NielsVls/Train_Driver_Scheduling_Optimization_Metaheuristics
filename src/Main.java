@@ -1,6 +1,8 @@
 import model.*;
+import util.LNS.LargeNeighbourhoodSearch;
 import util.LNS.Rebuild;
 import util.SA.Permutations;
+import util.SA.SimulatedAnnealing;
 import util.algorithms.BlockComparator;
 import util.algorithms.Calculations;
 import global.Parameters;
@@ -8,6 +10,8 @@ import util.algorithms.GreedyBaseAlgo;
 import util.dataReader.DataReader;
 
 import java.util.*;
+
+import static util.LNS.Rebuild.getRandomNumberInRange;
 
 public class Main {
 
@@ -21,6 +25,7 @@ public class Main {
     private static int[][] travelmatrix;
     private static int[][] consmatrix;
     private static int[][] consbreakmatrix;
+    private static ArrayList<TravelTrain> travelTrains;
 
     public static void main(String[] args) throws Exception {
 
@@ -42,6 +47,9 @@ public class Main {
         breakStations = dataReader.breakStations(stations);
         depots = dataReader.depots(stations);
 
+        //create the travelTrains
+        travelTrains = dataReader.readTravelTrains();
+
         //make the consecutive blocks
         consecutiveBlocks = consecutiveBlocks(blocks);
 
@@ -51,64 +59,93 @@ public class Main {
         consmatrix = consecutiveInMatrix();
         consbreakmatrix = consecutiveBreakInMatrix();
 
+
         Random random = new Random();
         //RUN THE ALGORITHM TO GET THE BASE SOLUTION
-        Calculations calculations = new Calculations(blocks,stations,breakStations,depots,parameters,travelmatrix,consmatrix,consbreakmatrix, random);
+        Calculations calculations = new Calculations(blocks, stations, breakStations, depots, parameters, travelmatrix, consmatrix, consbreakmatrix, random, travelTrains);
         GreedyBaseAlgo algoTest = new GreedyBaseAlgo(calculations);
+        Permutations permutations = new Permutations(calculations);
+        Rebuild builders = new Rebuild(calculations);
 
         int minutes = 5;
         int milis = minutes * 60000;
 
         //============================================= BASE SOLUTIONS =============================================
 
+        ArrayList<Solution> baseSolutions = new ArrayList<>();
+
         Solution baseSolution = algoTest.runInitialSolution();
         finalSolutionCheck(baseSolution,calculations);
+//        baseSolutions.add(baseSolution);
 
-        baseSolution = algoTest.runTimeBasedInitialSolution();
-        finalSolutionCheck(baseSolution,calculations);
+        Solution timeBasedbaseSolution = algoTest.runTimeBasedInitialSolution();
+        finalSolutionCheck(timeBasedbaseSolution, calculations);
+        baseSolutions.add(timeBasedbaseSolution);
 
-        baseSolution = algoTest.run1BlockPerScheduleInitialSolution();
-        finalSolutionCheck(baseSolution,calculations);
+        Solution timebaseWE = algoTest.runTimeBasedInitialSolutionWE();
 
-        baseSolution = algoTest.runRandomInitialSolution();
-        finalSolutionCheck(baseSolution,calculations);
 
-        baseSolution = algoTest.runStationDriverSolution();
-        finalSolutionCheck(baseSolution,calculations);
+//        Solution blockSchedulebaseSolution = algoTest.run1BlockPerScheduleInitialSolution();
+//        //finalSolutionCheck(blockSchedulebaseSolution,calculations);
+//        baseSolutions.add(blockSchedulebaseSolution);
+
+//        Solution randombaseSolution = algoTest.runRandomInitialSolution();
+//        //finalSolutionCheck(randombaseSolution,calculations);
+//        baseSolutions.add(randombaseSolution);
+
+        Solution stationDriverbaseSolution = algoTest.runStationDriverSolution();
+        finalSolutionCheck(stationDriverbaseSolution,calculations);
+//        baseSolutions.add(stationDriverbaseSolution);
 
         System.out.println("\n =================================================================================== \n");
         //============================================= SIMULATED ANNEALING =============================================
 
-        Permutations permutations = new Permutations(calculations);
-//        Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,milis, permutations);
+
+//        Solution endSolSA = SimulatedAnnealing.runSimulation(timeBasedbaseSolution,milis, permutations);
 //        finalSolutionCheck(endSolSA,calculations);
 
         //============================================= ADAPTIVE LNS =============================================
 
-        Rebuild builders = new Rebuild(calculations);
-//        Solution endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,milis,builders);
+
+//        Solution endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(timeBasedbaseSolution,milis,builders);
+//        finalSolutionCheck(endSolLNS,calculations);
+//
+//        endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(timeBasedbaseSolution,milis,builders,10,50);
+//        finalSolutionCheck(endSolLNS,calculations);
+//
+//        endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(timeBasedbaseSolution,milis,builders,50,200);
+//        finalSolutionCheck(endSolLNS,calculations);
+//
+//        endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(timebaseWE,milis,builders,10,50);
+//        finalSolutionCheck(endSolLNS,calculations);
+//
+//        endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(timebaseWE,milis,builders,50,200);
+//        finalSolutionCheck(endSolLNS,calculations);
+//
+//        endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(timebaseWE,milis,builders,15,30);
 //        finalSolutionCheck(endSolLNS,calculations);
 
-        int[] mins = {5,10,25,50,75,125};
-        int[] maxs = {15,30,50,100,150,200};
 
-//        for(int i = 1; i <= 5 ; i++){
+        //============================================= TESTING AND ANALYSING =============================================
+//        for(int i = 1; i <= 6 ; i++){
+//
+////            System.out.println("=====================================================================");
+////            System.out.println("\n TEST SA "+ i);
+////            Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolutions.get(i%2),milis, permutations);
+////            finalSolutionCheck(endSolSA,calculations);
 //
 //            System.out.println("=====================================================================");
-//            System.out.println("\n TEST SA "+i);
-//            Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolution,milis, permutations);
-//            finalSolutionCheck(endSolSA,calculations);
+//            System.out.println("\n TEST LNS "+ i);
 //
-//            System.out.println("=====================================================================");
-//            System.out.println("\n TEST LNS "+i);
-//
-//            Solution endLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,milis,builders,10,20);
+//            Solution endLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolutions.get(i%2),milis,builders,15,30);
 //            finalSolutionCheck(endLNS,calculations);
 //        }
+
+        System.out.println(combinatorialBound2(calculations));
     }
 
     //Final check of the schedules if the result is valid
-    static void finalSolutionCheck(Solution solution,Calculations c){
+    static void finalSolutionCheck(Solution solution, Calculations c) {
         ArrayList<Schedule> schedules = solution.getSchedules();
         ArrayList<Schedule> dupli = new ArrayList<>();
         ArrayList<Integer> dupliii = new ArrayList<>();
@@ -121,43 +158,45 @@ public class Main {
         boolean valid = true;
         int invalids = 0;
         Set<Integer> bl = new HashSet<>();
-        for (Schedule s : schedules){
-            if(s.getBlocks().isEmpty()){
+        for (Schedule s : schedules) {
+            if (s.getBlocks().isEmpty()) {
                 empty++;
             }
             c.calculateSchedule(s);
-            if(!finalCheckSchedule(s)){
+            if (!finalCheckSchedule(s)) {
                 valid = false;
                 invalids++;
             }
-            if(s.getDuration() < 360){
+            if (s.getDuration() < 360) {
                 shortSchedules++;
                 shortage += (360 - s.getDuration());
             }
-            for(Integer i : s.getBlocks()){
+            for (Integer i : s.getBlocks()) {
                 blockscovered++;
-                if(bl.contains(i)){
+                if (bl.contains(i)) {
                     duplicates++;
                     dupliii.add(i);
-                }else{
+                } else {
                     bl.add(i);
                 }
             }
-            if(s.getDriverType() != 0){stationDrivers++;}
+            if (s.getDriverType() != 0) {
+                stationDrivers++;
+            }
         }
 
-        for(Schedule s: schedules){
-            for (Integer i : dupliii){
-                if (s.getBlocks().contains(i) && !dupli.contains(s)){
+        for (Schedule s : schedules) {
+            for (Integer i : dupliii) {
+                if (s.getBlocks().contains(i) && !dupli.contains(s)) {
                     dupli.add(s);
                 }
             }
         }
 
         System.out.println("\n--------------- Solution ---------------");
-        if(valid){
+        if (valid) {
             System.out.println("The following solution is VALID.");
-        }else{
+        } else {
             System.out.println("The following solution is INVALID.");
             System.out.println("There are " + convert(invalids) + " invalid schedules.");
         }
@@ -172,40 +211,39 @@ public class Main {
         System.out.println("Drivers that are working less than 6 hours (get paid more then worked for) : " + (shortSchedules - empty) + ", with " + shortage + " minutes.");
     }
 
-    static boolean finalCheckSchedule(Schedule schedule){
+    static boolean finalCheckSchedule(Schedule schedule) {
         //Check if a schedule if VALID
         ArrayList<Integer> scheduleBlocks = schedule.getBlocks();
-        if(scheduleBlocks.isEmpty()){
+        if (scheduleBlocks.isEmpty()) {
             System.out.println("Schedule is empty but not remove.");
             return true;
-        }else
-            if(scheduleBlocks.size() == 1){
-            if (schedule.getDuration() > 300 && schedule.getBreakAfterBlock() == -1){
-                System.out.println("The schedule consist of 1 block [" + scheduleBlocks.get(0) + "] and takes longer then accepted ("+schedule.getDuration()+").");
+        } else if (scheduleBlocks.size() == 1) {
+            if (schedule.getDuration() > 300 && schedule.getBreakAfterBlock() == -1) {
+                System.out.println("The schedule consist of 1 block [" + scheduleBlocks.get(0) + "] and takes longer then accepted (" + schedule.getDuration() + ").");
                 return false;
             }
             return true;
-        }else{
-            for (int i = 0; i < scheduleBlocks.size()-2; i++) {
+        } else {
+            for (int i = 0; i < scheduleBlocks.size() - 2; i++) {
                 int a = scheduleBlocks.get(i);
-                int b = scheduleBlocks.get(i+1);
-                if(consmatrix[a][b] != 1){
+                int b = scheduleBlocks.get(i + 1);
+                if (consmatrix[a][b] != 1) {
                     System.out.println(schedule);
                     System.out.println("The following blocks aren't consecutive: " + a + " & " + b + ".");
                     return false;
                 }
-                if(schedule.getBreakAfterBlock() == a && (consbreakmatrix[a][b] != 1)){
+                if (schedule.getBreakAfterBlock() == a && (consbreakmatrix[a][b] != 1)) {
                     System.out.println(schedule);
                     System.out.println("There is a break after block " + a + ", but it isn't allowed.");
                     System.out.println("consbreakmatrix[" + a + "][" + b + "] = " + consbreakmatrix[a][b]);
                     return false;
                 }
-                if(schedule.getDuration() > parameters.getMaximumShiftLengthWeekend()){
+                if (schedule.getDuration() > parameters.getMaximumShiftLengthWeekend()) {
                     System.out.println(schedule);
                     System.out.println("The shift is longer then allowed.");
                     return false;
                 }
-                if(schedule.getBreakAfterBlock() != -1 && schedule.getTimeWorkingWithoutBreak() > 300){
+                if (schedule.getBreakAfterBlock() != -1 && schedule.getTimeWorkingWithoutBreak() > 300) {
                     System.out.println(schedule);
                     System.out.println("A driver has been working longer than allowed before taking a break.");
                     return false;
@@ -244,22 +282,42 @@ public class Main {
         if (a.getEndWeekday() == b.getStartWeekday()) {
             if (a.getEndLoc() == b.getStartLoc() && trainsA.get(trainsA.size() - 1).equals(trainsB.get(0))) {
                 return delta >= 0 &&
-                        delta < parameters.getMaximumShiftLengthWeekend();
+                        delta < parameters.getMaximumDurationBeforeBreak();
             } else {
-                return (delta - travelmatrix[a.getEndLoc()][b.getStartLoc()]) >= 0 &&
-                        delta < parameters.getMaximumShiftLengthWeekend();
+                int traveltime = calculateTravelTime(a, b); //travelmatrix[a.getEndLoc()][b.getStartLoc()]
+                return (delta - traveltime) >= 0 &&
+                        delta < parameters.getMaximumDurationBeforeBreak();
             }
 
         } else if ((a.getEndWeekday() - b.getStartWeekday()) == -1 || (a.getEndWeekday() - b.getStartWeekday()) == 6) {
             if (a.getEndLoc() == b.getStartLoc() && trainsA.get(trainsA.size() - 1).equals(trainsB.get(0))) {
-                return (1440 - a.getArrivalTime() + b.getDepartureTime()) < parameters.getMaximumShiftLengthWeekend();
+                return (1440 - a.getArrivalTime() + b.getDepartureTime()) < parameters.getMaximumDurationBeforeBreak();
             } else {
-                return (1440 - a.getArrivalTime() + b.getDepartureTime() - travelmatrix[a.getEndLoc()][b.getStartLoc()]) >= 0 &&
-                        (1440 - a.getArrivalTime() + b.getDepartureTime()) < parameters.getMaximumShiftLengthWeekend();
+                int traveltime = calculateTravelTime(a, b); //travelmatrix[a.getEndLoc()][b.getStartLoc()]
+                return (1440 - a.getArrivalTime() + b.getDepartureTime() - traveltime) >= 0 &&
+                        (1440 - a.getArrivalTime() + b.getDepartureTime()) < parameters.getMaximumDurationBeforeBreak();
             }
         } else {
             return false;
         }
+    }
+
+    static int calculateTravelTime(Block a, Block b) {
+        int drive = travelmatrix[a.getEndLoc()][b.getStartLoc()];
+
+        int shortest = 9999999;
+        for (TravelTrain train : travelTrains) {
+            if (a.getEndWeekday() == train.getStartDay() && b.getStartWeekday() == train.getEndDay()){
+                if (train.getStartLoc() == a.getEndLoc() && train.getEndLoc() == b.getStartLoc() && (train.getStartTime() > a.getArrivalTime() && train.getEndTime() < b.getDepartureTime())) {
+                    int traintime = train.getEndTime() - a.getArrivalTime();
+                    if (traintime < shortest) {
+                        shortest = traintime;
+                    }
+                }
+            }
+        }
+
+        return Math.min(drive, shortest);
     }
 
     static int findNearestBreakLocation(Station a, Station b) {
@@ -300,10 +358,10 @@ public class Main {
 
         if (a.getEndWeekday() == b.getStartWeekday()) {
             if (a.getEndLoc() == b.getStartLoc() && trainsA.get(trainsA.size() - 1).equals(trainsB.get(0))) {
-                return (b.getDepartureTime() - a.getArrivalTime() - calculateBreakTime(stations.get(a.getEndLoc() - 1), stations.get(b.getStartLoc() - 1))) >= 0 &&
+                return (b.getDepartureTime() - a.getArrivalTime() - calculateBreakTime(a,b)) >= 0 &&
                         (b.getDepartureTime() - a.getArrivalTime() /*- calculateBreakTime(stations.get(a.getEndLoc() - 1), stations.get(b.getStartLoc() - 1))*/) <= parameters.getMaximumTimeBetweenBlocks();
             } else {
-                int breakTime = calculateBreakTime(stations.get(a.getEndLoc() - 1), stations.get(b.getStartLoc() - 1));
+                int breakTime = calculateBreakTime(a,b);
                 return (b.getDepartureTime() - a.getArrivalTime() - breakTime) >= 0 &&
                         (b.getDepartureTime() - a.getArrivalTime() /*- breakTime*/) <= parameters.getMaximumTimeBetweenBlocks();
             }
@@ -312,7 +370,7 @@ public class Main {
             if (a.getEndLoc() == b.getStartLoc() && trainsA.get(trainsA.size() - 1).equals(trainsB.get(0))) {
                 return (1440 - a.getArrivalTime() + b.getDepartureTime() /*+ calculateBreakTime(stations.get(a.getEndLoc() - 1), stations.get(b.getStartLoc() - 1))*/) < parameters.getMaximumTimeBetweenBlocks();
             } else {
-                int breakTime = calculateBreakTime(stations.get(a.getEndLoc() - 1), stations.get(b.getStartLoc() - 1));
+                int breakTime = calculateBreakTime(a,b);
                 return (1440 - a.getArrivalTime() + b.getDepartureTime() - breakTime) >= 0 &&
                         (1440 - a.getArrivalTime() + b.getDepartureTime() /*- breakTime*/) <= parameters.getMaximumTimeBetweenBlocks();
             }
@@ -321,23 +379,59 @@ public class Main {
         }
     }
 
-    static int calculateBreakTime(Station a, Station b) {
-        int stationA = a.getID();
-        int stationB = b.getID();
-        if (a.isBreakLocation() || b.isBreakLocation()) {
+    static int calculateBreakTime(Block a, Block b) {
+        int stationA = a.getEndLoc();
+        int stationB = b.getStartLoc();
+        Station stA = stations.get(stationA - 1);
+        Station stB = stations.get(stationB - 1);
+        if (stA.isBreakLocation() || stB.isBreakLocation()) {
             if (stationA == stationB) {
                 return 30;
             } else {
-                return 30 + travelmatrix[stationA][stationB];
+                int traveltime = calculateTravelTime(a, b); //travelmatrix[stationA][stationB]
+                return 30 + traveltime;
             }
 
         } else {
-            int breaktime = 30;
-            int breakStation = findNearestBreakLocation(a, b);
-            int travel = travelmatrix[stationA][breakStation] + travelmatrix[breakStation][stationB];
-            return (breaktime + travel);
+            int breakStation = findNearestBreakLocation(stA, stB);
+            return calculateTravelTimeBreak(a, b, breakStation);
         }
 
+    }
+
+    static int calculateTravelTimeBreak(Block a, Block b, int breakstation) {
+        int driveTo = travelmatrix[a.getEndLoc()][breakstation];
+        int driveFrom = travelmatrix[breakstation][b.getStartLoc()];
+
+        int to = 9999999;
+        int from = 999999;
+
+        for (TravelTrain train : travelTrains) {
+            if (a.getEndWeekday() == train.getStartDay() && b.getStartWeekday() == train.getEndDay()) {
+                if (train.getStartLoc() == a.getEndLoc() && train.getEndLoc() == breakstation && (train.getStartTime() > a.getArrivalTime())) {
+                    int traintime = train.getEndTime() - a.getArrivalTime();
+                    if (traintime < to) {
+                        to = traintime;
+                    }
+                }
+                if (train.getStartLoc() == breakstation && train.getEndLoc() == b.getStartLoc() && (train.getEndTime() < b.getDepartureTime())) {
+                    int traintime = b.getDepartureTime() - train.getStartTime();
+                    if (traintime < from) {
+                        from = traintime;
+                    }
+                }
+            }
+        }
+
+        if (driveTo <= to && driveFrom <= from) {
+            return driveTo + driveFrom + 30;
+        } else if (to < driveTo && driveFrom <= from) {
+            return 30 + to + driveFrom;
+        } else if (to < driveTo) {
+            return to + from + 30;
+        } else {
+            return 30 + driveTo + from;
+        }
     }
 
     //Print the travelmatrix out in the form of a matrix
@@ -400,17 +494,17 @@ public class Main {
         return matrix;
     }
 
-    static double combinatorialBound(){
+    static double combinatorialBound() {
         ArrayList<Block> tempblocks = new ArrayList<>(blocks);
         tempblocks.sort(new BlockComparator());
         int start = tempblocks.get(0).getDepartureTime();
-        int end = tempblocks.get(tempblocks.size()-1).getArrivalTime();
-        int duration = (1440-start) + end + parameters.getCheckInTime() + parameters.getCheckOutTime();
+        int end = tempblocks.get(tempblocks.size() - 1).getArrivalTime();
+        int duration = (1440 - start) + end + parameters.getCheckInTime() + parameters.getCheckOutTime();
 
         return duration * parameters.getCostPerMinute();
     }
 
-    static double combinatorialBound2(Calculations c){
+    static double combinatorialBound2(Calculations c) {
         ArrayList<Block> tempblocks = new ArrayList<>(blocks);
         tempblocks.sort(new BlockComparator());
 
@@ -418,32 +512,36 @@ public class Main {
         Schedule first = new Schedule();
         first.getBlocks().add(tempblocks.get(0).getId());
         schedules.add(first);
-        for(Block b : tempblocks){
-            if(b.equals(tempblocks.get(0))){continue;}
+        for (Block b : tempblocks) {
+            if (b.equals(tempblocks.get(0))) {
+                continue;
+            }
             boolean added = false;
-            for(Schedule s : schedules){
-                Block last = blocks.get(s.getBlocks().get(s.getBlocks().size()-1)-1);
-                if(b.getDepartureTime() >= last.getArrivalTime()){
+            for (Schedule s : schedules) {
+                Block last = blocks.get(s.getBlocks().get(s.getBlocks().size() - 1) - 1);
+                if (b.getDepartureTime() >= last.getArrivalTime()) {
                     s.getBlocks().add(b.getId());
                     added = true;
                     break;
                 }
             }
-            if(added){continue;}
+            if (added) {
+                continue;
+            }
             Schedule ns = new Schedule();
             ns.getBlocks().add(b.getId());
             schedules.add(ns);
         }
 
-        double duration =0;
-        for(Schedule s : schedules){
-            if(s.getBlocks().size() > 1){
-                Block one = blocks.get(s.getBlocks().get(0)-1);
-                Block end = blocks.get(s.getBlocks().get(s.getBlocks().size()-1)-1);
+        double duration = 0;
+        for (Schedule s : schedules) {
+            if (s.getBlocks().size() > 1) {
+                Block one = blocks.get(s.getBlocks().get(0) - 1);
+                Block end = blocks.get(s.getBlocks().get(s.getBlocks().size() - 1) - 1);
 
-                if(one.getStartWeekday() != end.getEndWeekday()){
+                if (one.getStartWeekday() != end.getEndWeekday()) {
                     duration += end.getArrivalTime() + (1440 - one.getDepartureTime());
-                }else{
+                } else {
                     duration += (end.getArrivalTime() - one.getDepartureTime());
                 }
             }
@@ -451,6 +549,7 @@ public class Main {
         return duration * parameters.getCostPerMinute();
 
     }
+
     public static String convert(int number) {
         String numberString = String.valueOf(number);
         StringBuilder builder = new StringBuilder(numberString);

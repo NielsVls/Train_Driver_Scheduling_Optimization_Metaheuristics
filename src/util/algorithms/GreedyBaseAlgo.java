@@ -46,6 +46,13 @@ public class GreedyBaseAlgo {
         return solution;
     }
 
+    public Solution runTimeBasedInitialSolutionWE() {
+        Solution solution = new Solution();
+        solution.setSchedules(makeSchedulesByTimeWE());
+        solution.calculateSolution();
+        return solution;
+    }
+
     public Solution run1BlockPerScheduleInitialSolution(){
         Solution solution = new Solution();
         solution.setSchedules(make1BlockPerSchedule());
@@ -78,7 +85,7 @@ public class GreedyBaseAlgo {
         }
 
         //OPTIONAL: ADDING EMPTY SCHEDULES
-//        int max = 5;
+//        int max = 10;
 //        for(int i = 0 ; i < max ; i++){
 //            Schedule schedule = new Schedule();
 //            schedule.setId(counter);
@@ -99,6 +106,28 @@ public class GreedyBaseAlgo {
             c.calculateSchedule(s);
             counter++;
         }
+        return schedules;
+    }
+
+    public ArrayList<Schedule> makeSchedulesByTimeWE() {
+        ArrayList<Block> tempBlocks = new ArrayList<>(blocks);
+        Collections.sort(tempBlocks, new BlockComparator());
+        ArrayList<Schedule> schedules = makeSchedulesForList(tempBlocks);
+        int counter = 1;
+        for (Schedule s : schedules) {
+            s.setId(counter);
+            c.calculateSchedule(s);
+            counter++;
+        }
+
+        int max = 10;
+        for(int i = 0 ; i < max ; i++){
+            Schedule schedule = new Schedule();
+            schedule.setId(counter);
+            schedules.add(schedule);
+            counter++;
+        }
+
         return schedules;
     }
 

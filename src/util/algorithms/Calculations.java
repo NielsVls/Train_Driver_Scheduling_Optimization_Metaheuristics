@@ -4,6 +4,7 @@ import global.Parameters;
 import model.Block;
 import model.Schedule;
 import model.Station;
+import model.TravelTrain;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -13,13 +14,14 @@ public class Calculations {
     public final ArrayList<Station> stations;
     public final ArrayList<Station> breakStations;
     public final ArrayList<Station> depots;
+    public final ArrayList<TravelTrain> travelTrains;
     public final Parameters parameters;
     public final int[][] travelmatrix;
     public final int[][] consmatrix;
     public final int[][] consbreakmatrix;
     public final Random random;
 
-    public Calculations(ArrayList<Block> blocks, ArrayList<Station> stations, ArrayList<Station> breakStations, ArrayList<Station> depots, Parameters parameters, int[][] travelmatrix, int[][] consmatrix, int[][] consbreakmatrix, Random random) {
+    public Calculations(ArrayList<Block> blocks, ArrayList<Station> stations, ArrayList<Station> breakStations, ArrayList<Station> depots, Parameters parameters, int[][] travelmatrix, int[][] consmatrix, int[][] consbreakmatrix, Random random, ArrayList<TravelTrain> travelTrains) {
         this.blocks = blocks;
         this.stations = stations;
         this.breakStations = breakStations;
@@ -29,6 +31,7 @@ public class Calculations {
         this.consmatrix = consmatrix;
         this.consbreakmatrix = consbreakmatrix;
         this.random = random;
+        this.travelTrains = travelTrains;
     }
 
     public void calculateSchedule(Schedule s){
@@ -301,7 +304,6 @@ public class Calculations {
 
         return (startShift <= endNight) && (endShift >= startNight);
     }
-
     public boolean checkDuration(Schedule s){
 
         // CHECK IF THE DURATION IS VALID
