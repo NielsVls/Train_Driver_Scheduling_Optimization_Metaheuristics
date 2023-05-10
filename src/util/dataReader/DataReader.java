@@ -73,14 +73,13 @@ public class DataReader {
         while (sc.hasNextLine()) {
             String line = sc.nextLine();
             String[] param = line.split(",");
-            ArrayList<Integer> qualifications = getQualifications(param);
+            //ArrayList<Integer> qualifications = getQualifications(param);
             Station station = new Station(
                     searchCorrespondigId(param[0]),
                     param[0],
                     getBoolean(param[1]),
                     getBoolean(param[2]),
-                    getBoolean(param[3]),
-                    qualifications
+                    getBoolean(param[3])
             );
             allStations.add(station);
         }
@@ -118,6 +117,24 @@ public class DataReader {
             }
         }
         return breakStations;
+    }
+
+    public void readRegulations(ArrayList<Station> depots) throws Exception{
+        Scanner sc = new Scanner(new File(".//Data//CSV//Regulations.csv"));
+        sc.useDelimiter(",");
+        sc.nextLine();
+        for  (Station depot : depots) {
+            ArrayList<Integer> regul = new ArrayList<>();
+            regul.add(-1);
+            String line = sc.nextLine();
+            String[] param = line.split(",");
+            for(int i = 1;i <= 39;i++){
+                regul.add(Integer.valueOf(param[i]));
+            }
+            depot.setRegulations(regul);
+        }
+        sc.close();
+
     }
 
     public ArrayList<Station> depots(ArrayList<Station> stations) {
@@ -173,37 +190,37 @@ public class DataReader {
     }
 
     //Translate the matrix with qualifications to a list with the stationIDs where Reg drivers are eligible to drive to
-    private ArrayList<Integer> getQualifications(String[] param) {
-        ArrayList<Integer> quali = new ArrayList<>();
-        if (getBoolean(param[4])) {
-            quali.add(searchCorrespondigId("AB"));
-        }
-        if (getBoolean(param[5])) {
-            quali.add(searchCorrespondigId("AR"));
-        }
-        if (getBoolean(param[6])) {
-            quali.add(searchCorrespondigId("ES"));
-        }
-        if (getBoolean(param[7])) {
-            quali.add(searchCorrespondigId("FA"));
-        }
-        if (getBoolean(param[8])) {
-            quali.add(searchCorrespondigId("KH"));
-        }
-        if (getBoolean(param[9])) {
-            quali.add(searchCorrespondigId("OD"));
-        }
-        if (getBoolean(param[10])) {
-            quali.add(searchCorrespondigId("STR"));
-        }
-        if (getBoolean(param[11])) {
-            quali.add(searchCorrespondigId("TE"));
-        }
-        if (quali.isEmpty()) {
-            quali.add(0);
-        }
-        return quali;
-    }
+//    private ArrayList<Integer> getQualifications(String[] param) {
+//        ArrayList<Integer> quali = new ArrayList<>();
+//        if (getBoolean(param[4])) {
+//            quali.add(searchCorrespondigId("AB"));
+//        }
+//        if (getBoolean(param[5])) {
+//            quali.add(searchCorrespondigId("AR"));
+//        }
+//        if (getBoolean(param[6])) {
+//            quali.add(searchCorrespondigId("ES"));
+//        }
+//        if (getBoolean(param[7])) {
+//            quali.add(searchCorrespondigId("FA"));
+//        }
+//        if (getBoolean(param[8])) {
+//            quali.add(searchCorrespondigId("KH"));
+//        }
+//        if (getBoolean(param[9])) {
+//            quali.add(searchCorrespondigId("OD"));
+//        }
+//        if (getBoolean(param[10])) {
+//            quali.add(searchCorrespondigId("STR"));
+//        }
+//        if (getBoolean(param[11])) {
+//            quali.add(searchCorrespondigId("TE"));
+//        }
+//        if (quali.isEmpty()) {
+//            quali.add(0);
+//        }
+//        return quali;
+//    }
 
     public static boolean getBoolean(String value) {
         return !value.equals("0");

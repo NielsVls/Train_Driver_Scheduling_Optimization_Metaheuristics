@@ -351,7 +351,7 @@ public class Calculations {
         return consbreakmatrix[blockBeforeBreak][blockAfterBreak] == 1;
     }
     public boolean checkSchedule(Schedule s){
-        return (checkDuration(s) && breakCheck(s) && s.getTimeWorkingWithoutBreak() <= parameters.getMaximumDurationBeforeBreak() && s.getTimeWorkingWithoutBreak() > 0);
+        return (checkDuration(s) && breakCheck(s) && s.getTimeWorkingWithoutBreak() <= parameters.getMaximumDurationBeforeBreak() && s.getTimeWorkingWithoutBreak() > 0 && checkRegulations(s));
     }
     public double calculateCost(Schedule oldS, Schedule newS){
         double oldcost;
@@ -377,6 +377,20 @@ public class Calculations {
 
         double cost = newcost - oldcost;
         return cost;
+    }
+
+    public boolean checkRegulations(Schedule schedule){
+        Station depot = stations.get(schedule.getClosestDepot()-1);
+        for(Integer i : schedule.getBlocks()){
+            Block b = blocks.get(i-1);
+            if(depot.getRegulations().get(b.getStartLoc()) != 1 || depot.getRegulations().get(b.getEndLoc()) != 1){
+                if(depot.getRegulations().get(b.getStartLoc()) == -1 || depot.getRegulations().get(b.getEndLoc()) == -1){
+                    System.out.println("Error, this shouldn't be -1");
+                }
+                return false;
+            }
+        }
+        return true;
     }
     public int findClosestDepot(Block b) {
         int closest = 0;

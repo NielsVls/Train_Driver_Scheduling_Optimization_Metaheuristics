@@ -205,7 +205,7 @@ public class LargeNeighbourhoodSearch {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         String dateString = currentDate.format(formatter);
         String cost = String.valueOf(best.getTotalCost());
-        writeCsv(costgraph,timegraph,".//Data//Output//" + dateString + "_" + cost + ".csv");
+        writeCsv(costgraph,timegraph,".//Data//Output//" + dateString + "_" + cost + "_" + maxDuration + "min.csv");
         return best;
     }
 

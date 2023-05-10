@@ -46,7 +46,7 @@ public class Main {
         stations = dataReader.readStations();
         breakStations = dataReader.breakStations(stations);
         depots = dataReader.depots(stations);
-
+        dataReader.readRegulations(depots);
         //create the travelTrains
         travelTrains = dataReader.readTravelTrains();
 
@@ -67,7 +67,7 @@ public class Main {
         Permutations permutations = new Permutations(calculations);
         Rebuild builders = new Rebuild(calculations);
 
-        int minutes = 1;
+        int minutes = 0;
         int milis = minutes * 60000;
 
         //============================================= BASE SOLUTIONS =============================================
@@ -80,10 +80,9 @@ public class Main {
 
         Solution timeBasedbaseSolution = algoTest.runTimeBasedInitialSolution();
         finalSolutionCheck(timeBasedbaseSolution, calculations);
-        baseSolutions.add(timeBasedbaseSolution);
+        //baseSolutions.add(timeBasedbaseSolution);
 
         Solution timebaseWE = algoTest.runTimeBasedInitialSolutionWE();
-
 
 //        Solution blockSchedulebaseSolution = algoTest.run1BlockPerScheduleInitialSolution();
 //        //finalSolutionCheck(blockSchedulebaseSolution,calculations);
@@ -93,8 +92,8 @@ public class Main {
 //        //finalSolutionCheck(randombaseSolution,calculations);
 //        baseSolutions.add(randombaseSolution);
 
-        Solution stationDriverbaseSolution = algoTest.runStationDriverSolution();
-        finalSolutionCheck(stationDriverbaseSolution,calculations);
+        //Solution stationDriverbaseSolution = algoTest.runStationDriverSolution();
+        //finalSolutionCheck(stationDriverbaseSolution,calculations);
 //        baseSolutions.add(stationDriverbaseSolution);
 
         System.out.println("\n =================================================================================== \n");
@@ -107,8 +106,8 @@ public class Main {
         //============================================= ADAPTIVE LNS =============================================
 
 
-        Solution endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(timeBasedbaseSolution,milis,builders);
-        finalSolutionCheck(endSolLNS,calculations);
+        //Solution endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(timeBasedbaseSolution,milis,builders);
+        //finalSolutionCheck(endSolLNS,calculations);
 //
 //        endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(timeBasedbaseSolution,milis,builders,10,50);
 //        finalSolutionCheck(endSolLNS,calculations);
@@ -141,7 +140,7 @@ public class Main {
 //            finalSolutionCheck(endLNS,calculations);
 //        }
 
-        System.out.println(combinatorialBound2(calculations));
+        //System.out.println(combinatorialBound2(calculations));
     }
 
     //Final check of the schedules if the result is valid
