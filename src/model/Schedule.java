@@ -7,7 +7,6 @@ import java.util.ArrayList;
 public class Schedule implements Cloneable{
     Integer id;
     int driverType;
-    boolean isValid;
     int duration;
     int startStation;
     int startDay;
@@ -19,8 +18,6 @@ public class Schedule implements Cloneable{
     int breakAfterBlock;
     ArrayList<Integer> breakPossibleAfterBlocks;
     int timeWasted;
-    int travelTime;
-    double travelTimePerBlock;
     double totalCost;
 
     public Schedule(){
@@ -44,8 +41,6 @@ public class Schedule implements Cloneable{
         this.breakAfterBlock = s.breakAfterBlock;
         this.breakPossibleAfterBlocks = new ArrayList<>(s.breakPossibleAfterBlocks);
         this.timeWasted = s.timeWasted;
-        this.travelTime = s.travelTime;
-        this.travelTimePerBlock = s.travelTimePerBlock;
         this.totalCost = s.totalCost;
     }
 
@@ -160,14 +155,6 @@ public class Schedule implements Cloneable{
         this.timeWorkingBeforeBreak = timeWorkingBeforeBreak;
     }
 
-    public boolean isValid() {
-        return isValid;
-    }
-
-    public void setValid(boolean valid) {
-        isValid = valid;
-    }
-
     public Integer getId() {
         return id;
     }
@@ -184,22 +171,6 @@ public class Schedule implements Cloneable{
         this.timeWasted = timeWasted;
     }
 
-    public int getTravelTime() {
-        return travelTime;
-    }
-
-    public void setTravelTime(int travelTime) {
-        this.travelTime = travelTime;
-    }
-
-    public double getTravelTimePerBlock() {
-        return travelTimePerBlock;
-    }
-
-    public void setTravelTimePerBlock(double travelTimePerBlock) {
-        this.travelTimePerBlock = travelTimePerBlock;
-    }
-
     public double getTotalCost() {
         return totalCost;
     }
@@ -210,13 +181,9 @@ public class Schedule implements Cloneable{
 
     @Override
     public String toString() {
-        String valid = "INVALID";
-        if(isValid){
-            valid = "VALID";
-        }
 
         if (breakAfterBlock != -1){
-            return "\n" + valid + " Schedule " + id +" {\n" +
+            return "\n" + "Schedule " + id +" {\n" +
                     "duration =" + duration +
                     "\nstartTime=" + startTime +
                     "\nTime before Break=" + timeWorkingBeforeBreak +
@@ -227,7 +194,7 @@ public class Schedule implements Cloneable{
                     "\nType of driver= " + getDriverType() +
                     " }\n";
         }else{
-            return "\n" + valid + " Schedule " + id +" {\n" +
+            return "\n" + "Schedule " + id +" {\n" +
                     "duration =" + duration +
                     "\nstartTime=" + startTime +
                     "\nblocks=" + blocks +

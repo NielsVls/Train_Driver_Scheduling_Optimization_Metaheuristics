@@ -5,7 +5,6 @@ import model.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
 
 public class GreedyBaseAlgo {
@@ -80,7 +79,7 @@ public class GreedyBaseAlgo {
         int counter = 1;
         for (Schedule s : schedules) {
             s.setId(counter);
-            c.calculateSchedule(s);
+            c.calculateScheduleFB(s);
             counter++;
         }
 
@@ -103,7 +102,7 @@ public class GreedyBaseAlgo {
         int counter = 1;
         for (Schedule s : schedules) {
             s.setId(counter);
-            c.calculateSchedule(s);
+            c.calculateScheduleFB(s);
             counter++;
         }
         return schedules;
@@ -116,7 +115,7 @@ public class GreedyBaseAlgo {
         int counter = 1;
         for (Schedule s : schedules) {
             s.setId(counter);
-            c.calculateSchedule(s);
+            c.calculateScheduleFB(s);
             counter++;
         }
 
@@ -140,13 +139,13 @@ public class GreedyBaseAlgo {
             newschedule.setClosestDepot(findClosestDepot(b));
             newschedule.setStartStation(b.getStartLoc());
             newschedule.setStartDay(b.getStartWeekday());
-            c.calculateSchedule(newschedule);
+            c.calculateScheduleFB(newschedule);
             schedules.add(newschedule);
         }
         int counter = 0;
         for (Schedule s : schedules) {
             s.setId(counter);
-            c.calculateSchedule(s);
+            c.calculateScheduleFB(s);
             counter++;
         }
         return schedules;
@@ -160,7 +159,7 @@ public class GreedyBaseAlgo {
         int counter = 1;
         for (Schedule s : schedules) {
             s.setId(counter);
-            c.calculateSchedule(s);
+            c.calculateScheduleFB(s);
             counter++;
         }
         return schedules;
@@ -199,7 +198,7 @@ public class GreedyBaseAlgo {
         int counter = 1;
         for (Schedule s : schedules) {
             s.setId(counter);
-            c.calculateSchedule(s);
+            c.calculateScheduleFB(s);
             counter++;
         }
 
@@ -227,7 +226,7 @@ public class GreedyBaseAlgo {
                 newschedule.setClosestDepot(findClosestDepot(b));
                 newschedule.setStartStation(b.getStartLoc());
                 newschedule.setStartDay(b.getStartWeekday());
-                c.calculateSchedule(newschedule);
+                c.calculateScheduleFB(newschedule);
                 schedules.add(newschedule);
             }
         }
@@ -242,7 +241,7 @@ public class GreedyBaseAlgo {
             s.setClosestDepot(findClosestDepot(b));
             s.setStartStation(b.getStartLoc());
             s.setStartDay(b.getStartWeekday());
-            c.calculateSchedule(s);
+            c.calculateScheduleFB(s);
             return true;
         }
         if (checkBreakFit(b, s)) {
@@ -250,14 +249,14 @@ public class GreedyBaseAlgo {
                 // BREAK : YES ||| BLOCK : YES
                 //If this block is added, there can be a break between temporary last and the new block
                 s.getBlocks().add(b.getId());
-                c.calculateSchedule(s);
+                c.calculateScheduleFB(s);
                 //TotalDuration checked here
                 if (c.checkSchedule(s)) {
                     //BLOCK ADDED
                     return true;
                 } else {
                     s.getBlocks().remove(s.getBlocks().size() - 1);
-                    c.calculateSchedule(s);
+                    c.calculateScheduleFB(s);
                     //BLOCK NOT ADDED
                     return false;
                 }
@@ -266,13 +265,13 @@ public class GreedyBaseAlgo {
             // BREAK : NO ||| BLOCK : YES
             //The block can be added but there can be no break
             s.getBlocks().add(b.getId());
-            c.calculateSchedule(s);
+            c.calculateScheduleFB(s);
             if (c.checkSchedule(s)) {
                 //BLOCK ADDED
                 return true;
             } else {
                 s.getBlocks().remove(s.getBlocks().size() - 1);
-                c.calculateSchedule(s);
+                c.calculateScheduleFB(s);
                 //BLOCK NOT ADDED
                 return false;
             }

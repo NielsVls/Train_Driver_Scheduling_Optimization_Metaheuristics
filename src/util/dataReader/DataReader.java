@@ -89,8 +89,9 @@ public class DataReader {
 
     public ArrayList<TravelTrain> readTravelTrains() throws Exception {
         ArrayList<TravelTrain> allTrains = new ArrayList<>();
-        Scanner sc = new Scanner(new File(".//Data//CSV//travel_by_train.csv"));
+        Scanner sc = new Scanner(new File(".//Data//CSV//travel_by_train2.csv"));
         sc.useDelimiter(",");
+        sc.nextLine();
         while (sc.hasNextLine()) {
             String line = sc.nextLine();
             String[] param = line.split(",");

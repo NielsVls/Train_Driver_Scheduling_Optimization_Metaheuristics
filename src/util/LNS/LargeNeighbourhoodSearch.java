@@ -17,7 +17,7 @@ public class LargeNeighbourhoodSearch {
 
     private static boolean acceptanceProbability(double delta, double temperature) {
         if(Math.exp(-delta / temperature) > Math.random()){
-            System.out.println("worse accepted");
+            //System.out.println("worse accepted");
             return true;
         }else return false;
     }
@@ -71,24 +71,33 @@ public class LargeNeighbourhoodSearch {
     }
 
     public static Solution runSimulationTMP(Solution initial, int maxDuration, Rebuild builders) {
-        ArrayList<Integer> costgraph = new ArrayList<>();
+        ArrayList<Integer> costgraphBEST = new ArrayList<>();
+        ArrayList<Integer> costgraphCURR = new ArrayList<>();
         ArrayList<Long> timegraph = new ArrayList<>();
-        costgraph.add(initial.getTotalCost());
+        ArrayList<ArrayList<Double>> probabilitiesD = new ArrayList<>();
+        ArrayList<ArrayList<Double>> probabilitiesR = new ArrayList<>();
+        ArrayList<Double> temperatureGraph = new ArrayList<>();
+        costgraphBEST.add(initial.getTotalCost());
+        costgraphCURR.add(initial.getTotalCost());
+
         timegraph.add(0L);
         long startTime = System.currentTimeMillis();
         long currentTime = System.currentTimeMillis();
         long tempTime = System.currentTimeMillis();
         int minutes = 0;
         int countIterations = 0;
+        double temperature = 1000000000;
+        double alfa = 0.9999;
+        temperatureGraph.add(temperature);
 
         ArrayList<Double> rewardDestroy = new ArrayList<>();
         ArrayList<Double> rewardRepair = new ArrayList<>();
 
-        for (int i = 0; i < 7; i++) {
-            rewardDestroy.add(10.0);
+        for (int i = 0; i < 8; i++) {
+            rewardDestroy.add(20.0);
         }
         for (int i = 0; i < 2; i++) {
-            rewardRepair.add(10.0);
+            rewardRepair.add(20.0);
         }
 
         Solution current = initial;
@@ -99,8 +108,10 @@ public class LargeNeighbourhoodSearch {
         while((currentTime - startTime) < maxDuration){
             PossibleSolution possibleSolution = null;
 
-            int destroymethod = randomPicker(calculateProbability(rewardDestroy));
-            int repairmethod = randomPicker(calculateProbability(rewardRepair));
+            ArrayList<Double> destroyProbs = calculateProbability(rewardDestroy);
+            ArrayList<Double> repairProbs = calculateProbability(rewardRepair);
+            int destroymethod = randomPicker(destroyProbs);
+            int repairmethod = randomPicker(repairProbs);
             int destructions;
 
             String destroy = "";
@@ -108,14 +119,15 @@ public class LargeNeighbourhoodSearch {
 
             repair = (repairmethod == 1) ? "REGRET FIT" : "BEST FIT";
 
+            long iteStart = System.currentTimeMillis();
             switch (destroymethod) {
                 case 0 : destructions = getRandomNumberInRange(10,30);
                          possibleSolution = builders.randomDestruct(current, destructions, repairmethod);
                          destroy = "RANDOM 10-30";
                          break;
-                case 1 : destructions = getRandomNumberInRange(35,65);
+                case 1 : destructions = getRandomNumberInRange(35,75);
                          possibleSolution = builders.randomDestruct(current, destructions, repairmethod);
-                         destroy = "RANDOM 35-65";
+                         destroy = "RANDOM 35-75";
                          break;
                 case 2 : destructions = getRandomNumberInRange(100,150);
                          possibleSolution = builders.randomDestruct(current, destructions, repairmethod);
@@ -125,36 +137,47 @@ public class LargeNeighbourhoodSearch {
                          possibleSolution = builders.destructByTime(current, destructions, repairmethod);
                          destroy = "TIME 10-30";
                          break;
-                case 4 : destructions = getRandomNumberInRange(25,50);
+                case 4 : destructions = getRandomNumberInRange(35,75);
                          possibleSolution = builders.destructByTime(current, destructions, repairmethod);
-                         destroy = "TIME 25 - 50";
+                         destroy = "TIME 35-75";
                          break;
-                case 5 : possibleSolution = builders.destructByLocation(current,repairmethod);
+                case 5 : destructions = getRandomNumberInRange(100,150);
+                         possibleSolution = builders.destructByTime(current, destructions, repairmethod);
+                         destroy = "TIME 100-150";
+                         break;
+                case 6 : possibleSolution = builders.destructByLocation(current,repairmethod);
                          destroy = "LOCATION";
                          break;
-                case 6 : possibleSolution = builders.destructSchedule(current,repairmethod);
+                case 7 : possibleSolution = builders.destructSchedule(current,repairmethod);
                          destroy = "SCHEDULE";
                          break;
             }
-            int points =0;
+            long iteEnd = System.currentTimeMillis();
+            long iteDur = iteEnd - iteStart;
+            long profitPerTimeUnit = 0;
 
+            int points =0;
             if(possibleSolution != null) {
                 double deltaE2 = possibleSolution.getNewCost() - possibleSolution.getOldCost();
-                if (deltaE2 < 0) {
+                profitPerTimeUnit = (long) (deltaE2 / iteDur);
+                points = 1;
+                if (deltaE2 < 0 ) {
                     current = possibleSolution.getNewSolution();
                     current.calculateSolution();
                     points = 5;
+                    if (current.getTotalCost() < best.getTotalCost()) {
+                        best = current;
+                        points = 10;
+                    }
+                } else if (acceptanceProbability(deltaE2,temperature)) {
+                    current = possibleSolution.getNewSolution();
+                    current.calculateSolution();
                 }
-                if (current.getTotalCost() < best.getTotalCost()) {
-                    best = current;
-                    points = 10;
-                }
-                if(points == 5){
-                    System.out.println("5");
-                }
+
             }
 
             countIterations++;
+            temperature = alfa * temperature;
             currentTime = System.currentTimeMillis();
 
             //System.out.println(destroy + " || " + repair + " ==> " + points + " points.");
@@ -184,7 +207,6 @@ public class LargeNeighbourhoodSearch {
                 double prevR = rewardRepair.get(repairmethod);
                 rewardDestroy.set(destroymethod,(prevD + points));
                 rewardRepair.set(repairmethod,(prevR + points));
-                //System.out.println("POINTS ADDED :" + points);
             }
 
             if ((currentTime - tempTime) > 60000) {
@@ -193,8 +215,12 @@ public class LargeNeighbourhoodSearch {
                 tempTime = currentTime;
             }
 
-            costgraph.add(best.getTotalCost());
+            costgraphBEST.add(best.getTotalCost());
+            costgraphCURR.add(current.getTotalCost());
             timegraph.add((currentTime-startTime));
+            temperatureGraph.add(temperature);
+            probabilitiesD.add(destroyProbs);
+            probabilitiesR.add(repairProbs);
         }
 
         System.out.println("Iterations: " + convert(countIterations));
@@ -205,17 +231,40 @@ public class LargeNeighbourhoodSearch {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         String dateString = currentDate.format(formatter);
         String cost = String.valueOf(best.getTotalCost());
-        writeCsv(costgraph,timegraph,".//Data//Output//" + dateString + "_" + cost + "_" + maxDuration + "min.csv");
+        writeCsv(costgraphBEST,costgraphCURR,timegraph,temperatureGraph,probabilitiesD,probabilitiesR,".//Data//Output//" + dateString + "_" + cost + "_" + (maxDuration/60000) + "min_Graph.csv");
         return best;
     }
 
-    public static void writeCsv(ArrayList<Integer> data, ArrayList <Long> time, String filename) {
+    public static void writeCsv(ArrayList<Integer> dataBest, ArrayList<Integer> dataCurr, ArrayList <Long> time, ArrayList<Double> temp , ArrayList<ArrayList<Double>> probsD,ArrayList<ArrayList<Double>> probsR, String filename) {
 
         try {
             FileWriter writer = new FileWriter(filename);
 
-            for (int i = 0; i < data.size(); i++) {
-                writer.append(data.get(i).toString()).append(",").append(time.get(i).toString());
+            for (int i = 0; i < dataBest.size(); i++) {
+                StringBuilder strD = new StringBuilder();
+                StringBuilder strR = new StringBuilder();
+                if(i == dataBest.size()-1){
+                    strD.append(",").append(",").append(",").append(",").append(",").append(",").append(",");
+                    strR.append(",").append(",");
+                }else{
+                    for(Double dble : probsD.get(i)){
+                        strD.append(dble);
+                        strD.append(",");
+                    }
+                    for(Double dble : probsR.get(i)){
+                        strR.append(dble);
+                        strR.append(",");
+                    }
+                }
+                writer.append(dataBest.get(i).toString()).append(",")
+                        .append(dataCurr.get(i).toString()).append(",")
+                        .append(temp.get(i).toString()).append(",")
+                        .append(",")
+                        .append(strD)
+                        .append(",")
+                        .append(strR)
+                        .append(",")
+                        .append(time.get(i).toString());
                 writer.append("\n");
             }
 

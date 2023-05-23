@@ -2,16 +2,17 @@ import model.*;
 import util.LNS.LargeNeighbourhoodSearch;
 import util.LNS.Rebuild;
 import util.SA.Permutations;
-import util.SA.SimulatedAnnealing;
 import util.algorithms.BlockComparator;
 import util.algorithms.Calculations;
 import global.Parameters;
 import util.algorithms.GreedyBaseAlgo;
 import util.dataReader.DataReader;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
-
-import static util.LNS.Rebuild.getRandomNumberInRange;
 
 public class Main {
 
@@ -49,6 +50,7 @@ public class Main {
         dataReader.readRegulations(depots);
         //create the travelTrains
         travelTrains = dataReader.readTravelTrains();
+        //travelTrains = new ArrayList<>();
 
         //make the consecutive blocks
         consecutiveBlocks = consecutiveBlocks(blocks);
@@ -67,47 +69,51 @@ public class Main {
         Permutations permutations = new Permutations(calculations);
         Rebuild builders = new Rebuild(calculations);
 
-        int minutes = 0;
+        int minutes = 180;
         int milis = minutes * 60000;
 
         //============================================= BASE SOLUTIONS =============================================
 
-        ArrayList<Solution> baseSolutions = new ArrayList<>();
-
         Solution baseSolution = algoTest.runInitialSolution();
         finalSolutionCheck(baseSolution,calculations);
-//        baseSolutions.add(baseSolution);
 
         Solution timeBasedbaseSolution = algoTest.runTimeBasedInitialSolution();
-        finalSolutionCheck(timeBasedbaseSolution, calculations);
-        //baseSolutions.add(timeBasedbaseSolution);
+         finalSolutionCheck(timeBasedbaseSolution, calculations);
 
-        Solution timebaseWE = algoTest.runTimeBasedInitialSolutionWE();
 
-//        Solution blockSchedulebaseSolution = algoTest.run1BlockPerScheduleInitialSolution();
-//        //finalSolutionCheck(blockSchedulebaseSolution,calculations);
-//        baseSolutions.add(blockSchedulebaseSolution);
-
-//        Solution randombaseSolution = algoTest.runRandomInitialSolution();
-//        //finalSolutionCheck(randombaseSolution,calculations);
-//        baseSolutions.add(randombaseSolution);
-
-        //Solution stationDriverbaseSolution = algoTest.runStationDriverSolution();
-        //finalSolutionCheck(stationDriverbaseSolution,calculations);
-//        baseSolutions.add(stationDriverbaseSolution);
+        Solution blockSchedulebaseSolution = algoTest.run1BlockPerScheduleInitialSolution();
+        finalSolutionCheck(blockSchedulebaseSolution,calculations);
 
         System.out.println("\n =================================================================================== \n");
         //============================================= SIMULATED ANNEALING =============================================
 
 
-//        Solution endSolSA = SimulatedAnnealing.runSimulation(timeBasedbaseSolution,milis, permutations);
-//        finalSolutionCheck(endSolSA,calculations);
+        //Solution endSolSA = SimulatedAnnealing.runSimulation(timeBasedbaseSolution,milis, permutations);
+        //finalSolutionCheck(endSolSA,calculations);
 
         //============================================= ADAPTIVE LNS =============================================
 
-
+        // Time
         //Solution endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(timeBasedbaseSolution,milis,builders);
         //finalSolutionCheck(endSolLNS,calculations);
+        LocalDate currentDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        String dateString = currentDate.format(formatter);
+        //String cost = String.valueOf(endSolLNS.getTotalCost());
+        //writeCsv(endSolLNS.getSchedules(),".//Data//Results//" + dateString + "_" + cost + "_" + (minutes) + "min_time.csv");
+        String cost = "";
+        Solution endSolLNS = null;
+        //Base
+//        endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,milis,builders);
+//        finalSolutionCheck(endSolLNS,calculations);
+//        cost = String.valueOf(endSolLNS.getTotalCost());
+//        writeCsv(endSolLNS.getSchedules(),".//Data//Results//" + dateString + "_" + cost + "_" + (minutes) + "min_base.csv");
+
+        //1 Block
+        endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(blockSchedulebaseSolution,milis,builders);
+        finalSolutionCheck(endSolLNS,calculations);
+        cost = String.valueOf(endSolLNS.getTotalCost());
+        writeCsv(endSolLNS.getSchedules(),".//Data//Results//" + dateString + "_" + cost + "_" + (minutes) + "min_1block.csv");
 //
 //        endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(timeBasedbaseSolution,milis,builders,10,50);
 //        finalSolutionCheck(endSolLNS,calculations);
@@ -161,7 +167,7 @@ public class Main {
             if (s.getBlocks().isEmpty()) {
                 empty++;
             }
-            c.calculateSchedule(s);
+            c.calculateScheduleFB(s);
             if (!finalCheckSchedule(s)) {
                 valid = false;
                 invalids++;
@@ -407,13 +413,13 @@ public class Main {
 
         for (TravelTrain train : travelTrains) {
             if (a.getEndWeekday() == train.getStartDay() && b.getStartWeekday() == train.getEndDay()) {
-                if (train.getStartLoc() == a.getEndLoc() && train.getEndLoc() == breakstation && (train.getStartTime() > a.getArrivalTime())) {
+                if (train.getStartLoc() == a.getEndLoc() && train.getEndLoc() == breakstation && train.getStartTime() > a.getArrivalTime() && train.getEndTime() < b.getDepartureTime() -30) {
                     int traintime = train.getEndTime() - a.getArrivalTime();
                     if (traintime < to) {
                         to = traintime;
                     }
                 }
-                if (train.getStartLoc() == breakstation && train.getEndLoc() == b.getStartLoc() && (train.getEndTime() < b.getDepartureTime())) {
+                if (train.getStartLoc() == breakstation && train.getEndLoc() == b.getStartLoc() && train.getStartTime() > a.getArrivalTime() + 30 && (train.getEndTime() < b.getDepartureTime())) {
                     int traintime = b.getDepartureTime() - train.getStartTime();
                     if (traintime < from) {
                         from = traintime;
@@ -560,6 +566,156 @@ public class Main {
         }
 
         return builder.toString();
+    }
+
+    public static void writeCsv(ArrayList<Schedule> schedules, String filename) {
+        int lastlocation;
+        int lasttime;
+        int duty = 1;
+        try {
+            FileWriter writer = new FileWriter(filename);
+            writer.append("Duty").append(",").append("Task / Block").append(",").append("Departure time").append(",")
+                    .append("Arrival time").append(",").append("Departure Location").append(",")
+                    .append("Arrival location").append(",").append("Weekday (block start)").append("Type").append("\n");
+            for(Schedule s : schedules){
+                String type = "Regular";
+                if(s.getDriverType() != 0){ type = "Station";}
+
+                //Checkin
+                writer.append(String.valueOf(duty)).append(",").append("Check in").append(",").append(min2Str(s.getStartTime())).append(",")
+                        .append(min2Str(s.getStartTime()+ parameters.getCheckInTime())).append(",")
+                        .append(idToStationName(s.getClosestDepot())).append(",").append(idToStationName(s.getClosestDepot())).append(",")
+                        .append(" ").append(",").append(type);
+                writer.append("\n");
+                lastlocation = s.getClosestDepot();
+                lasttime = s.getStartTime()+ parameters.getCheckInTime();
+
+                for(Integer i : s.getBlocks()){
+                    Block block = blocks.get(i-1);
+                    Integer b = null;
+                    int indexI = s.getBlocks().indexOf(i);
+                    if(indexI != s.getBlocks().size()-1){
+                        b = s.getBlocks().get(indexI + 1);
+                    }
+
+                    if(lastlocation != block.getStartLoc()){
+                        // NEED OF A TRAVEL
+                        if(trainOrTaxi(i,b)){
+                            writer.append(String.valueOf(duty)).append(",").append("TravelTrain").append(",");
+                        }else{
+                            writer.append(String.valueOf(duty)).append(",").append("Travel").append(",");
+                        }
+                        writer.append(min2Str(lasttime)).append(",").append(min2Str(lasttime + travelmatrix[lastlocation][block.getStartLoc()])).append(",")
+                                .append(idToStationName(lastlocation)).append(",").append(idToStationName(block.getStartLoc()))
+                                .append(" ").append(",").append(type);
+                        writer.append("\n");
+                    }
+
+                    //Block
+                    writer.append(String.valueOf(duty)).append(",").append("Block ").append(String.valueOf(block.getId())).append(",").append(min2Str(block.getDepartureTime())).append(",")
+                            .append(min2Str(block.getArrivalTime())).append(",").append(idToStationName(block.getStartLoc()))
+                            .append(",").append(idToStationName(block.getEndLoc())).append(",")
+                            .append(String.valueOf(block.getStartWeekday())).append(",").append(type);
+                    writer.append("\n");
+
+                    lastlocation = block.getEndLoc();
+                    lasttime = block.getArrivalTime();
+
+                    if(s.getBreakAfterBlock() == block.getId()){
+                        //Break
+                        int index = s.getBlocks().indexOf(block);
+                        int station;
+                        if(index != s.getBlocks().size()-1){
+                            //there is a block after the break
+                            Integer after = s.getBlocks().get(index+1);
+                            Block afterB = blocks.get(after-1);
+                            station = findNearestBreakLocation(stations.get(block.getEndLoc()-1),stations.get(afterB.getStartLoc()-1));
+
+                        }else{
+                            //Break after last block
+                            station = findNearestBreakLocation(stations.get(block.getEndLoc()-1),stations.get(s.getClosestDepot()-1));
+                        }
+                        int startbreak = lasttime;
+                        if(lastlocation != station){
+                            writer.append(String.valueOf(duty)).append(",").append("Travel").append(",");
+                            writer.append(min2Str(lasttime)).append(",").append(min2Str(lasttime + travelmatrix[lastlocation][station])).append(",")
+                                    .append(idToStationName(lastlocation)).append(",").append(idToStationName(station))
+                                    .append(" ").append(",").append(type);
+                            writer.append("\n");
+                            startbreak = lasttime + travelmatrix[lastlocation][station];
+                            if(startbreak >= 1440){startbreak -= 1440;}
+                        }
+
+                        writer.append(String.valueOf(duty)).append(",").append("Break").append(",").append(min2Str(startbreak)).append(",").append(min2Str(startbreak+30)).append(",")
+                                .append(idToStationName(station)).append(",").append(idToStationName(station)).append(",").append(" ").append(",").append(type);
+                        writer.append("\n");
+                        lasttime = startbreak+30;
+                        if(lasttime >= 1440){lasttime -= 1440;}
+                        lastlocation = station;
+                    }
+                }
+
+                //Travel to depot
+                if(lastlocation != s.getClosestDepot()){
+                    writer.append(String.valueOf(duty)).append(",").append("Travel").append(",");
+                    writer.append(min2Str(lasttime)).append(",").append(min2Str(lasttime + travelmatrix[lastlocation][s.getClosestDepot()])).append(",")
+                            .append(idToStationName(lastlocation)).append(",").append(idToStationName(s.getClosestDepot()))
+                            .append(" ").append(",").append(type);
+                    writer.append("\n");
+                    lasttime += travelmatrix[lastlocation][s.getClosestDepot()];
+                    if(lasttime > 1440){lasttime -=1440;}
+                }
+
+                //Check out
+                writer.append(String.valueOf(duty)).append(",").append("Check out").append(",").append(min2Str(lasttime )).append(",")
+                        .append(min2Str(lasttime + parameters.getCheckOutTime())).append(",")
+                        .append(idToStationName(s.getClosestDepot())).append(",").append(idToStationName(s.getClosestDepot())).append(",")
+                        .append(" ").append(",").append(type);
+                writer.append("\n");
+                duty++;
+            }
+
+            writer.flush();
+            writer.close();
+            System.out.println("CSV file created successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static boolean trainOrTaxi(Integer a, Integer b){
+        if(b == null){
+            return false;
+        }
+        Block blockA = blocks.get(a-1);
+        Block blockB = blocks.get(b-1);
+
+
+        for(TravelTrain train : travelTrains){
+            if(blockA.getEndLoc() == train.getStartLoc()
+                && blockB.getStartLoc() == train.getEndLoc()
+                && (blockA.getArrivalTime() < train.getStartTime()
+                && blockB.getDepartureTime() > train.getEndTime()
+                && train.getStartDay() == blockA.getEndWeekday()
+                && train.getEndDay() == blockB.getStartWeekday())){
+                    return true;
+
+            }
+        }
+        return false;
+    }
+    public static String min2Str(int minutes){
+        if(minutes >= 1440){
+            minutes -= 1440;
+        }
+        int hours = minutes / 60;
+        int remainingMinutes = minutes % 60;
+        return String.format("%02d:%02d", hours, remainingMinutes);
+    }
+
+    public static String idToStationName (int id){
+        Station station = stations.get(id-1);
+        return station.getName();
     }
 
 }

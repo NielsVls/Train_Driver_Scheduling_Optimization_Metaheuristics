@@ -1,11 +1,9 @@
 package util.SA;
 
-import global.Parameters;
 import model.*;
 import util.algorithms.Calculations;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class Permutations {
 
@@ -44,8 +42,8 @@ public class Permutations {
             if (s1 == null || s2 == null) return null;
         }
 
-        c.calculateSchedule(s1);
-        c.calculateSchedule(s2);
+        c.calculateScheduleFB(s1);
+        c.calculateScheduleFB(s2);
 
         Schedule tempS1 = new Schedule(s1);
         Schedule tempS2 = new Schedule(s2);
@@ -122,8 +120,8 @@ public class Permutations {
             if (s1 == null || s2 == null) return null;
         }
 
-        c.calculateSchedule(s1);
-        c.calculateSchedule(s2);
+        c.calculateScheduleFB(s1);
+        c.calculateScheduleFB(s2);
 
         Schedule tempS1 = new Schedule(s1);
         Schedule tempS2 = new Schedule(s2);
@@ -139,7 +137,7 @@ public class Permutations {
         tempS1.getBlocks().remove(blockIndex1);
 
         if(!tempS1.getBlocks().isEmpty()){
-            c.calculateSchedule(tempS1);
+            c.calculateScheduleFB(tempS1);
         }
 
         int max2 = tempS2.getBlocks().size() - 1;
@@ -189,21 +187,21 @@ public class Permutations {
     public boolean checkSwap(Schedule schedule, int block, int index) {
         if (schedule.getBlocks().isEmpty()) {
             schedule.getBlocks().add(block);
-            c.calculateSchedule(schedule);
+            c.calculateScheduleFB(schedule);
             return true;
         }
         if (index == 0) {
             Block after = blocks.get(schedule.getBlocks().get(0) - 1);
             if (consmatrix[block][after.getId()] == 1) {
                 schedule.getBlocks().add(0, block);
-                c.calculateSchedule(schedule);
+                c.calculateScheduleFB(schedule);
                 return c.checkSchedule(schedule);
             }else{return false;}
         } else if (index == schedule.getBlocks().size()) {
             Block before = blocks.get(schedule.getBlocks().get(index - 1) - 1);
             if (consmatrix[before.getId()][block] == 1) {
                 schedule.getBlocks().add(index, block);
-                c.calculateSchedule(schedule);
+                c.calculateScheduleFB(schedule);
                 return c.checkSchedule(schedule);
             }else{return false;}
         } else {
@@ -212,7 +210,7 @@ public class Permutations {
 
             if (consmatrix[before.getId()][block] == 1 && consmatrix[block][after.getId()] == 1) {
                 schedule.getBlocks().add(index, block);
-                c.calculateSchedule(schedule);
+                c.calculateScheduleFB(schedule);
                 return c.checkSchedule(schedule);
             }else{return false;}
         }
