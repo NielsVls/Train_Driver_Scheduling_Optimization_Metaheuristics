@@ -109,7 +109,7 @@ public class GreedyLNSAlgo {
             Block before = blocks.get(schedule.getBlocks().get(index - 1) - 1);
             if (c.consmatrix[before.getId()][block] == 1) {
                 schedule.getBlocks().add(block);
-                c.calculateScheduleLB(schedule);
+                c.calculateScheduleFB(schedule);
                 return c.checkSchedule(schedule);
             }else{return false;}
         } else {
@@ -117,7 +117,7 @@ public class GreedyLNSAlgo {
             Block after = blocks.get(schedule.getBlocks().get(index) - 1);
             if (c.consmatrix[before.getId()][block] == 1 && c.consmatrix[block][after.getId()] == 1) {
                 schedule.getBlocks().add(index, block);
-                c.calculateScheduleMB(schedule);
+                c.calculateScheduleFB(schedule);
                 return c.checkSchedule(schedule);
             }else{return false;}
         }

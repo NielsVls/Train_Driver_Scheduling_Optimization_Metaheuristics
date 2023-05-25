@@ -137,7 +137,6 @@ public class GreedyBaseAlgo {
             Schedule newschedule = new Schedule();
             newschedule.getBlocks().add(b.getId());
             newschedule.setClosestDepot(findClosestDepot(b));
-            newschedule.setStartStation(b.getStartLoc());
             newschedule.setStartDay(b.getStartWeekday());
             c.calculateScheduleFB(newschedule);
             schedules.add(newschedule);
@@ -224,7 +223,6 @@ public class GreedyBaseAlgo {
                 Schedule newschedule = new Schedule();
                 newschedule.getBlocks().add(b.getId());
                 newschedule.setClosestDepot(findClosestDepot(b));
-                newschedule.setStartStation(b.getStartLoc());
                 newschedule.setStartDay(b.getStartWeekday());
                 c.calculateScheduleFB(newschedule);
                 schedules.add(newschedule);
@@ -239,7 +237,6 @@ public class GreedyBaseAlgo {
         if(s.getBlocks().isEmpty()){
             s.getBlocks().add(b.getId());
             s.setClosestDepot(findClosestDepot(b));
-            s.setStartStation(b.getStartLoc());
             s.setStartDay(b.getStartWeekday());
             c.calculateScheduleFB(s);
             return true;

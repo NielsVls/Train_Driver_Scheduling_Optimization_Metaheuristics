@@ -8,7 +8,6 @@ public class Schedule implements Cloneable{
     Integer id;
     int driverType;
     int duration;
-    int startStation;
     int startDay;
     int startTime;
     ArrayList<Integer> blocks;
@@ -31,7 +30,6 @@ public class Schedule implements Cloneable{
         this.id = s.id;
         this.driverType = s.driverType;
         this.duration = s.duration;
-        this.startStation = s.startStation;
         this.startTime = s.startTime;
         this.startDay = s.startDay;
         this.blocks = new ArrayList<>(s.blocks);
@@ -99,10 +97,6 @@ public class Schedule implements Cloneable{
         return duration;
     }
 
-    public int getStartStation() {
-        return startStation;
-    }
-
     public ArrayList<Integer> getBlocks() {
         return blocks;
     }
@@ -113,10 +107,6 @@ public class Schedule implements Cloneable{
 
     public void setDuration(int duration) {
         this.duration = duration;
-    }
-
-    public void setStartStation(int startStation) {
-        this.startStation = startStation;
     }
 
     public int getTimeWorkingWithoutBreak() {

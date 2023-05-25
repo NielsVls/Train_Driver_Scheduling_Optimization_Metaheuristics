@@ -91,7 +91,7 @@ public class Calculations {
         Block first = blocks.get(sblocks.get(0) - 1);
         int depot = findClosestDepot(first);
         s.setClosestDepot(depot);
-        int travel = travelmatrix[s.getClosestDepot()][s.getStartStation()];
+        int travel = travelmatrix[s.getClosestDepot()][first.getStartLoc()];
 
         int startTime = first.getDepartureTime() - travel - parameters.getCheckInTime();
         if (startTime < 0) {
@@ -148,7 +148,7 @@ public class Calculations {
 
     void calculateBreak(Schedule s) {
         breaksPossible(s);
-        Block last = blocks.get(s.getBlocks().get(s.getBlocks().size() - 1) - 1);
+        //Block last = blocks.get(s.getBlocks().get(s.getBlocks().size() - 1) - 1);
         if (!s.getBreakPossibleAfterBlocks().isEmpty()) {
             int longest = 0;
             for (Integer i : s.getBreakPossibleAfterBlocks()) {
@@ -165,11 +165,11 @@ public class Calculations {
                     if (dur > longest && dur < parameters.getMaximumDurationBeforeBreak() && s.getBlocks().size() > 1) {
                         longest = dur;
                         s.setBreakAfterBlock(i);
-                        if (last.getEndWeekday() != afterBreak.getStartWeekday()) {
-                            s.setTimeWorkingWithoutBreak(1440 - afterBreak.getDepartureTime() + last.getArrivalTime() + calculateTravelTimeFromBreak(stations.get(beforeBreak.getEndLoc() - 1), stations.get(afterBreak.getStartLoc() - 1)));
-                        } else {
-                            s.setTimeWorkingWithoutBreak(calculateTravelTimeFromBreak(stations.get(beforeBreak.getEndLoc() - 1), stations.get(afterBreak.getStartLoc() - 1)) + (last.getArrivalTime() - afterBreak.getDepartureTime()));
-                        }
+//                        if (last.getEndWeekday() != afterBreak.getStartWeekday()) {
+//                            s.setTimeWorkingWithoutBreak(1440 - afterBreak.getDepartureTime() + last.getArrivalTime() + calculateTravelTimeFromBreak(stations.get(beforeBreak.getEndLoc() - 1), stations.get(afterBreak.getStartLoc() - 1)));
+//                        } else {
+//                            s.setTimeWorkingWithoutBreak(calculateTravelTimeFromBreak(stations.get(beforeBreak.getEndLoc() - 1), stations.get(afterBreak.getStartLoc() - 1)) + (last.getArrivalTime() - afterBreak.getDepartureTime()));
+//                        }
                         s.setTimeWorkingBeforeBreak(dur);
                     }
                 }
@@ -337,6 +337,9 @@ public class Calculations {
             return false;
         }
 
+        if(s.getStartTime() < 180){
+            return false;
+        }
         // CHECK TIME WORKING BEFORE OR/AND  AFTER BREAK
         if (s.getBreakAfterBlock() != -1) {
             return s.getTimeWorkingBeforeBreak() <= parameters.getMaximumDurationBeforeBreak() && s.getTimeWorkingWithoutBreak() <= parameters.getMaximumDurationBeforeBreak();
