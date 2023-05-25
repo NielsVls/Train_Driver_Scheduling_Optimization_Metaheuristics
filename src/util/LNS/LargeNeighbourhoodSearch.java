@@ -87,7 +87,7 @@ public class LargeNeighbourhoodSearch {
         int minutes = 0;
         int countIterations = 0;
         double temperature = 1000000000;
-        double alfa = 0.9999;
+        double alfa = 0.99;
         temperatureGraph.add(temperature);
 
         ArrayList<Double> rewardDestroy = new ArrayList<>();

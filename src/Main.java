@@ -49,8 +49,8 @@ public class Main {
         depots = dataReader.depots(stations);
         dataReader.readRegulations(depots);
         //create the travelTrains
-        //travelTrains = dataReader.readTravelTrains();
-        travelTrains = new ArrayList<>();
+        travelTrains = dataReader.readTravelTrains();
+        //travelTrains = new ArrayList<>();
 
         //make the consecutive blocks
         consecutiveBlocks = consecutiveBlocks(blocks);
@@ -72,27 +72,18 @@ public class Main {
         int minutes = 5;
         int milis = minutes * 60000;
 
-
-        System.out.println(consbreakmatrix[150][530]);
-
-        Block a = blocks.get(150 - 1 );
-        Block b = blocks.get(530 - 1);
-
-        System.out.println(calculateBreakTime(a,b));
-
         //============================================= BASE SOLUTIONS =============================================
 
 //        Solution baseSolution = algoTest.runInitialSolution();
 //        finalSolutionCheck(baseSolution,calculations);
 //
 //
-       Solution timeBasedbaseSolution = algoTest.runTimeBasedInitialSolution();
+       //Solution timeBasedbaseSolution = algoTest.runTimeBasedInitialSolution();
 //        finalSolutionCheck(timeBasedbaseSolution, calculations);
 //
-        writeCsv(timeBasedbaseSolution.getSchedules(),".//Data//Results//" + "test1.csv");
 
 
-//        Solution blockSchedulebaseSolution = algoTest.run1BlockPerScheduleInitialSolution();
+        Solution blockSchedulebaseSolution = algoTest.run1BlockPerScheduleInitialSolution();
 //        finalSolutionCheck(blockSchedulebaseSolution,calculations);
 
         System.out.println("\n =================================================================================== \n");
@@ -121,10 +112,10 @@ public class Main {
 //        writeCsv(endSolLNS.getSchedules(),".//Data//Results//" + dateString + "_" + cost + "_" + (minutes) + "min_base.csv");
 
         //1 Block
-//        endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(blockSchedulebaseSolution,milis,builders);
-//        finalSolutionCheck(endSolLNS,calculations);
-//        cost = String.valueOf(endSolLNS.getTotalCost());
-//        writeCsv(endSolLNS.getSchedules(),".//Data//Results//" + dateString + "_" + cost + "_" + (minutes) + "min_1block.csv");
+        endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(blockSchedulebaseSolution,milis,builders);
+        finalSolutionCheck(endSolLNS,calculations);
+        cost = String.valueOf(endSolLNS.getTotalCost());
+        writeCsv(endSolLNS.getSchedules(),".//Data//Results//" + dateString + "_" + cost + "_" + (minutes) + "min_1block.csv");
 //
 //        endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(timeBasedbaseSolution,milis,builders,10,50);
 //        finalSolutionCheck(endSolLNS,calculations);

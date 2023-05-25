@@ -351,7 +351,8 @@ public class Calculations {
     boolean breakCheck(Schedule s) {
         Integer blockBeforeBreak = s.getBreakAfterBlock();
         if (blockBeforeBreak == -1) {
-            return true;
+            return false;
+            //TODO CHECK IF THIS FIXED IT
         }
         if (s.getBlocks().size() == 1) {
             return blockBeforeBreak.equals(s.getBlocks().get(0));
