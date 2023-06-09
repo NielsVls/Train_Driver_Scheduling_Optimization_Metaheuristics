@@ -10,7 +10,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static util.LNS.Rebuild.c;
 import static util.LNS.Rebuild.getRandomNumberInRange;
 
 public class LargeNeighbourhoodSearch {
@@ -70,7 +69,7 @@ public class LargeNeighbourhoodSearch {
 
     }
 
-    public static Solution runSimulationTMP(Solution initial, int maxDuration, Rebuild builders) {
+    public static Solution runALNS(Solution initial, int maxDuration, Rebuild builders) {
         ArrayList<Integer> costgraphBEST = new ArrayList<>();
         ArrayList<Integer> costgraphCURR = new ArrayList<>();
         ArrayList<Long> timegraph = new ArrayList<>();

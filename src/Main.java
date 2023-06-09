@@ -1,7 +1,10 @@
 import model.*;
+import util.HALNS.HybridALNS;
+import util.HALNS.Repair;
 import util.LNS.LargeNeighbourhoodSearch;
 import util.LNS.Rebuild;
 import util.SA.Permutations;
+import util.SA.SimulatedAnnealing;
 import util.algorithms.BlockComparator;
 import util.algorithms.Calculations;
 import global.Parameters;
@@ -68,23 +71,14 @@ public class Main {
         GreedyBaseAlgo algoTest = new GreedyBaseAlgo(calculations);
         Permutations permutations = new Permutations(calculations);
         Rebuild builders = new Rebuild(calculations);
+        Repair repair = new Repair(calculations);
 
-        int minutes = 5;
+        int minutes = 180;
         int milis = minutes * 60000;
 
         //============================================= BASE SOLUTIONS =============================================
-
-//        Solution baseSolution = algoTest.runInitialSolution();
-//        finalSolutionCheck(baseSolution,calculations);
-//
-//
-       //Solution timeBasedbaseSolution = algoTest.runTimeBasedInitialSolution();
-//        finalSolutionCheck(timeBasedbaseSolution, calculations);
-//
-
-
         Solution blockSchedulebaseSolution = algoTest.run1BlockPerScheduleInitialSolution();
-//        finalSolutionCheck(blockSchedulebaseSolution,calculations);
+        //finalSolutionCheck(blockSchedulebaseSolution,calculations);
 
         System.out.println("\n =================================================================================== \n");
         //============================================= SIMULATED ANNEALING =============================================
@@ -95,59 +89,30 @@ public class Main {
 
         //============================================= ADAPTIVE LNS =============================================
 
-        // Time
-        //Solution endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(timeBasedbaseSolution,milis,builders);
-        //finalSolutionCheck(endSolLNS,calculations);
         LocalDate currentDate = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         String dateString = currentDate.format(formatter);
-        //String cost = String.valueOf(endSolLNS.getTotalCost());
-        //writeCsv(endSolLNS.getSchedules(),".//Data//Results//" + dateString + "_" + cost + "_" + (minutes) + "min_time.csv");
         String cost = "";
         Solution endSolLNS = null;
-        //Base
-//        endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolution,milis,builders);
-//        finalSolutionCheck(endSolLNS,calculations);
-//        cost = String.valueOf(endSolLNS.getTotalCost());
-//        writeCsv(endSolLNS.getSchedules(),".//Data//Results//" + dateString + "_" + cost + "_" + (minutes) + "min_base.csv");
 
         //1 Block
-        endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(blockSchedulebaseSolution,milis,builders);
+        endSolLNS = LargeNeighbourhoodSearch.runALNS(blockSchedulebaseSolution,milis,builders);
         finalSolutionCheck(endSolLNS,calculations);
         cost = String.valueOf(endSolLNS.getTotalCost());
-        writeCsv(endSolLNS.getSchedules(),".//Data//Results//" + dateString + "_" + cost + "_" + (minutes) + "min_1block.csv");
-//
-//        endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(timeBasedbaseSolution,milis,builders,10,50);
-//        finalSolutionCheck(endSolLNS,calculations);
-//
-//        endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(timeBasedbaseSolution,milis,builders,50,200);
-//        finalSolutionCheck(endSolLNS,calculations);
-//
-//        endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(timebaseWE,milis,builders,10,50);
-//        finalSolutionCheck(endSolLNS,calculations);
-//
-//        endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(timebaseWE,milis,builders,50,200);
-//        finalSolutionCheck(endSolLNS,calculations);
-//
-//        endSolLNS = LargeNeighbourhoodSearch.runSimulationTMP(timebaseWE,milis,builders,15,30);
-//        finalSolutionCheck(endSolLNS,calculations);
+        writeCsv(endSolLNS.getSchedules(),".//Data//Results//" + dateString + "_" + cost + "_" + (minutes) + "min_1block_LNS.csv");
 
+        int milisSA = 60000*30;
+        Solution endSolSA = SimulatedAnnealing.runSimulation(endSolLNS, milisSA, permutations);
+        finalSolutionCheck(endSolSA,calculations);
+        writeCsv(endSolLNS.getSchedules(),".//Data//Results//" + dateString + "_" + cost + "_" + (minutes) + "min_1block_LNS_SA.csv");
 
+        //HALNS
+        HybridALNS halns = new HybridALNS();
+        //Solution hybrid = halns.HALNS(blockSchedulebaseSolution,repair,calculations);
+        //finalSolutionCheck(hybrid,calculations);
+        //System.out.println("Writing CSV-file ...");
+        //writeCsv(hybrid.getSchedules(),".//Data//Results//" + dateString + "_" + cost + "_HALNS.csv");
         //============================================= TESTING AND ANALYSING =============================================
-//        for(int i = 1; i <= 6 ; i++){
-//
-////            System.out.println("=====================================================================");
-////            System.out.println("\n TEST SA "+ i);
-////            Solution endSolSA = SimulatedAnnealing.runSimulation(baseSolutions.get(i%2),milis, permutations);
-////            finalSolutionCheck(endSolSA,calculations);
-//
-//            System.out.println("=====================================================================");
-//            System.out.println("\n TEST LNS "+ i);
-//
-//            Solution endLNS = LargeNeighbourhoodSearch.runSimulationTMP(baseSolutions.get(i%2),milis,builders,15,30);
-//            finalSolutionCheck(endLNS,calculations);
-//        }
-
         //System.out.println(combinatorialBound2(calculations));
     }
 
@@ -606,9 +571,6 @@ public class Main {
                         b = s.getBlocks().get(indexI - 1);
                         bef = blocks.get(b-1);
                         trainsBef = bef.getTrainNr();
-                        if(i == 150){
-                            System.out.println("BUG");
-                        }
                     }
                     ArrayList<Integer> trainsAft = block.getTrainNr();
 

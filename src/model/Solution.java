@@ -168,7 +168,7 @@ public class Solution implements Cloneable{
         return "Solution{" +
                 ", blocksExecuted=" + blocksExecuted +
                 ", totalDrivers=" + totalDrivers +
-                ", totalRegularDrivers=" + totalRegularDrivers +
+                ", totalCost=" + totalCost +
                 ", totalStationDrivers=" + totalStationDrivers +
                 ", driversWorkingLessThen6hours=" + driversWorkingLessThen6hours +
                 '}';

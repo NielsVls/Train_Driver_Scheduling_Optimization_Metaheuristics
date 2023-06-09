@@ -314,11 +314,14 @@ public class Calculations {
 
         int startShift = s.getStartTime();
         int endShift = s.getStartTime() + s.getDuration();
+
+        //Shift ends on different day
         if (endShift > 1440) {
             endShift -= 1440;
+            return startNight <= endShift;
         }
 
-        return (startShift <= endNight) && (endShift >= startNight);
+        return (startShift <= endNight && endShift >= startNight);
     }
 
     public boolean checkDuration(Schedule s) {
@@ -400,9 +403,6 @@ public class Calculations {
         for (Integer i : schedule.getBlocks()) {
             Block b = blocks.get(i - 1);
             if (depot.getRegulations().get(b.getStartLoc()) != 1 || depot.getRegulations().get(b.getEndLoc()) != 1) {
-                if (depot.getRegulations().get(b.getStartLoc()) == -1 || depot.getRegulations().get(b.getEndLoc()) == -1) {
-                    System.out.println("Error, this shouldn't be -1");
-                }
                 return false;
             }
         }

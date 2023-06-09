@@ -21,7 +21,7 @@ public class DataReader {
         ArrayList<Block> blocks = new ArrayList<>();
         Scanner sc = new Scanner(new File(".//Data//CSV//Blocks_Vest_2_ABL_FLB_NG.csv"));
         sc.useDelimiter(",");
-        while (sc.hasNextLine()) {
+        while (sc.hasNextLine() /*&& counter < 250*/) {
             String line = sc.nextLine();
             String[] param = line.split(",");
             Block block = new Block(
