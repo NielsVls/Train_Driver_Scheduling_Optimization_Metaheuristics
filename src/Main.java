@@ -73,7 +73,9 @@ public class Main {
         Rebuild builders = new Rebuild(calculations);
         Repair repair = new Repair(calculations);
 
-        int minutes = 180;
+        //Solution hastus = dataReader.readHASTUSsolution();
+
+        int minutes = 5;
         int milis = minutes * 60000;
 
         //============================================= BASE SOLUTIONS =============================================
@@ -96,15 +98,15 @@ public class Main {
         Solution endSolLNS = null;
 
         //1 Block
-        endSolLNS = LargeNeighbourhoodSearch.runALNS(blockSchedulebaseSolution,milis,builders);
-        finalSolutionCheck(endSolLNS,calculations);
-        cost = String.valueOf(endSolLNS.getTotalCost());
-        writeCsv(endSolLNS.getSchedules(),".//Data//Results//" + dateString + "_" + cost + "_" + (minutes) + "min_1block_LNS.csv");
+        //endSolLNS = LargeNeighbourhoodSearch.runALNS(blockSchedulebaseSolution,milis,builders);
+        //finalSolutionCheck(endSolLNS,calculations);
+        //cost = String.valueOf(endSolLNS.getTotalCost());
+        //writeCsv(endSolLNS.getSchedules(),".//Data//Results//" + dateString + "_" + cost + "_" + (minutes) + "min_1block_LNS.csv");
 
         int milisSA = 60000*30;
-        Solution endSolSA = SimulatedAnnealing.runSimulation(endSolLNS, milisSA, permutations);
-        finalSolutionCheck(endSolSA,calculations);
-        writeCsv(endSolLNS.getSchedules(),".//Data//Results//" + dateString + "_" + cost + "_" + (minutes) + "min_1block_LNS_SA.csv");
+        //Solution endSolSA = SimulatedAnnealing.runSimulation(endSolLNS, milisSA, permutations);
+        //finalSolutionCheck(endSolSA,calculations);
+        //writeCsv(endSolLNS.getSchedules(),".//Data//Results//" + dateString + "_" + cost + "_" + (minutes) + "min_1block_LNS_SA.csv");
 
         //HALNS
         HybridALNS halns = new HybridALNS();
@@ -134,7 +136,7 @@ public class Main {
             if (s.getBlocks().isEmpty()) {
                 empty++;
             }
-            c.calculateScheduleFB(s);
+            c.calculateSchedule(s);
             if (!finalCheckSchedule(s)) {
                 valid = false;
                 invalids++;
@@ -187,11 +189,11 @@ public class Main {
         //Check if a schedule if VALID
         ArrayList<Integer> scheduleBlocks = schedule.getBlocks();
         if (scheduleBlocks.isEmpty()) {
-            System.out.println("Schedule is empty but not remove.");
+            System.out.println("Schedule "+ schedule.getId() + " is empty but not remove.");
             return true;
         } else if (scheduleBlocks.size() == 1) {
             if (schedule.getDuration() > 300 && schedule.getBreakAfterBlock() == -1) {
-                System.out.println("The schedule consist of 1 block [" + scheduleBlocks.get(0) + "] and takes longer then accepted (" + schedule.getDuration() + ").");
+                System.out.println("The schedule "+ schedule.getId() + " consist of 1 block [" + scheduleBlocks.get(0) + "] and takes longer then accepted (" + schedule.getDuration() + ").");
                 return false;
             }
             return true;
@@ -199,24 +201,23 @@ public class Main {
             for (int i = 0; i < scheduleBlocks.size() - 2; i++) {
                 int a = scheduleBlocks.get(i);
                 int b = scheduleBlocks.get(i + 1);
-                if (consmatrix[a][b] != 1) {
-                    System.out.println(schedule);
+                if (schedule.getBreakAfterBlock() != a && consmatrix[a][b] != 1) {
+                    System.out.println("Schedule " + schedule.getId());
                     System.out.println("The following blocks aren't consecutive: " + a + " & " + b + ".");
                     return false;
                 }
                 if (schedule.getBreakAfterBlock() == a && (consbreakmatrix[a][b] != 1)) {
-                    System.out.println(schedule);
                     System.out.println("There is a break after block " + a + ", but it isn't allowed.");
                     System.out.println("consbreakmatrix[" + a + "][" + b + "] = " + consbreakmatrix[a][b]);
                     return false;
                 }
                 if (schedule.getDuration() > parameters.getMaximumShiftLengthWeekend()) {
-                    System.out.println(schedule);
+                    System.out.println("Schedule " + schedule.getId());
                     System.out.println("The shift is longer then allowed.");
                     return false;
                 }
                 if (schedule.getBreakAfterBlock() != -1 && schedule.getTimeWorkingWithoutBreak() > 300) {
-                    System.out.println(schedule);
+                    System.out.println("Schedule " + schedule.getId());
                     System.out.println("A driver has been working longer than allowed before taking a break.");
                     return false;
                 }
@@ -280,7 +281,7 @@ public class Main {
         int shortest = 9999999;
         for (TravelTrain train : travelTrains) {
             if (a.getEndWeekday() == train.getStartDay() && b.getStartWeekday() == train.getEndDay()){
-                if (train.getStartLoc() == a.getEndLoc() && train.getEndLoc() == b.getStartLoc() && (train.getStartTime() > a.getArrivalTime() && train.getEndTime() < b.getDepartureTime())) {
+                if (train.getStartLoc() == a.getEndLoc() && train.getEndLoc() == b.getStartLoc() && (train.getStartTime() >= a.getArrivalTime() && train.getEndTime() <= b.getDepartureTime())) {
                     int traintime = train.getEndTime() - a.getArrivalTime();
                     if (traintime < shortest) {
                         shortest = traintime;
@@ -288,7 +289,6 @@ public class Main {
                 }
             }
         }
-
         return Math.min(drive, shortest);
     }
 

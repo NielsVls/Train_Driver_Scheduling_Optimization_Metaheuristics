@@ -2,10 +2,8 @@ package util.HALNS;
 
 import model.Schedule;
 import model.Solution;
-import util.LNS.Rebuild;
 import util.algorithms.Calculations;
 
-import java.sql.SQLOutput;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -244,7 +242,7 @@ public class HybridALNS {
             if (s.getBlocks().isEmpty()) {
                 empty++;
             }
-            c.calculateScheduleFB(s);
+            c.calculateSchedule(s);
             if (!finalCheckSchedule(s)) {
                 valid = false;
                 invalids++;

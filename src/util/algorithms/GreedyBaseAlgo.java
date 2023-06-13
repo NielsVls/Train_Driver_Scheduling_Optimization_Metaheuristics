@@ -79,7 +79,7 @@ public class GreedyBaseAlgo {
         int counter = 1;
         for (Schedule s : schedules) {
             s.setId(counter);
-            c.calculateScheduleFB(s);
+            c.calculateSchedule(s);
             counter++;
         }
 
@@ -102,7 +102,7 @@ public class GreedyBaseAlgo {
         int counter = 1;
         for (Schedule s : schedules) {
             s.setId(counter);
-            c.calculateScheduleFB(s);
+            c.calculateSchedule(s);
             counter++;
         }
         return schedules;
@@ -115,7 +115,7 @@ public class GreedyBaseAlgo {
         int counter = 1;
         for (Schedule s : schedules) {
             s.setId(counter);
-            c.calculateScheduleFB(s);
+            c.calculateSchedule(s);
             counter++;
         }
 
@@ -138,13 +138,13 @@ public class GreedyBaseAlgo {
             newschedule.getBlocks().add(b.getId());
             newschedule.setClosestDepot(findClosestDepot(b));
             newschedule.setStartDay(b.getStartWeekday());
-            c.calculateScheduleFB(newschedule);
+            c.calculateSchedule(newschedule);
             schedules.add(newschedule);
         }
         int counter = 0;
         for (Schedule s : schedules) {
             s.setId(counter);
-            c.calculateScheduleFB(s);
+            c.calculateSchedule(s);
             counter++;
         }
         return schedules;
@@ -158,7 +158,7 @@ public class GreedyBaseAlgo {
         int counter = 1;
         for (Schedule s : schedules) {
             s.setId(counter);
-            c.calculateScheduleFB(s);
+            c.calculateSchedule(s);
             counter++;
         }
         return schedules;
@@ -197,7 +197,7 @@ public class GreedyBaseAlgo {
         int counter = 1;
         for (Schedule s : schedules) {
             s.setId(counter);
-            c.calculateScheduleFB(s);
+            c.calculateSchedule(s);
             counter++;
         }
 
@@ -224,7 +224,7 @@ public class GreedyBaseAlgo {
                 newschedule.getBlocks().add(b.getId());
                 newschedule.setClosestDepot(findClosestDepot(b));
                 newschedule.setStartDay(b.getStartWeekday());
-                c.calculateScheduleFB(newschedule);
+                c.calculateSchedule(newschedule);
                 schedules.add(newschedule);
             }
         }
@@ -238,7 +238,7 @@ public class GreedyBaseAlgo {
             s.getBlocks().add(b.getId());
             s.setClosestDepot(findClosestDepot(b));
             s.setStartDay(b.getStartWeekday());
-            c.calculateScheduleFB(s);
+            c.calculateSchedule(s);
             return true;
         }
         if (checkBreakFit(b, s)) {
@@ -246,14 +246,14 @@ public class GreedyBaseAlgo {
                 // BREAK : YES ||| BLOCK : YES
                 //If this block is added, there can be a break between temporary last and the new block
                 s.getBlocks().add(b.getId());
-                c.calculateScheduleFB(s);
+                c.calculateSchedule(s);
                 //TotalDuration checked here
                 if (c.checkSchedule(s)) {
                     //BLOCK ADDED
                     return true;
                 } else {
                     s.getBlocks().remove(s.getBlocks().size() - 1);
-                    c.calculateScheduleFB(s);
+                    c.calculateSchedule(s);
                     //BLOCK NOT ADDED
                     return false;
                 }
@@ -262,13 +262,13 @@ public class GreedyBaseAlgo {
             // BREAK : NO ||| BLOCK : YES
             //The block can be added but there can be no break
             s.getBlocks().add(b.getId());
-            c.calculateScheduleFB(s);
+            c.calculateSchedule(s);
             if (c.checkSchedule(s)) {
                 //BLOCK ADDED
                 return true;
             } else {
                 s.getBlocks().remove(s.getBlocks().size() - 1);
-                c.calculateScheduleFB(s);
+                c.calculateSchedule(s);
                 //BLOCK NOT ADDED
                 return false;
             }

@@ -34,7 +34,7 @@ public class Calculations {
         this.travelTrains = travelTrains;
     }
 
-    public void calculateScheduleFB(Schedule s) {
+    public void calculateSchedule(Schedule s) {
         //CALCULATES EVERYTHING NEEDED WHEN THE NEW BLOCK IS THE FIRST ONE
         if (s.getBlocks().isEmpty()) {
             return;
@@ -42,38 +42,7 @@ public class Calculations {
         //Calculate how late the schedule starts (with the travel from the depot included)
         calculateStartTime(s);
         //Calculate when a break can be taken
-        calculateBreak(s);
-        //Calculates the duration of a schedule
-        calculateDuration(s);
-        //Calculates the time a driver is working without a break
-        calculateTimeWithoutBreak(s);
-        //Calculates the time that is wasted in the schedule, so the driver isn't doing anything
-        calculateTimeWaste(s);
-        //Check if the schedule is local or not
-        possibleForStationDriver(s);
-    }
-
-    public void calculateScheduleMB(Schedule s) {
-        if (s.getBlocks().isEmpty()) {
-            return;
-        }
-        //Calculate when a break can be taken
-        calculateBreak(s);
-        //Calculates the time a driver is working without a break
-        calculateTimeWithoutBreak(s);
-        //Calculates the time that is wasted in the schedule, so the driver isn't doing anything
-        calculateTimeWaste(s);
-        //Check if the schedule is local or not
-        possibleForStationDriver(s);
-    }
-
-    public void calculateScheduleLB(Schedule s) {
-        //CALCULATES EVERYTHING NEEDED WHEN THE NEW BLOCK IS THE LAST ONE
-        if (s.getBlocks().isEmpty()) {
-            return;
-        }
-        //Calculate when a break can be taken
-        calculateBreak(s);
+        calculateBreak2(s);
         //Calculates the duration of a schedule
         calculateDuration(s);
         //Calculates the time a driver is working without a break
@@ -148,7 +117,6 @@ public class Calculations {
 
     void calculateBreak(Schedule s) {
         breaksPossible(s);
-        //Block last = blocks.get(s.getBlocks().get(s.getBlocks().size() - 1) - 1);
         if (!s.getBreakPossibleAfterBlocks().isEmpty()) {
             int longest = 0;
             for (Integer i : s.getBreakPossibleAfterBlocks()) {
@@ -157,7 +125,7 @@ public class Calculations {
                 if (index != s.getBlocks().size() - 1) {
                     int i2 = s.getBlocks().get(index + 1);
                     Block afterBreak = blocks.get(i2 - 1);
-                    int temp = beforeBreak.getArrivalTime() - s.getStartTime();
+                    int temp = beforeBreak.getArrivalTime() - s.getStartTime(); //199
                     if (temp < 0) {
                         temp += 1440;
                     }
@@ -176,6 +144,40 @@ public class Calculations {
             }
         }
     }
+
+    void calculateBreak2(Schedule s) {
+        breaksPossible(s);
+        if (!s.getBreakPossibleAfterBlocks().isEmpty()) {
+            int longest = 0;
+            for (Integer i : s.getBreakPossibleAfterBlocks()) {
+                Block beforeBreak = blocks.get(i - 1);
+                int index = s.getBlocks().indexOf(i);
+                if (index != s.getBlocks().size() - 1) {
+                    int i2 = s.getBlocks().get(index + 1);
+                    Block afterBreak = blocks.get(i2 - 1);
+                    int temp = afterBreak.getDepartureTime() - s.getStartTime(); //254
+                    if (temp < 0) {
+                        temp += 1440;
+                    }
+                    int dur = temp - calculateTravelTimeFromBreak(stations.get(beforeBreak.getEndLoc() - 1), stations.get(afterBreak.getStartLoc() - 1)) - 30;
+                    if (dur > longest /*&& dur < parameters.getMaximumDurationBeforeBreak()*/ && s.getBlocks().size() > 1) {
+                        if(dur > parameters.getMaximumDurationBeforeBreak()){
+                            dur = 300;
+                        }
+                        longest = dur;
+                        s.setBreakAfterBlock(i);
+//                        if (last.getEndWeekday() != afterBreak.getStartWeekday()) {
+//                            s.setTimeWorkingWithoutBreak(1440 - afterBreak.getDepartureTime() + last.getArrivalTime() + calculateTravelTimeFromBreak(stations.get(beforeBreak.getEndLoc() - 1), stations.get(afterBreak.getStartLoc() - 1)));
+//                        } else {
+//                            s.setTimeWorkingWithoutBreak(calculateTravelTimeFromBreak(stations.get(beforeBreak.getEndLoc() - 1), stations.get(afterBreak.getStartLoc() - 1)) + (last.getArrivalTime() - afterBreak.getDepartureTime()));
+//                        }
+                        s.setTimeWorkingBeforeBreak(dur);
+                    }
+                }
+            }
+        }
+    }
+
 
     void breaksPossible(Schedule s) {
         s.getBreakPossibleAfterBlocks().clear();
@@ -218,8 +220,8 @@ public class Calculations {
 
                 if (a.getId() == s.getBreakAfterBlock()) {
                     int travelToAndFromBreak = calculateTravelTimeFromBreak(stations.get(a.getEndLoc() - 1), stations.get(b.getStartLoc() - 1)) + calculateTravelTimeToBreak(stations.get(a.getEndLoc() - 1), stations.get(b.getStartLoc() - 1));
-                    if (travelToAndFromBreak > 120) {
-                        waste += (travelToAndFromBreak - 120);
+                    if (travelToAndFromBreak > 60) {
+                        waste += (travelToAndFromBreak - 60);
                     }
                     int connectionWaste;
                     if (a.getStartWeekday() != b.getEndWeekday()) {
@@ -397,6 +399,37 @@ public class Calculations {
         double cost = newcost - oldcost;
         return cost;
     }
+
+    public double calculateCost2(Schedule oldS, Schedule newS) {
+        double oldcost;
+        if (oldS.getDuration() > 0 && oldS.getDuration() < 360) {
+            oldcost = 360 * parameters.getCostPerMinute();
+        } else {
+            oldcost = oldS.getDuration() * parameters.getCostPerMinute();
+        }
+
+        double newcost;
+        if (newS.getDuration() > 0 && newS.getDuration() < 360) {
+            newcost = 360 * parameters.getCostPerMinute();
+        } else {
+            newcost = newS.getDuration() * parameters.getCostPerMinute();
+        }
+
+        if (oldS.getDriverType() != 0) {
+            oldcost = oldcost * parameters.getCostFraction();
+        }
+        if (newS.getDriverType() != 0) {
+            newcost = newcost * parameters.getCostFraction();
+        }
+
+        int wasteO = oldS.getTimeWasted();
+        int wasteN = newS.getTimeWasted();
+
+        double cost = newcost - oldcost;
+        int waste = wasteN - wasteO;
+        return (cost*2 + waste);
+    }
+
 
     public boolean checkRegulations(Schedule schedule) {
         Station depot = stations.get(schedule.getClosestDepot() - 1);

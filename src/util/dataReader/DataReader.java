@@ -1,8 +1,6 @@
 package util.dataReader;
 
-import model.Block;
-import model.Station;
-import model.TravelTrain;
+import model.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -73,7 +71,6 @@ public class DataReader {
         while (sc.hasNextLine()) {
             String line = sc.nextLine();
             String[] param = line.split(",");
-            //ArrayList<Integer> qualifications = getQualifications(param);
             Station station = new Station(
                     searchCorrespondigId(param[0]),
                     param[0],
@@ -100,9 +97,9 @@ public class DataReader {
                     searchCorrespondigId(param[3]),
                     Integer.parseInt(param[0]),
                     Integer.parseInt(param[1]),
+                    Integer.parseInt(param[6]),
                     Integer.parseInt(param[4]),
-                    Integer.parseInt(param[5]),
-                    Integer.parseInt(param[6])
+                    Integer.parseInt(param[5])
             );
             allTrains.add(train);
         }
@@ -118,6 +115,34 @@ public class DataReader {
             }
         }
         return breakStations;
+    }
+
+    public Solution readHASTUSsolution() throws FileNotFoundException {
+        Scanner sc = new Scanner(new File(".//Data//CSV//HASTUS_solution.csv"));
+        sc.useDelimiter(",");
+        sc.nextLine();
+        int currentDuty = 1798;//first duty
+        ArrayList<Schedule> schedules = new ArrayList<>();
+        Schedule s = new Schedule();
+        while(sc.hasNextLine()){
+            String line = sc.nextLine();
+            String[] param = line.split(",");
+            if(Integer.parseInt(param[0]) != currentDuty){
+                schedules.add(s);
+                currentDuty = Integer.parseInt(param[0]);
+                s = new Schedule();
+                s.getBlocks().add(Integer.parseInt(param[1]));
+            }else{
+                s.getBlocks().add(Integer.parseInt(param[1]));
+                s.setId(currentDuty);
+            }
+        }
+        schedules.add(s);
+        sc.close();
+        Solution sol = new Solution();
+        sol.setSchedules(schedules);
+        sol.calculateSolution();
+        return sol;
     }
 
     public void readRegulations(ArrayList<Station> depots) throws Exception{
@@ -189,39 +214,6 @@ public class DataReader {
         int value = stations.get(name);
         return value;
     }
-
-    //Translate the matrix with qualifications to a list with the stationIDs where Reg drivers are eligible to drive to
-//    private ArrayList<Integer> getQualifications(String[] param) {
-//        ArrayList<Integer> quali = new ArrayList<>();
-//        if (getBoolean(param[4])) {
-//            quali.add(searchCorrespondigId("AB"));
-//        }
-//        if (getBoolean(param[5])) {
-//            quali.add(searchCorrespondigId("AR"));
-//        }
-//        if (getBoolean(param[6])) {
-//            quali.add(searchCorrespondigId("ES"));
-//        }
-//        if (getBoolean(param[7])) {
-//            quali.add(searchCorrespondigId("FA"));
-//        }
-//        if (getBoolean(param[8])) {
-//            quali.add(searchCorrespondigId("KH"));
-//        }
-//        if (getBoolean(param[9])) {
-//            quali.add(searchCorrespondigId("OD"));
-//        }
-//        if (getBoolean(param[10])) {
-//            quali.add(searchCorrespondigId("STR"));
-//        }
-//        if (getBoolean(param[11])) {
-//            quali.add(searchCorrespondigId("TE"));
-//        }
-//        if (quali.isEmpty()) {
-//            quali.add(0);
-//        }
-//        return quali;
-//    }
 
     public static boolean getBoolean(String value) {
         return !value.equals("0");

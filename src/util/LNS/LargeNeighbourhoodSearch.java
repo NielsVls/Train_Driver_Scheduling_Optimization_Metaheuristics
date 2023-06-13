@@ -85,7 +85,7 @@ public class LargeNeighbourhoodSearch {
         long tempTime = System.currentTimeMillis();
         int minutes = 0;
         int countIterations = 0;
-        double temperature = 1000000000;
+        double temperature = 100000;//1000000000;
         double alfa = 0.99;
         temperatureGraph.add(temperature);
 

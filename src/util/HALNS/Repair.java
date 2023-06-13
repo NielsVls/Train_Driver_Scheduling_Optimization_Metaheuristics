@@ -72,7 +72,7 @@ public class Repair {
                 Integer block1 = tempS1.getBlocks().get(blockIndex1);
                 tempS1.getBlocks().remove(block1);
 
-                c.calculateScheduleFB(tempS1);
+                c.calculateSchedule(tempS1);
 
                 if (checkRemove(tempS1, blockIndex1)) {
                     //Keep track of the removed blocks
@@ -99,7 +99,7 @@ public class Repair {
                 int blockIndex1 = tempS1.getBlocks().indexOf(block1);
                 tempS1.getBlocks().remove(block1);
 
-                c.calculateScheduleFB(tempS1);
+                c.calculateSchedule(tempS1);
 
                 if (checkRemove(tempS1, blockIndex1)) {
                     //Keep track of the removed blocks
@@ -162,7 +162,7 @@ public class Repair {
                         Schedule tempS1 = new Schedule(s);
                         int index = tempS1.getBlocks().indexOf(bINT);
                         tempS1.getBlocks().remove(bINT);
-                        c.calculateScheduleFB(tempS1);
+                        c.calculateSchedule(tempS1);
                         if (checkRemove(tempS1, index)) {
                             removedBlocks.add(bINT);
                             newSolution.getSchedules().remove(s);
@@ -203,7 +203,7 @@ public class Repair {
                         Schedule tempS1 = new Schedule(s);
                         int index = tempS1.getBlocks().indexOf(bINT);
                         tempS1.getBlocks().remove(bINT);
-                        c.calculateScheduleFB(tempS1);
+                        c.calculateSchedule(tempS1);
                         if (checkRemove(tempS1, index)) {
                             removedBlocks.add(bINT);
                             newSolution.getSchedules().remove(s);
@@ -254,7 +254,7 @@ public class Repair {
                         Schedule tempS1 = new Schedule(s);
                         int index = tempS1.getBlocks().indexOf(bINT);
                         tempS1.getBlocks().remove(bINT);
-                        c.calculateScheduleFB(tempS1);
+                        c.calculateSchedule(tempS1);
                         if (checkRemove(tempS1, index)) {
                             removedBlocks.add(bINT);
                             newSolution.getSchedules().remove(s);
@@ -349,7 +349,7 @@ public class Repair {
         while (!bestFits.isEmpty()) {
             bestFits.sort(new BestFitComparator());
             newSolution.insertBestFit(bestFits.get(0));
-            c.calculateScheduleFB(newSolution.getScheduleByID(bestFits.get(0).getScheduleID()));
+            c.calculateSchedule(newSolution.getScheduleByID(bestFits.get(0).getScheduleID()));
             changedSchedules.add(newSolution.getScheduleByID(bestFits.get(0).getScheduleID()));
             removedBlocks.remove(bestFits.get(0).getBlock());
             bestFits.remove(0);
@@ -414,7 +414,7 @@ public class Repair {
         while (!bestRegrets.isEmpty()) {
             bestRegrets.sort(new RegretFitComparator());
             newSolution.insertRegretFit(bestRegrets.get(0));
-            c.calculateScheduleFB(newSolution.getScheduleByID(bestRegrets.get(0).getScheduleID()));
+            c.calculateSchedule(newSolution.getScheduleByID(bestRegrets.get(0).getScheduleID()));
             changedSchedules.add(newSolution.getScheduleByID(bestRegrets.get(0).getScheduleID()));
             removedBlocks.remove(bestRegrets.get(0).getBlock());
             bestRegrets.remove(0);
