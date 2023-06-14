@@ -75,6 +75,19 @@ public class Main {
 
         //Solution hastus = dataReader.readHASTUSsolution();
 
+        Solution test = dataReader.readSolution(".//Data//Results//13-06-2023__HALNS.csv");
+        for(Schedule s: test.getSchedules()){
+            calculations.calculateSchedule(s);
+            if(s.getTimeWasted() > 120){
+                System.out.println(s);
+                System.out.println(s.getTimeWasted());
+                calculations.calculateTimeWaste(s);
+            }
+
+        }
+        test.calculateSolution();
+        finalSolutionCheck(test,calculations);
+
         int minutes = 5;
         int milis = minutes * 60000;
 
@@ -110,10 +123,11 @@ public class Main {
 
         //HALNS
         HybridALNS halns = new HybridALNS();
-        //Solution hybrid = halns.HALNS(blockSchedulebaseSolution,repair,calculations);
-        //finalSolutionCheck(hybrid,calculations);
-        //System.out.println("Writing CSV-file ...");
-        //writeCsv(hybrid.getSchedules(),".//Data//Results//" + dateString + "_" + cost + "_HALNS.csv");
+//        Solution hybrid = halns.HALNS(blockSchedulebaseSolution,repair,calculations);
+//        finalSolutionCheck(hybrid,calculations);
+//        System.out.println("Writing CSV-file ...");
+//        cost = String.valueOf(hybrid.getTotalCost());
+//        writeCsv(hybrid.getSchedules(),".//Data//Results//" + dateString + "_" + cost + "_HALNS.csv");
         //============================================= TESTING AND ANALYSING =============================================
         //System.out.println(combinatorialBound2(calculations));
     }

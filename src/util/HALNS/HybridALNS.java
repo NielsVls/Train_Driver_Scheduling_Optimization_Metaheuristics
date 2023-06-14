@@ -31,8 +31,7 @@ public class HybridALNS {
         for (int i = 0; i < populationSize; i++) {
             Solution solution = runALNS(initial, null, 100, repair, c);
             initialPopulation.add(solution);
-            finalSolutionCheck(solution,c);
-            System.out.println("ALNS " + (i+1) + " added.");
+            System.out.println("ALNS " + (i+1) + " added: " + solution.getTotalCost());
         }
 
         population = initialPopulation;
@@ -45,8 +44,9 @@ public class HybridALNS {
             if(generation %5 == 0){
                 System.out.println("Adding Diversity ...");
                 for (int j = 0;j < 3 ; j++){
-                    Solution solution = runALNS(initial, null, 250, repair, c);
+                    Solution solution = runALNS(initial, null, 500, repair, c);
                     population.add(solution);
+                    System.out.println("Solution added: " + solution.getTotalCost());
                 }
                 System.out.println("Diversity added.");
             }
@@ -161,6 +161,8 @@ public class HybridALNS {
 
         ArrayList<Integer> totalSorted = new ArrayList<>(totalRank);
         Collections.sort(totalSorted);
+        System.out.println("The population final score before ranking");
+        System.out.println(totalSorted);
 
         ArrayList<Solution> finalRank = new ArrayList<>();
         for(Integer i : totalSorted){

@@ -117,6 +117,37 @@ public class DataReader {
         return breakStations;
     }
 
+    public Solution readSolution(String filename) throws FileNotFoundException{
+        Scanner sc = new Scanner(new File(filename));
+        sc.useDelimiter(",");
+        sc.nextLine();
+        int currentDuty = 1;//first duty
+        ArrayList<Schedule> schedules = new ArrayList<>();
+        Schedule s = new Schedule();
+        while(sc.hasNextLine()){
+            String line = sc.nextLine();
+            String[] param = line.split(",");
+            String[] block = param[1].split(" ");
+            if(block[0].equals("Block")){
+                if(Integer.parseInt(param[0]) != currentDuty){
+                    schedules.add(s);
+                    currentDuty = Integer.parseInt(param[0]);
+                    s = new Schedule();
+                    s.getBlocks().add(Integer.parseInt(block[1]));
+                }else{
+                    s.getBlocks().add(Integer.parseInt(block[1]));
+                    s.setId(currentDuty);
+                }
+            }
+        }
+        schedules.add(s);
+        sc.close();
+        Solution sol = new Solution();
+        sol.setSchedules(schedules);
+        sol.calculateSolution();
+        return sol;
+    }
+
     public Solution readHASTUSsolution() throws FileNotFoundException {
         Scanner sc = new Scanner(new File(".//Data//CSV//HASTUS_solution.csv"));
         sc.useDelimiter(",");

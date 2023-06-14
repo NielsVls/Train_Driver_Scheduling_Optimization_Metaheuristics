@@ -220,11 +220,11 @@ public class Calculations {
 
                 if (a.getId() == s.getBreakAfterBlock()) {
                     int travelToAndFromBreak = calculateTravelTimeFromBreak(stations.get(a.getEndLoc() - 1), stations.get(b.getStartLoc() - 1)) + calculateTravelTimeToBreak(stations.get(a.getEndLoc() - 1), stations.get(b.getStartLoc() - 1));
-                    if (travelToAndFromBreak > 60) {
-                        waste += (travelToAndFromBreak - 60);
-                    }
+//                    if (travelToAndFromBreak > 60) {
+//                        waste += (travelToAndFromBreak - 60);
+//                    }
                     int connectionWaste;
-                    if (a.getStartWeekday() != b.getEndWeekday()) {
+                    if (a.getEndWeekday() != b.getStartWeekday()) {
                         connectionWaste = (1440 - a.getArrivalTime() + b.getDepartureTime() - 30 - travelToAndFromBreak);
                     } else {
                         connectionWaste = (b.getDepartureTime() - a.getArrivalTime() - 30 - travelToAndFromBreak);
@@ -235,10 +235,10 @@ public class Calculations {
                     waste += connectionWaste;
                 } else {
                     int connectionWaste;
-                    if (travelmatrix[a.getEndLoc()][b.getStartLoc()] > 120) {
-                        waste += (travelmatrix[a.getEndLoc()][b.getStartLoc()] - 120);
-                    }
-                    if (a.getStartWeekday() != b.getEndWeekday()) {
+//                    if (travelmatrix[a.getEndLoc()][b.getStartLoc()] > 120) {
+//                        waste += (travelmatrix[a.getEndLoc()][b.getStartLoc()] - 120);
+//                    }
+                    if (a.getEndWeekday() != b.getStartWeekday()) {
                         connectionWaste = (1440 - a.getArrivalTime() + b.getDepartureTime() - travelmatrix[a.getEndLoc()][b.getStartLoc()]);
                     } else {
                         connectionWaste = (b.getDepartureTime() - a.getArrivalTime() - travelmatrix[a.getEndLoc()][b.getStartLoc()]);
