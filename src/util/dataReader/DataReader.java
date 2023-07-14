@@ -124,6 +124,7 @@ public class DataReader {
         int currentDuty = 1;//first duty
         ArrayList<Schedule> schedules = new ArrayList<>();
         Schedule s = new Schedule();
+        s.setId(1);
         while(sc.hasNextLine()){
             String line = sc.nextLine();
             String[] param = line.split(",");
@@ -131,8 +132,9 @@ public class DataReader {
             if(block[0].equals("Block")){
                 if(Integer.parseInt(param[0]) != currentDuty){
                     schedules.add(s);
-                    currentDuty = Integer.parseInt(param[0]);
+                    currentDuty++;
                     s = new Schedule();
+                    s.setId(currentDuty);
                     s.getBlocks().add(Integer.parseInt(block[1]));
                 }else{
                     s.getBlocks().add(Integer.parseInt(block[1]));

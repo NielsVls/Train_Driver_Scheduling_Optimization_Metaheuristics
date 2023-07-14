@@ -14,8 +14,8 @@ import static util.LNS.LargeNeighbourhoodSearch.convert;
 public class HybridALNS {
     ArrayList<Solution> initialPopulation = new ArrayList<>();
     ArrayList<Solution> population = new ArrayList<>();
-    static int populationSize = 3;
-    int gensWithoutImprove = 5;
+    static int populationSize = 5;
+    int gensWithoutImprove = 10;
     int gensMax = 500;
     static Calculations c;
 
@@ -44,7 +44,7 @@ public class HybridALNS {
             if(generation %5 == 0){
                 System.out.println("Adding Diversity ...");
                 for (int j = 0;j < 3 ; j++){
-                    Solution solution = runALNS(initial, null, 500, repair, c);
+                    Solution solution = runALNS(initial, null, 750, repair, c);
                     population.add(solution);
                     System.out.println("Solution added: " + solution.getTotalCost());
                 }
@@ -70,8 +70,9 @@ public class HybridALNS {
                 Solution curr = population.get(i).clone();
                 curr.calculateSolution();
                 if (!curr.equals(globalbest)) {
-                    Solution temp = runALNS(curr, globalbest, 100, repair, c);
+                    Solution temp = runALNS(curr, globalbest, 250, repair, c);
                     temp.calculateSolution();
+                    System.out.println("New crossover :" + temp.getTotalCost());
                     if (temp != null) {
                         population.add(temp);
                     }
@@ -162,7 +163,7 @@ public class HybridALNS {
         ArrayList<Integer> totalSorted = new ArrayList<>(totalRank);
         Collections.sort(totalSorted);
         System.out.println("The population final score before ranking");
-        System.out.println(totalSorted);
+        System.out.println(totalRank);
 
         ArrayList<Solution> finalRank = new ArrayList<>();
         for(Integer i : totalSorted){
@@ -179,14 +180,14 @@ public class HybridALNS {
     }
 
 
-    public static int getHammingDistance(Solution curr, Solution best) {
-        if (best == null || curr.equals(best)) {
+    public static int getHammingDistance(Solution curr, Solution solution) {
+        if (solution == null || curr.equals(solution)) {
             return 0;
         }
         int hammingDistance = 0;
         for (int i = 1; i <= c.blocks.size(); i++) {
             Schedule currS = findSchedule(curr, i);
-            Schedule bestS = findSchedule(best, i);
+            Schedule bestS = findSchedule(solution, i);
 
             int sizeC = currS.getBlocks().size();
             int sizeB = bestS.getBlocks().size();

@@ -108,14 +108,17 @@ public class Rebuild {
         int offset = destructions / 2;
 
         for (int i = (indexOrigin - offset); i <= (indexOrigin + offset); i++) {
-            if (i < 0) {
-                continue;
+            int ind = i;
+            if (ind < 0) {
+                ind += timeblocks.size();
+                //continue;
             }
-            if (i >= timeblocks.size()) {
-                break;
+            if (ind >= timeblocks.size()) {
+                ind -= timeblocks.size();
+                //break;
             }
 
-            Block b = timeblocks.get(i);
+            Block b = timeblocks.get(ind);
             Integer bINT = b.getId();
 
             //find schedule

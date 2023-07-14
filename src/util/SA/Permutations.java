@@ -22,7 +22,7 @@ public class Permutations {
         Solution newSolution = oldSolution.clone();
 
         //Saving the old solution
-        oldSolution.calculateSolution();
+        oldSolution.calculateCost();
         int oldCost = oldSolution.getTotalCost();
 
         PossibleSolution result = new PossibleSolution();
@@ -73,7 +73,7 @@ public class Permutations {
             double diff1 = c.calculateCost(s1, tempS1);
             double diff2 = c.calculateCost(s2, tempS2);
 
-            if ((diff1 + diff2) < 0) {
+            //if ((diff1 + diff2) < 0) {
                 newSolution.getSchedules().remove(s1);
                 newSolution.getSchedules().remove(s2);
                 newSolution.getSchedules().add(tempS1);
@@ -82,7 +82,7 @@ public class Permutations {
                 result.setNewSolution(newSolution);
                 result.setNewCost(newSolution.getTotalCost());
                 return result;
-            }
+            //}
         }
         return null;
     }
@@ -148,7 +148,7 @@ public class Permutations {
             double diff1 = c.calculateCost(s1, tempS1);
             double diff2 = c.calculateCost(s2, tempS2);
 
-            if ((diff1 + diff2) < 0) {
+            //if ((diff1 + diff2) < 0) {
                 newSolution.getSchedules().remove(s1);
                 newSolution.getSchedules().remove(s2);
                 if(!tempS1.getBlocks().isEmpty()){
@@ -161,7 +161,7 @@ public class Permutations {
                 result.setNewSolution(newSolution);
                 result.setNewCost(newSolution.getTotalCost());
                 return result;
-            }
+           // }
         }
         return null;
     }
