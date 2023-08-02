@@ -14,8 +14,8 @@ import static util.LNS.LargeNeighbourhoodSearch.convert;
 public class HybridALNS {
     ArrayList<Solution> initialPopulation = new ArrayList<>();
     ArrayList<Solution> population = new ArrayList<>();
-    static int populationSize = 5;
-    int gensWithoutImprove = 10;
+    static int populationSize = 3;
+    int gensWithoutImprove = 5;
     int gensMax = 500;
     static Calculations c;
 
@@ -44,7 +44,7 @@ public class HybridALNS {
             if(generation %5 == 0){
                 System.out.println("Adding Diversity ...");
                 for (int j = 0;j < 3 ; j++){
-                    Solution solution = runALNS(initial, null, 750, repair, c);
+                    Solution solution = runALNS(initial, null, 500, repair, c);
                     population.add(solution);
                     System.out.println("Solution added: " + solution.getTotalCost());
                 }
@@ -69,14 +69,13 @@ public class HybridALNS {
             for (int i = 0; i < populationSize; i++) {
                 Solution curr = population.get(i).clone();
                 curr.calculateSolution();
-                if (!curr.equals(globalbest)) {
-                    Solution temp = runALNS(curr, globalbest, 250, repair, c);
-                    temp.calculateSolution();
-                    System.out.println("New crossover :" + temp.getTotalCost());
-                    if (temp != null) {
-                        population.add(temp);
-                    }
+                Solution temp = runALNS(curr, globalbest, 500, repair, c);
+                temp.calculateSolution();
+                System.out.println("New crossover :" + temp.getTotalCost());
+                if (temp != null) {
+                    population.add(temp);
                 }
+
             }
 
             System.out.println("Selecting Survivors ...");

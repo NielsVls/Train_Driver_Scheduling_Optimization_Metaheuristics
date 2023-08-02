@@ -73,8 +73,9 @@ public class ALNS {
     public static Solution runALNS(Solution initial, Solution globalBest, int maxIterations, Repair repair, Calculations c) {
 
         int countIterations = 0;
-        double temperature = 10000;
-        double alfa = 0.99;
+        double startTemperature = 2;
+        double temperature = startTemperature;
+        double alfa = 0.001;
 
         ArrayList<Double> rewardDestroy = new ArrayList<>();
         ArrayList<Double> rewardRepair = new ArrayList<>();
@@ -176,7 +177,7 @@ public class ALNS {
             }
 
             countIterations++;
-            temperature = alfa * temperature;
+            temperature = startTemperature / Math.log(1 + countIterations * alfa);
 
             if(countIterations%5 == 0){
                 for (int i =0 ; i < rewardDestroy.size(); i++){

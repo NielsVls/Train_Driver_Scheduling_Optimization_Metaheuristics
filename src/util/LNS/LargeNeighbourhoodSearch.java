@@ -85,8 +85,9 @@ public class LargeNeighbourhoodSearch {
         long tempTime = System.currentTimeMillis();
         int minutes = 0;
         int countIterations = 0;
-        double temperature = 100000;//1000000000;
-        double alfa = 0.99;
+        double startTemperature = 5;
+        double temperature = startTemperature;
+        double alfa = 0.001;
         temperatureGraph.add(temperature);
 
         ArrayList<Double> rewardDestroy = new ArrayList<>();
@@ -176,7 +177,7 @@ public class LargeNeighbourhoodSearch {
             }
 
             countIterations++;
-            temperature = alfa * temperature;
+            temperature = startTemperature / Math.log(1 + countIterations * alfa);
             currentTime = System.currentTimeMillis();
 
             //System.out.println(destroy + " || " + repair + " ==> " + points + " points.");

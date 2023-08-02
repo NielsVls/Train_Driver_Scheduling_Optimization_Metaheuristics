@@ -75,67 +75,60 @@ public class Main {
 
         Solution hastus = dataReader.readHASTUSsolution();
 
-//        Solution test = dataReader.readSolution(".//Data//Results//13-06-2023__HALNS.csv");
-//        for(Schedule s: test.getSchedules()){
-//            calculations.calculateSchedule(s);
-//        }
-//        test.calculateSolution();
-//        finalSolutionCheck(test,calculations);
+        Solution test = dataReader.readSolution(".//Data//Results//23-05-2023_18851_180min_1block.csv");
+        for(Schedule s: test.getSchedules()){
+            calculations.calculateSchedule(s);
+        }
+        test.calculateSolution();
+        finalSolutionCheck(test,calculations);
+        timeCalculation(test);
 
-        int minutes = 5;
-        int milis = minutes * 60000;
+        LocalDate currentDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        String dateString = currentDate.format(formatter);
+        String cost = "";
 
         //============================================= BASE SOLUTIONS =============================================
-        //Solution blockSchedulebaseSolution = algoTest.run1BlockPerScheduleInitialSolution();
+        Solution blockSchedulebaseSolution = algoTest.run1BlockPerScheduleInitialSolution();
         Solution timedInitial = algoTest.runTimeBasedInitialSolution();
         //Solution id = algoTest.runInitialSolution();
         //Solution station = algoTest.runStationDriverSolution();
 
         //finalSolutionCheck(id,calculations);
-        finalSolutionCheck(timedInitial,calculations);
+        //finalSolutionCheck(timedInitial,calculations);
         //finalSolutionCheck(blockSchedulebaseSolution,calculations);
         //finalSolutionCheck(station,calculations);
 
         System.out.println("\n =================================================================================== \n");
         //============================================= SIMULATED ANNEALING =============================================
 
-
-        Solution endSolSA = SimulatedAnnealing.runSimulation(timedInitial,milis, permutations);
-        finalSolutionCheck(endSolSA,calculations);
+        int minutes = 10;
+        int milis = minutes * 60000;
+//
+//            Solution endSolSA = SimulatedAnnealing.runSimulation(timedInitial,milis, permutations);
+//            finalSolutionCheck(endSolSA,calculations);
+//            cost = String.valueOf(endSolSA.getTotalCost());
+//            writeCsv(endSolSA.getSchedules(),".//Data//Results//" + cost + "_" + dateString + "_" + (minutes) + "min_SA.csv");
 
         //============================================= ADAPTIVE LNS =============================================
 
-        LocalDate currentDate = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        String dateString = currentDate.format(formatter);
-        String cost = "";
         Solution endSolLNS = null;
+        for(int i = 0; i < 0 ; i++){
+            endSolLNS = LargeNeighbourhoodSearch.runALNS(test,milis,builders);
+            finalSolutionCheck(endSolLNS,calculations);
+            cost = String.valueOf(endSolLNS.getTotalCost());
+            writeCsv(endSolLNS.getSchedules(),".//Data//Results//" + cost + "_" + dateString + "_" + (minutes) + "min_18674OPL_LNS.csv");
+            timeCalculation(endSolLNS);
+        }
 
-        //1 Block
-//        endSolLNS = LargeNeighbourhoodSearch.runALNS(blockSchedulebaseSolution,milis,builders);
-//        finalSolutionCheck(endSolLNS,calculations);
-//        cost = String.valueOf(endSolLNS.getTotalCost());
-//        writeCsv(endSolLNS.getSchedules(),".//Data//Results//" + dateString + "_" + cost + "_" + (minutes) + "min_1block_LNS.csv");
-
-        //endSolLNS = LargeNeighbourhoodSearch.runALNS(test,milis,builders);
-        //finalSolutionCheck(endSolLNS,calculations);
-        //cost = String.valueOf(endSolLNS.getTotalCost());
-        //writeCsv(endSolLNS.getSchedules(),".//Data//Results//" + dateString + "_" + cost + "_" + (minutes) + "min_1block_LNS.csv");
-
-
-        int milisSA = 60000*240;
-        //Solution endSolSA = SimulatedAnnealing.runSimulation(blockSchedulebaseSolution, milisSA, permutations);
-        //finalSolutionCheck(endSolSA,calculations);
-        //cost = String.valueOf(endSolSA.getTotalCost());
-        //writeCsv(endSolSA.getSchedules(),".//Data//Results//" + dateString + "_" + cost + "_" + (milisSA/60000) + "min_1block_LNS_SA.csv");
 
         //HALNS
-        HybridALNS halns = new HybridALNS();
-        //Solution hybrid = halns.HALNS(blockSchedulebaseSolution,repair,calculations);
-       // finalSolutionCheck(hybrid,calculations);
-       // System.out.println("Writing CSV-file ...");
-        //cost = String.valueOf(hybrid.getTotalCost());
-        //writeCsv(hybrid.getSchedules(),".//Data//Results//" + dateString + "_" + cost + "_HALNS.csv");
+//        HybridALNS halns = new HybridALNS();
+//        Solution hybrid = halns.HALNS(blockSchedulebaseSolution,repair,calculations);
+//        finalSolutionCheck(hybrid,calculations);
+//        System.out.println("Writing CSV-file ...");
+//        cost = String.valueOf(hybrid.getTotalCost());
+//        writeCsv(hybrid.getSchedules(),".//Data//Results//" + dateString + "_" + cost + "_HALNS.csv");
         //============================================= TESTING AND ANALYSING =============================================
         //System.out.println(combinatorialBound2(calculations));
     }
@@ -249,6 +242,35 @@ public class Main {
         }
     }
 
+    static void timeCalculation(Solution solution){
+        int breaktime = 0;
+        int traveltime = 0;
+        int wastedTime = solution.getTotalTimeWasted();
+        int blocktime = 0;
+        int totalduration = solution.getTotalDuration();
+
+        for(Schedule s : solution.getSchedules()){
+            blocktime += parameters.getCheckOutTime() + parameters.getCheckInTime();
+            breaktime += 30;
+            for(Integer i : s.getBlocks()){
+                Block b = blocks.get(i-1);
+                int blockdur = b.getArrivalTime() - b.getDepartureTime();
+                if(blockdur < 0){
+                    blockdur += 1440;
+                }
+                blocktime += blockdur;
+            }
+        }
+
+        traveltime = totalduration - blocktime - breaktime - wastedTime;
+
+        System.out.println("TOT " + totalduration);
+        System.out.println("TW " + wastedTime);
+        System.out.println("TR " + traveltime);
+        System.out.println("Bl " + blocktime);
+        System.out.println("Bre " + breaktime);
+    }
+
     //Check if blocks are consecutive and puts them as pairs in a list
     static ArrayList<ArrayList<Integer>> consecutiveBlocks(ArrayList<Block> blocks) {
         ArrayList<ArrayList<Integer>> allPairs = new ArrayList<>();
@@ -273,6 +295,10 @@ public class Main {
         ArrayList<Integer> trainsB = b.getTrainNr();
 
         int delta = b.getDepartureTime() - a.getArrivalTime();
+
+//        if(a.getLocalDriver() != b.getLocalDriver()){
+//            return false;
+//        }
 
         if (a.getEndWeekday() == b.getStartWeekday()) {
             if (a.getEndLoc() == b.getStartLoc() && trainsA.get(trainsA.size() - 1).equals(trainsB.get(0))) {
@@ -349,6 +375,10 @@ public class Main {
     static boolean checkFeasibilityWithBreak(Block a, Block b) {
         ArrayList<Integer> trainsA = a.getTrainNr();
         ArrayList<Integer> trainsB = b.getTrainNr();
+
+//        if(a.getLocalDriver() != b.getLocalDriver()){
+//            return false;
+//        }
 
         if (a.getEndWeekday() == b.getStartWeekday()) {
             if (a.getEndLoc() == b.getStartLoc() && trainsA.get(trainsA.size() - 1).equals(trainsB.get(0))) {

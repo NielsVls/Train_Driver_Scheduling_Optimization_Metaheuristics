@@ -17,7 +17,9 @@ public class DataReader {
         int counter = 0;
         stations = connectStationswithId();
         ArrayList<Block> blocks = new ArrayList<>();
-        Scanner sc = new Scanner(new File(".//Data//CSV//Blocks_Vest_2_ABL_FLB_NG.csv"));
+        Scanner sc = new Scanner(new File(".//Data//CSV//Blocks_Vest_2_ABL_FLB_NG.csv")); // normal dataset
+        //Scanner sc = new Scanner(new File(".//Data//CSV//ReducedDepots.csv")); // 2 Depots (AR and FA)
+        //Scanner sc = new Scanner(new File(".//Data//CSV//First250.csv")); // 250 first blocks
         sc.useDelimiter(",");
         while (sc.hasNextLine() /*&& counter < 250*/) {
             String line = sc.nextLine();

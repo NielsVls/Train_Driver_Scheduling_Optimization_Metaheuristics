@@ -103,7 +103,6 @@ public class Solution implements Cloneable{
         totalCost = 0;
         totalDuration =0;
         totalTimeWasted =0;
-        Parameters p = new Parameters();
         if(!schedules.isEmpty()){
             for (Schedule s: schedules){
                 if(!s.getBlocks().isEmpty()){

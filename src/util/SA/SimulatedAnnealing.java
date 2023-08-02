@@ -28,9 +28,9 @@ public class SimulatedAnnealing {
         long tempTime = System.currentTimeMillis();
         int minutes = 0;
         int countIterations = 0;
-        double startTemperature = 1000;
+        double startTemperature = 50;
         double temperature = startTemperature;
-        double alfa = 0.01;
+        double alfa = 0.001;
 
         temperatureGraph.add(startTemperature);
 
